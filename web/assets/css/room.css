@@ -215,6 +215,14 @@ a:hover, a:active { color:#fff; text-decoration: underline; }
 	background: rgba(255,255,255,.5);
 }
 
+.navbar-playctl
+{
+    position: absolute;
+    width: 100%;
+    left: 0;
+    text-align: center;
+    margin: auto;
+}
 
 
 /********************************************************/
