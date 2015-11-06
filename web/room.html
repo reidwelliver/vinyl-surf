@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport"    content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
 	<title>vinyl.surf - social radio</title>
 	
@@ -20,7 +20,7 @@
 			vinyl.surf
 			</a>
 		</div>
-		<div id="navbar" class="navbar-collapse collapse">
+		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav navbar-right">
 				<li><a href="#">Settings</a></li>
 				<li><a href="#">Profile</a></li>
@@ -32,8 +32,24 @@
 	<div class="container-fluid">
 	<div class="row" style="height: 5em"></div>
 	<div class="row">
-		<div class="col-sm-2 col-md-2 sidebar" style="background-color:white; margin-left: 4em; height: 40em">
-			<!-- TODO: Put chat mock here, remove forced height -->
+		<div class="col-sm-2 col-md-2 chat" style="background-color:white; margin-left: 1em;">
+			<table style="margin:.5em">
+				<tr>
+					<td class="chat-user-username">Bob:</td>
+					<td class="chat-user-message">Dope track g</td>
+				</tr>
+				<tr>
+					<td class="chat-user-username">Dan:</td>
+					<td class="chat-user-message">Dope track g</td>
+				</tr>
+				<tr>
+					<td class="chat-user-username">Ralph:</td>
+					<td class="chat-user-message">not enjoying this one</td>
+				</tr>
+				<tr>
+					<td><input type="text" class="form-control" placeholder="chat message"></input></td>
+				</tr>
+			</table>
 		</div>
 
 		<div class="col-sm-9 col-md-8 main col-md-offset-1">
