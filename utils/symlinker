@@ -24,7 +24,6 @@ function symlink() {
 	if empty "$SOURCENODE" || empty "$DESTNODE"
 	then
 		warn "Malformed line in package file, skipping line $NUMLN."
-		echo "S: $SOURCENODE -- D: $DESTNODE"
 	elif [ ! -e $SOURCENODE ]
 	then
 		warn "Source doesn't exist, skipping line $NUMLN."

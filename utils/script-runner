@@ -8,8 +8,9 @@ INDIR=$(getopt -d yes)
 
 CONTDIR=`basename $INDIR`
 SKIPDEF=$(getopt -s)
-SCRIPTCOUNT=0
-RUNCOUNT=0
+
+NUMLN=0
+NUMINS=0
 
 #check if directory has executable scripts
 ISEMPTY=$(ls -al $INDIR | grep '^[^d][\-rw]*x')
@@ -41,12 +42,12 @@ fi
 
 for script in "$INDIR"/*
 do
-	let "SCRIPTCOUNT+=1"
+	((NUMLN++))
 	SCRIPTNAME=`basename $script`
 
 	if [[ -x  "$script" ]]
 	then
-		let "RUNCOUNT+=1"
+		((NUMINS++))
 		info "Running $script, logging to $(normalize $SCRIPTNAME)"
 		"$script" | log "$SCRIPTNAME"
 	else
@@ -54,4 +55,4 @@ do
 	fi
 done
 
-info "Ran $RUNCOUNT/$SCRIPTCOUNT scripts."
+info "Ran $NUMINS/$NUMLN scripts."

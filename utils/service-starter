@@ -5,8 +5,9 @@ source $UTILDIR/common "$@"
 checkopt -f yes
 FILE=$(getopt -f yes)
 
-NUMSRVC=0
-NUMSTART=0
+NUMLN=0
+NUMINS=0
+
 # service starter: starts services with logging
 # @Param $1: line beginning with servicename
 ## I.e. "nginx"
@@ -15,16 +16,16 @@ NUMSTART=0
 function service-start() {
 	LINEARRAY=($1)
 	SERVICENAME="${LINEARRAY[0]}"
-	((NUMSRVC++))
+	((NUMLN++))
 	if empty "$SERVICENAME"
 	then
-		warn "Malformed line in service file, skipping line $NUMSRVC."
+		warn "Malformed line in service file, skipping line $NUMLN."
 	# TODO: Package name regex for safety, this just falls through all the time currently
 	elif ! contains "$SERVICENAME" "[A-Za-z]"
 	then
-		error "Bad package name $SERVICENAME in $FILE, skipping line $NUMSRVC."
+		error "Bad package name $SERVICENAME in $FILE, skipping line $NUMLN."
 	else
-		((NUMSTART++))
+		((NUMINS++))
 		info "Starting service $SERVICENAME, logging to $(normalize $SERVICENAME)"
 		service "$SERVICENAME" start | log "$SERVICENAME"
 	fi
@@ -32,4 +33,4 @@ function service-start() {
 
 #invoke file processing with our above function as a per-line callback
 processfile "$FILE" service-start
-info "Started $NUMSTART/$NUMSRVC services."
+info "Started $NUMINS/$NUMLN services."

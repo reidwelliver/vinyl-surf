@@ -133,7 +133,7 @@ then
 	read -r -a METAPARAMARRAY <<< "$METAPARAM"
 	source $UTILDIR/logger "$@"
 
-	debug "COMMON_METAPARAM: $METAPARAM"
+	#debug "COMMON_METAPARAM: $METAPARAM"
 
 	# Do we include the mock/debug functions?
 	if getopt "--debug" || ! empty "$UTILDBG"

@@ -81,12 +81,14 @@ function debug() {
 #only run manually if called directly as a utility
 if ! empty "$DIRECTCALL"
 then
-	checkopt -p yes
 	checkopt -f yes
-
-	PATHPREFIX=$(getopt -p yes)
 	FILENAME=$(getopt -f yes)
 	
+	PATHPREFIX=$(getopt -p yes)
+	if empty "$PATHPREFIX"
+	then
+		PATHPREFIX=$LOGDIR/$FILENAME
+	fi
 	log $FILENAME $PATHPREFIX
 fi
 

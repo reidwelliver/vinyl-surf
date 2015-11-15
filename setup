@@ -1,13 +1,33 @@
 #!/bin/bash
 
+#absolute path to bind to docker
+GITPATH=$(pwd $(dirname "$0"))
+UTILDIR="$GITPATH/utils"
+
+source $UTILDIR/common "$@"
+
+
 #TODO: allow gitpath to be entered
 #TODO: improve parameter gathering (gatheropts)
 #TODO: if project subdir has a dockerfile, override call to this one
 #TODO: map ports here
 
 
-#absolute path to bind to docker
-GITPATH=`dirname "$0"`
+#Server Directory
+checkopt -p yes
+SERVDIR=$(getopt -p yes)
+
+
+if [ ! -d $SERVDIR ]
+then
+	error "Your selected server is not a directory in the git project!"
+	exit 1
+fi
+
+
+PORTCMD=$($UTILDIR/port-generator -f $SERVDIR/config/ports)
+#todo: portcmd validation
 
 #gathers argument and feeds to docker file
-docker build -P --build-arg SERV=$1 --build-arg GITPATH=$GITPATH ./ 
+IMAGEID=$(docker build --build-arg SERV=$SERVDIR --build-arg GITPATH=$GITPATH ./ )
+#docker run $PORTCMD -i -t /bin/bash

@@ -1,0 +1,46 @@
+#!/bin/bash
+if [ -z "$UTILDIR" ] || [ ! -d "$UTILDIR" ]
+then
+	GITPATH=$(pwd $(dirname "$0"))
+	UTILDIR="$GITPATH/utils"
+fi
+
+source $UTILDIR/common "$@"
+
+
+checkopt -f yes
+FILE=$(getopt -f yes)
+
+NUMLN=0
+NUMINS=0
+
+PORTCMD=""
+
+# port-generate: generates the -p for a docker command
+# @Param $1: line beginning with 2 ports
+function port-generate() {
+	LINEARRAY=($1)
+
+	EXTPORT="${LINEARRAY[0]}"
+	INTPORT="${LINEARRAY[1]}"
+
+	((NUMLN++))
+	if empty "$INTPORT" || empty "$EXTPORT"
+	then
+		# warn "Malformed line in package file, skipping line $NUMLN."
+		continue #noop
+		# TODO: port number regex for safety, this may just fall through all the time
+	elif ! contains "$EXTPORT" "[1-9]" || ! contains "$INTPORT" "[1-9]"
+	then
+		continue #noop
+		# error "Bad port format, skipping line $NUMLN."
+	else
+		((NUMINS++))
+		PORTCMD="$PORTCMD -p $EXTPORT:$INTPORT"
+	fi
+}
+
+#invoke file processing with our above function as a per-line callback
+processfile "$FILE" port-generate
+
+echo "$PORTCMD"
