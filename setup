@@ -29,5 +29,5 @@ PORTCMD=$($UTILDIR/port-generator -f $SERVDIR/config/ports)
 #todo: portcmd validation
 
 #gathers argument and feeds to docker file
-IMAGEID=$(docker build --build-arg SERV=$SERVDIR --build-arg GITPATH=$GITPATH ./ )
+IMAGEID=$(docker build --build-arg SERV=$SERVDIR --build-arg GITPATH=$GITPATH ./utils )
 #docker run $PORTCMD -i -t /bin/bash
