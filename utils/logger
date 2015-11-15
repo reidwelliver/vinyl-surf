@@ -1,0 +1,41 @@
+#!/bin/bash
+# logger - sanely logs to a file
+
+#TODO: better arg collection
+#TODO: different debug levels
+
+OUTFILE=$1
+DATE=`date +%s`
+
+OUTDIR=`dirname $OUTFILE`
+if [[ ! -e $OUTDIR ]]
+then
+	mkdir -p $OUTDIR
+fi
+
+if [[ -e $OUTFILE ]]
+then	
+	if [[ ! -f $OUTFILE ]]
+	then
+		echo "LOGWARN: output file is path to a directory, inserting into directory with appended .log"
+		BASE=`basename $OUTFILE`
+		OUTFILE="$OUTFILE/$BASE.$DATE.log"
+	fi
+
+	if [[ -f $OUTFILE ]]
+	then
+		OUTDIR=`dirname $OUTFILE`
+		BASE=`basename $OUTFILE`
+		OUTFILE="$OUTDIR/$BASE.$DATE.log"
+	fi
+fi
+
+if [[ -z `echo "$OUTFILE" | grep '.log$'` ]]
+then
+	OUTFILE="$OUTFILE.$DATE.log"
+fi
+
+while read line
+do
+	echo "${line}" >> "$OUTFILE"
+done

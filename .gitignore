@@ -1,0 +1,5 @@
+#build directory and info, we don't need that
+./build/*
+
+#The ever-annoying DS_STORE from macs
+.DS_Store
