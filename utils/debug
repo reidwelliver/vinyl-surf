@@ -8,3 +8,10 @@ function apt-get() {
 	debug "This is a fake apt-get call"
 	info "installing ${ARGARR[$LASTARG]}"
 }
+
+function service() {
+	ARGARR=($@)
+	LASTARG=`expr $#-2`
+	debug "This is a fake service call"
+	info "starting ${ARGARR[$LASTARG]}"
+}

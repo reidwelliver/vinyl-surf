@@ -2,7 +2,7 @@
 source $UTILDIR/common "$@"
 
 #TODO: richer arg collection
-FILE=$(getopt -d yes)
+FILE=$(getopt -f yes)
 
 NUMPKG=0
 NUMINS=0
@@ -17,15 +17,15 @@ function package-install() {
 	((NUMPKG++))
 	if empty "$PACKAGENAME"
 	then
-		warn "Empty line in package file, skipping line."
+		warn "Malformed line in package file, skipping line $NUMPKG."
 	# TODO: Package name regex for safety, this just falls through all the time currently
 	elif ! contains "$PACKAGENAME" "[A-Za-z]"
 	then
-		error "Bad package name $PACKAGENAME in $FILE, skipping line."
+		error "Bad package name $PACKAGENAME in $FILE, skipping line $NUMPKG."
 	else
 		((NUMINS++))
-		info "Installing package $PACKAGENAME, logging to $LOGDIR/package-installer/$PACKAGENAME"
-		apt-get install -y "$PACKAGENAME" | "$UTILDIR"/logger "$LOGDIR/package-installer/$PACKAGENAME"
+		info "Installing package $PACKAGENAME, logging to $(normalize $PACKAGENAME)"
+		apt-get install -y "$PACKAGENAME" | log "$PACKAGENAME"
 	fi
 }
 

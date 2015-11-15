@@ -42,7 +42,7 @@ RUN $UTILDIR/sql-inserter $SERVDIR/database/sample/ | $UTILDIR/logger $LOGDIR/da
 
 
 #install packages
-RUN $UTILDIR/package-installer $SERVDIR/config/packages | $UTILDIR/logger $LOGDIR/package-installer/package-installer
+RUN $UTILDIR/package-installer -f $SERVDIR/config/packages | $UTILDIR/logger $LOGDIR/package-installer/package-installer
 
 
 #run nodejs projects

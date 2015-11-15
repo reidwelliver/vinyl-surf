@@ -4,10 +4,6 @@
 # source $UTILDIR/common "$@"
 
 
-#bootstrapping parameters
-METAPARAM="$@"
-debug "DEBUG_METAPARAM: $DEBUG_METAPARAM"
-read -r -a METAPARAMARRAY <<< "$METAPARAM"
 
 # Process Line: reads in a line, skips if it's a comment
 # Otherwise runs a callback
@@ -70,27 +66,6 @@ function empty() {
 }
 
 
-#Logging functions
-#TODO: give these color and shit!
-# They all take in 1 param and print it atm
-# @Param $1: String to print as warning
-function warn() {
-	echo "[  WARN ]: $1"
-}
-
-function info() {
-	echo "[  INFO ]: $1"
-}
-
-function error() {
-	echo "[ ERROR ]: $1"
-}
-
-function debug() {
-	echo "[ DEBUG ]: $1"
-}
-
-
 # getopt
 # This searches the parameters that we sourced into this script from the caller
 # you give it a flag and whether it has an option, and it returns an exit code
@@ -133,11 +108,23 @@ function getopt() {
 }
 
 
+#bootstrapping parameters
+LIBLINKED=1
 
-# Do we include the mock/debug functions?
-if getopt "--debug" || ! empty "$UTILDBG"
+if ! empty $1
 then
-	debug "loading debug includes"
-	#todo: make sure we use parameters right
-	source $UTILDIR/debug "$METAPARAM"
+	METAPARAM="$@"
+	CALLERNAME=`basename $0`
+	read -r -a METAPARAMARRAY <<< "$METAPARAM"
+	source $UTILDIR/logger "$@"
+
+	debug "COMMON_METAPARAM: $METAPARAM"
+
+	# Do we include the mock/debug functions?
+	if getopt "--debug" || ! empty "$UTILDBG"
+	then
+		debug "loading debug includes"
+		#todo: make sure we use parameters right
+		source $UTILDIR/debug "$METAPARAM"
+	fi
 fi

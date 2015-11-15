@@ -4,19 +4,18 @@ source $UTILDIR/common "$@"
 # script-runner - sanely runs all scripts in a folder
 
 
-#TODO: collect args better, add arg to override default searching (currently hard set to 1 w/ SKIPDEF)
-INDIR=$1
+INDIR=$(getopt -d yes)
 CONTDIR=`basename $INDIR`
-SKIPDEF="1"
+SKIPDEF=$(getopt -s)
 SCRIPTCOUNT=0
 RUNCOUNT=0
 
 #check if directory has executable scripts
-ISEMPTY=`ls -al $INDIR | grep '^[^d][\-rw]*x'`
+ISEMPTY=$(ls -al $INDIR | grep '^[^d][\-rw]*x')
 
 
 #check if input file exists, otherwise try to use base
-if [ -d "$INDIR" -a ! empty "$ISEMPTY" ]
+if [ -d "$INDIR" ] || ! empty "$ISEMPTY"
 then
 	info "Running all scripts from $INDIR"
 elif ! empty "$SKIPDEF"

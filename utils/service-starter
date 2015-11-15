@@ -1,1 +1,34 @@
 #!/bin/bash
+source $UTILDIR/common "$@"
+
+#TODO: richer arg collection
+FILE=$(getopt -f yes)
+
+NUMSRVC=0
+NUMSTART=0
+# service starter: starts services with logging
+# @Param $1: line beginning with servicename
+## I.e. "nginx"
+## You can put things after it, I don't care
+## I.e. "nginx #comment about nginx"
+function service-start() {
+	LINEARRAY=($1)
+	SERVICENAME="${LINEARRAY[0]}"
+	((NUMSRVC++))
+	if empty "$SERVICENAME"
+	then
+		warn "Malformed line in service file, skipping line $NUMSRVC."
+	# TODO: Package name regex for safety, this just falls through all the time currently
+	elif ! contains "$SERVICENAME" "[A-Za-z]"
+	then
+		error "Bad package name $SERVICENAME in $FILE, skipping line $NUMSRVC."
+	else
+		((NUMSTART++))
+		info "Starting service $SERVICENAME, logging to $(normalize $SERVICENAME)"
+		service "$SERVICENAME" start | log "$SERVICENAME"
+	fi
+}
+
+#invoke file processing with our above function as a per-line callback
+processfile "$FILE" service-start
+info "Started $NUMSTART/$NUMSRVC services."
