@@ -3,8 +3,9 @@ source $UTILDIR/common "$@"
 
 # script-runner - sanely runs all scripts in a folder
 
-
+checkopt -d yes
 INDIR=$(getopt -d yes)
+
 CONTDIR=`basename $INDIR`
 SKIPDEF=$(getopt -s)
 SCRIPTCOUNT=0
@@ -46,8 +47,8 @@ do
 	if [[ -x  "$script" ]]
 	then
 		let "RUNCOUNT+=1"
-		info "Running $script, logging to $LOGDIR/$CONTDIR/$SCRIPTNAME"
-		"$script" | "$UTILDIR"/logger "$LOGDIR/$CONTDIR/$SCRIPTNAME"
+		info "Running $script, logging to $(normalize $SCRIPTNAME)"
+		"$script" | log "$SCRIPTNAME"
 	else
 		warn "Script $script is not marked executable. Skipping."
 	fi

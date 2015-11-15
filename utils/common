@@ -15,7 +15,7 @@ function processline() {
 
 	if [[ -z `echo "$LINE" | grep "^#"` ]]
 	then
-		$CALLBACK $LINE
+		$CALLBACK "$LINE"
 	fi
 }
 
@@ -104,6 +104,21 @@ function getopt() {
 		return 1
 	else
 		return 0
+	fi
+}
+
+#like getopt, but this will fail if it can't get an option
+# @Param $1: string flag to search for
+# @Param $2: (optional) non-null value signifying to echo the option
+function checkopt(){
+	OPT=$(getopt $1 $2)
+	RETVAL=$?
+	if [ $RETVAL -ne 0 ]
+	then
+		error "Invalid option given with $1"
+		exit 1
+	else
+		return $RETVAL
 	fi
 }
 

@@ -16,12 +16,9 @@ VOLUME $GITPATH:/git
 
 
 # Things to create
-# TODO: make script runner - runs all scripts in directory
-# TODO: make logger - Logs to dir sanely
 # TODO: sql example data installer
 # TODO: node runner
 # TODO: symlinker
-# TODO: package installer
 
 
 # run pre-install scripts

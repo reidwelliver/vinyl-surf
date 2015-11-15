@@ -2,6 +2,7 @@
 source $UTILDIR/common "$@"
 
 #TODO: richer arg collection
+checkopt -f yes
 FILE=$(getopt -f yes)
 
 NUMSRVC=0
