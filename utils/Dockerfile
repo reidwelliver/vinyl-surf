@@ -4,10 +4,11 @@ MAINTAINER Reid Welliver
 ARG SERV=test
 ARG GITPATH=./
 ARG GITMOUNT=/git
+ARG UTILDBG=""
 
-ARG GITLOG=$GITMOUNT/build/$SERV/log
-ARG GITSERV=$GITMOUNT/$SERV
-ARG GITUTIL=$GITMOUNT/utils
+ARG LOGDIR=$GITMOUNT/build/$SERV/log
+ARG SERVDIR=$GITMOUNT/$SERV
+ARG UTILDIR=$GITMOUNT/utils
 
 #mounts current directory to /git in container
 #you ARE running this from the git directory, right?
@@ -20,32 +21,34 @@ VOLUME $GITPATH:/git
 # TODO: sql example data installer
 # TODO: node runner
 # TODO: symlinker
-# TODO: apt package installer
+# TODO: package installer
+
 
 # run pre-install scripts
-RUN $GITUTIL/script-runner $GITSERV/scripts/pre/ | $GITUTIL/logger $GITLOG/script-pre
+RUN $UTILDIR/script-runner $SERVDIR/scripts/pre | $UTILDIR/logger $LOGDIR/script-pre
 
 
 # symlink directories from git
-RUN /git/utils/symlinker /git/$SERV/config/symlinks | /git/utils/logger /git/build/$SERV/log/symlinks
+RUN $UTILDIR/symlinker $SERVDIR/config/symlinks | $UTILDIR/logger $LOGDIR/symlinks
 
 
 # start services
-RUN service mysql start | /git/utils/logger /git/build/$SERV/log/mysql-start
-RUN service nginx start | /git/utils/logger /git/build/$SERV/log/nginx-start
+RUN $UTILDIR/service-starter $SERVDIR/config/services | /$UTILDIR/logger $LOGDIR/service-starter
 
 
 #install DB tables, install example data
-RUN /git/utils/script-runner /git/$SERV/database/setup/ | /git/utils/logger /git/build/$SERV/log/database-setup
-RUN /git/utils/sql-inserter /git/$SERV/database/sample/ | /git/utils/logger /git/build/$SERV/log/database-samples
+RUN $UTILDIR/script-runner $SERVDIR/database/setup/ | $UTILDIR/logger $LOGDIR/database-setup/database-setup
+RUN $UTILDIR/sql-inserter $SERVDIR/database/sample/ | $UTILDIR/logger $LOGDIR/database-samples/sql-inserter
+
 
 #install packages
-RUN /git/utils/apt-installer /git/$SERV/config/packages | /git/utils/logger /git/build/$SERV/log/apt-installer
+RUN $UTILDIR/package-installer $SERVDIR/config/packages | $UTILDIR/logger $LOGDIR/package-installer/package-installer
+
 
 #run nodejs projects
-RUN /git/utils/node-runner /git/$SERV/node/ | /git/utils/logger /git/build/$SERV/log/node-runner
+RUN $UTILDIR/node-runner $SERVDIR/node | $UTILDIR/logger $LOGDIR/node-runner/node-runner
 
 
 # run post-install scripts
-RUN /git/utils/script-runner /git/$SERV/scripts/pre/ | /git/utils/logger /git/build/$SERV/log/script-post
+RUN $UTILDIR/script-runner $SERVDIR/scripts/post | $UTILDIR/logger $LOGDIR/script-post/script-post
 

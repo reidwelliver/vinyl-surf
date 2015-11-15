@@ -1,38 +1,40 @@
 #!/bin/bash
+source $UTILDIR/common "$@"
+
 # script-runner - sanely runs all scripts in a folder
 
 
-#TODO: collect args better, add arg to override default searching
+#TODO: collect args better, add arg to override default searching (currently hard set to 1 w/ SKIPDEF)
 INDIR=$1
 CONTDIR=`basename $INDIR`
-SKIPDEF=1
+SKIPDEF="1"
 SCRIPTCOUNT=0
 RUNCOUNT=0
 
 #check if directory has executable scripts
-HASSCRIPTS=`ls -al $INDIR | grep '^[^d][\-rw]*x'`
+ISEMPTY=`ls -al $INDIR | grep '^[^d][\-rw]*x'`
 
 
 #check if input file exists, otherwise try to use base
-if [ -d "$INDIR" -a ! -z "$HASSCRIPTS" ]
+if [ -d "$INDIR" -a ! empty "$ISEMPTY" ]
 then
-	echo "INFO: Running all scripts from $INDIR"
-elif [[ $SKIPDEF -gt 0 ]]
+	info "Running all scripts from $INDIR"
+elif ! empty "$SKIPDEF"
 then
-	echo "INFO: $INDIR does not exist, is not a directory, or is empty."
-	echo "INFO: The flag to skip running defaults has been set, exiting."
+	info "$INDIR does not exist, is not a directory, or is empty."
+	info "The flag to skip running defaults has been set, exiting."
 	exit 0
 else
-	echo "WARN: $INDIR does not exist, is not a directory, or is empty."
-	echo "WARN: Attempting to find default to satisfy $INDIR"
+	warn "$INDIR does not exist, is not a directory, or is empty."
+	warn "Attempting to find default to satisfy $INDIR"
 
-	DEFDIR="$GITUTIL/default/$CONTDIR"
+	DEFDIR="$UTILDIR/default/$CONTDIR"
 	if [ -d "$DEFDIR" ]
 	then
-		echo "WARN: Found default directory $DEFDIR, proceeding."
+		warn "Found default directory $DEFDIR, proceeding."
 		INDIR="$DEFDIR"
 	else
-		echo "ERROR: Could not find directory to run scripts from, exiting."
+		error "Could not find directory to run scripts from, exiting."
 		exit 1
 	fi
 fi
@@ -45,11 +47,11 @@ do
 	if [[ -x  "$script" ]]
 	then
 		let "RUNCOUNT+=1"
-		echo "INFO: Running $script logging to $GITLOG/script/$CONTDIR/$SCRIPTNAME"
-		"$script" | "$GITUTIL"/logger "$GITLOG/script/$CONTDIR/$SCRIPTNAME"
+		info "Running $script, logging to $LOGDIR/$CONTDIR/$SCRIPTNAME"
+		"$script" | "$UTILDIR"/logger "$LOGDIR/$CONTDIR/$SCRIPTNAME"
 	else
-		echo "WARN: Script $script is not marked executable. Skipping."
+		warn "Script $script is not marked executable. Skipping."
 	fi
 done
 
-echo "INFO: Ran $RUNCOUNT/$SCRIPTCOUNT scripts."
+info "Ran $RUNCOUNT/$SCRIPTCOUNT scripts."

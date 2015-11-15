@@ -1,0 +1,34 @@
+#!/bin/bash
+source $UTILDIR/common "$@"
+
+#TODO: richer arg collection
+FILE=$(getopt -d yes)
+
+NUMPKG=0
+NUMINS=0
+# Package-install: installs from apt with logging
+# @Param $1: line beginning with packagename
+## I.e. "curl"
+## You can put things after it, I don't care
+## I.e. "curl #comment about curl"
+function package-install() {
+	LINEARRAY=($1)
+	PACKAGENAME="${LINEARRAY[0]}"
+	((NUMPKG++))
+	if empty "$PACKAGENAME"
+	then
+		warn "Empty line in package file, skipping line."
+	# TODO: Package name regex for safety, this just falls through all the time currently
+	elif ! contains "$PACKAGENAME" "[A-Za-z]"
+	then
+		error "Bad package name $PACKAGENAME in $FILE, skipping line."
+	else
+		((NUMINS++))
+		info "Installing package $PACKAGENAME, logging to $LOGDIR/package-installer/$PACKAGENAME"
+		apt-get install -y "$PACKAGENAME" | "$UTILDIR"/logger "$LOGDIR/package-installer/$PACKAGENAME"
+	fi
+}
+
+#invoke file processing with our above function as a per-line callback
+processfile "$FILE" package-install
+info "Installed $NUMINS/$NUMPKG packages."

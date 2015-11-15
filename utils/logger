@@ -4,6 +4,8 @@
 #TODO: better arg collection
 #TODO: different debug levels
 
+# source $UTILDIR/common
+
 OUTFILE=$1
 DATE=`date +%s`
 

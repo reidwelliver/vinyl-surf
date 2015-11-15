@@ -1,0 +1,143 @@
+#!/bin/bash
+# Common useful BASH functions
+# To include this write at the top of your script:
+# source $UTILDIR/common "$@"
+
+
+#bootstrapping parameters
+METAPARAM="$@"
+debug "DEBUG_METAPARAM: $DEBUG_METAPARAM"
+read -r -a METAPARAMARRAY <<< "$METAPARAM"
+
+# Process Line: reads in a line, skips if it's a comment
+# Otherwise runs a callback
+# @Param $1: line (String)
+# @Param $2: callback (function) - should take line as first arg
+function processline() {
+	LINE=$1
+	CALLBACK=$2
+
+	if [[ -z `echo "$LINE" | grep "^#"` ]]
+	then
+		$CALLBACK $LINE
+	fi
+}
+
+
+# Process File: reads in a file, runs Process Line on each line
+# @Param $1: file (String)
+# @Param $2: callback (function) - should take line as first arg
+function processfile() {
+	FILE=$1
+	CALLBACK=$2
+
+	while read LINE
+	do
+		processline "$LINE" $CALLBACK
+	done < $FILE
+}
+
+# shortcut for checking if a string matches a grep
+# @Param $1: String to check
+# @Param $2: String to match against
+function contains() {
+	STRING=$1
+	REGEX=$2
+
+	MATCH=`echo "$STRING" | grep "$REGEX"` 
+	
+	if empty $MATCH
+	then
+		return 1
+	else
+		return 0
+	fi
+
+}
+
+
+# shortcut for checking if a string isn't empty
+# @Param $1: String to check for emptiness
+function empty() {
+	STRING=$1
+
+	if [ -z "$STRING" ]
+	then
+		return 0
+	else
+		return 1
+	fi
+}
+
+
+#Logging functions
+#TODO: give these color and shit!
+# They all take in 1 param and print it atm
+# @Param $1: String to print as warning
+function warn() {
+	echo "[  WARN ]: $1"
+}
+
+function info() {
+	echo "[  INFO ]: $1"
+}
+
+function error() {
+	echo "[ ERROR ]: $1"
+}
+
+function debug() {
+	echo "[ DEBUG ]: $1"
+}
+
+
+# getopt
+# This searches the parameters that we sourced into this script from the caller
+# you give it a flag and whether it has an option, and it returns an exit code
+# it also echoes the option (if selected) for capture
+# @Param $1: string flag to search for
+# @Param $2: (optional) non-null value signifying to echo the option
+## Caveat: if you tell this function to find an option after the last parameter, it will exit code 1
+## I think this is pretty sane behavior
+function getopt() {
+	FLAG=$1
+	HASOPTION=$2
+	ITER=0
+
+	for ARG in $METAPARAM
+	do
+		((ITER++))
+		if contains "$ARG" "^$FLAG"
+		then
+			if ! empty "$HASOPTION"
+			then
+				#I'm assuming if you bothered to set hasoption, it has an option
+				OPTION="${METAPARAMARRAY[$ITER]}"
+				echo $OPTION
+			else
+				OPTION=1
+			fi
+
+			break	
+		fi
+	done
+
+
+
+	if empty $OPTION
+	then
+		return 1
+	else
+		return 0
+	fi
+}
+
+
+
+# Do we include the mock/debug functions?
+if getopt "--debug" || ! empty "$UTILDBG"
+then
+	debug "loading debug includes"
+	#todo: make sure we use parameters right
+	source $UTILDIR/debug "$METAPARAM"
+fi
