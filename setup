@@ -42,7 +42,7 @@ PORTCMD=$($UTILDIR/port-generator -f $SERVDIR/config/ports)
 #todo: portcmd validation
 
 #gathers argument and feeds to docker file
-docker build --build-arg SERVDIR=$SERVDIR $BUILD_DEBUG ./
+docker build --build-arg SERV=$SERVDIR $BUILD_DEBUG ./
 
 #TODO: map ports here
 #docker run $PORTCMD -i -t /bin/bash
