@@ -17,34 +17,34 @@ ARG UTILDIR=$GITMOUNT/utils
 COPY . $GITMOUNT/
 
 # run pre-install scripts
-RUN $UTILDIR/script-runner $GITMOUNT/$SERV/scripts/pre | $UTILDIR/logger script-pre
+RUN $UTILDIR/script-runner -d $GITMOUNT/$SERV/scripts/pre | $UTILDIR/logger -f script-pre
 
 
 # symlink directories from git
-RUN $UTILDIR/symlinker $GITMOUNT/$SERV/config/symlinks | $UTILDIR/logger symlinks
+RUN $UTILDIR/symlinker -f $GITMOUNT/$SERV/config/symlinks | $UTILDIR/logger -f symlinks
 
 
 # start services
-RUN $UTILDIR/service-starter $GITMOUNT/$SERV/config/services | /$UTILDIR/logger service-starter
+RUN $UTILDIR/service-starter -f $GITMOUNT/$SERV/config/services | /$UTILDIR/logger -f service-starter
 
 
 #install DB tables, install example data
-RUN $UTILDIR/script-runner $GITMOUNT/$SERV/database/setup/ | $UTILDIR/logger database-setup
+RUN $UTILDIR/script-runner -d $GITMOUNT/$SERV/database/setup/ | $UTILDIR/logger -f database-setup
 
 # TODO: script to install samples
-# RUN $UTILDIR/sql-inserter $GITMOUNT/$SERV/database/sample/ | $UTILDIR/logger sql-inserter
+# RUN $UTILDIR/sql-inserter -d $GITMOUNT/$SERV/database/sample/ | $UTILDIR/logger -f sql-inserter
 
 
 #install packages
-RUN $UTILDIR/package-installer -f $GITMOUNT/$SERV/config/packages | $UTILDIR/logger package-installer
+RUN $UTILDIR/package-installer -f $GITMOUNT/$SERV/config/packages | $UTILDIR/logger -f package-installer
 
 
 #run nodejs projects
-RUN $UTILDIR/node-runner $GITMOUNT/$SERV/node | $UTILDIR/logger node-runner
+RUN $UTILDIR/node-runner -d $GITMOUNT/$SERV/node | $UTILDIR/logger -f node-runner
 
 
 # run post-install scripts
-RUN $UTILDIR/script-runner $GITMOUNT/$SERV/scripts/post | $UTILDIR/logger script-post
+RUN $UTILDIR/script-runner -d $GITMOUNT/$SERV/scripts/post | $UTILDIR/logger -f script-post
 
 # Entrypoint command
 ENTRYPOINT ["/bin/bash"]
