@@ -1,14 +1,13 @@
 #!/bin/bash
 if [ -z "$UTILDIR" ] || [ ! -d "$UTILDIR" ]
 then
-	GITPATH=$(pwd $(dirname "$0"))
-	UTILDIR="$GITPATH/utils"
+	UTILDIR="$(pwd $(dirname "$0"))/utils"
 fi
 
-source $UTILDIR/common "$@"
+source $UTILDIR/link "$@"
 
 
-checkopt -f yes
+requireopt -f yes
 FILE=$(getopt -f yes)
 
 NUMLN=0
@@ -18,14 +17,14 @@ PORTCMD=""
 
 # port-generate: generates the -p for a docker command
 # @Param $1: line beginning with 2 ports
-function port-generate() {
+function port-generate-callback() {
 	LINEARRAY=($1)
 
 	EXTPORT="${LINEARRAY[0]}"
 	INTPORT="${LINEARRAY[1]}"
 
 	((NUMLN++))
-	if empty "$INTPORT" || empty "$EXTPORT"
+	if isempty "$INTPORT" || isempty "$EXTPORT"
 	then
 		# warn "Malformed line in package file, skipping line $NUMLN."
 		continue #noop
@@ -41,6 +40,6 @@ function port-generate() {
 }
 
 #invoke file processing with our above function as a per-line callback
-processfile "$FILE" port-generate
+processfile "$FILE" port-generate-callback
 
 echo "$PORTCMD"

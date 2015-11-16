@@ -1,8 +1,8 @@
 #!/bin/bash
-source $UTILDIR/common "$@"
+source $UTILDIR/link "$@"
 
 
-checkopt -f yes
+requireopt -f yes
 FILE=$(getopt -f yes)
 
 NUMLN=0
@@ -12,7 +12,7 @@ NUMINS=0
 ## I.e. "curl"
 ## You can put things after it, I don't care
 ## I.e. "curl #comment about curl"
-function symlink() {
+function symlink-callback() {
 	LINEARRAY=($1)
 
 	SOURCENODE="${LINEARRAY[0]}"
@@ -21,7 +21,7 @@ function symlink() {
 	HARDNESS="${LINEARRAY[2]}"
 
 	((NUMLN++))
-	if empty "$SOURCENODE" || empty "$DESTNODE"
+	if isempty "$SOURCENODE" || isempty "$DESTNODE"
 	then
 		warn "Malformed line in package file, skipping line $NUMLN."
 	elif [ ! -e $SOURCENODE ]
@@ -43,6 +43,7 @@ function symlink() {
 	fi
 }
 
+
 #invoke file processing with our above function as a per-line callback
-processfile "$FILE" symlink
+processfile "$FILE" symlink-callback
 info "Installed $NUMINS/$NUMLN packages."

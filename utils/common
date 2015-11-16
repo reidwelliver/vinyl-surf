@@ -1,9 +1,8 @@
 #!/bin/bash
 # Common useful BASH functions
 # To include this write at the top of your script:
-# source $UTILDIR/common "$@"
-
-
+# source $UTILDIR/link "$@"
+source $UTILDIR/link "$@"
 
 # Process Line: reads in a line, skips if it's a comment
 # Otherwise runs a callback
@@ -42,7 +41,7 @@ function contains() {
 
 	MATCH=`echo "$STRING" | grep "$REGEX"` 
 	
-	if empty $MATCH
+	if isempty $MATCH
 	then
 		return 1
 	else
@@ -50,21 +49,6 @@ function contains() {
 	fi
 
 }
-
-
-# shortcut for checking if a string isn't empty
-# @Param $1: String to check for emptiness
-function empty() {
-	STRING=$1
-
-	if [ -z "$STRING" ]
-	then
-		return 0
-	else
-		return 1
-	fi
-}
-
 
 # getopt
 # This searches the parameters that we sourced into this script from the caller
@@ -78,16 +62,15 @@ function getopt() {
 	FLAG=$1
 	HASOPTION=$2
 	ITER=0
-
-	for ARG in $METAPARAM
+	for ARG in $LIB_CALLER_PARAM
 	do
 		((ITER++))
 		if contains "$ARG" "^$FLAG"
 		then
-			if ! empty "$HASOPTION"
+			if ! isempty "$HASOPTION"
 			then
 				#I'm assuming if you bothered to set hasoption, it has an option
-				OPTION="${METAPARAMARRAY[$ITER]}"
+				OPTION="${LIB_CALLER_PARAM_ARRAY[$ITER]}"
 				echo $OPTION
 			else
 				OPTION=1
@@ -99,7 +82,7 @@ function getopt() {
 
 
 
-	if empty $OPTION
+	if isempty $OPTION
 	then
 		return 1
 	else
@@ -110,7 +93,7 @@ function getopt() {
 #like getopt, but this will fail if it can't get an option
 # @Param $1: string flag to search for
 # @Param $2: (optional) non-null value signifying to echo the option
-function checkopt(){
+function requireopt() {
 	OPT=$(getopt $1 $2)
 	RETVAL=$?
 	if [ $RETVAL -ne 0 ]
@@ -123,23 +106,17 @@ function checkopt(){
 }
 
 
-#bootstrapping parameters
-LIBLINKED=1
+#Shortcut to non-fatally check for option, suppresses output
+# @Param $1: string flag to search for
+# @Param $2: (optional) non-null value signifying to echo the option
+function hasopt() {
+	OPT=$(getopt $1 $2)
+	return $?
+}
 
-if ! empty $1
-then
-	METAPARAM="$@"
-	CALLERNAME=`basename $0`
-	read -r -a METAPARAMARRAY <<< "$METAPARAM"
-	source $UTILDIR/logger "$@"
 
-	#debug "COMMON_METAPARAM: $METAPARAM"
+function canary() {
+	echo "!!! tweet"
+}
 
-	# Do we include the mock/debug functions?
-	if getopt "--debug" || ! empty "$UTILDBG"
-	then
-		debug "loading debug includes"
-		#todo: make sure we use parameters right
-		source $UTILDIR/debug "$METAPARAM"
-	fi
-fi
+return 0

@@ -1,24 +1,17 @@
 #!/bin/bash
 
 # logger - sanely logs to a file
+source $UTILDIR/link "$@"
 
-DIRECTCALL=""
-
-if [ -z "$LIBLINKED" ]
-then
-	info "Calling logger directly."
-	DIRECTCALL="true"
-	source $UTILDIR/common
-fi
 
 # normalize
 # Does everything in its power to echo a normalized, safe file to log to
 # @Param $1: the filename of the file to log to
 # @Param $2: (optional) the path prefix
 function normalize() {
-	if empty "$2"
+	if isempty "$2"
 	then
-		NORMDIR="$LOGDIR/$CALLERNAME"
+		NORMDIR="$LOGDIR/$LIB_CALLER_NAME"
 		NORMBASE="$1"
 	else
 		NORMDIR="$2"
@@ -79,18 +72,20 @@ function debug() {
 #TODO: different debug levels
 
 #only run manually if called directly as a utility
-if ! empty "$DIRECTCALL"
+if iscaller "logger"
 then
-	checkopt -f yes
+	requireopt -f yes
 	FILENAME=$(getopt -f yes)
 	
 	PATHPREFIX=$(getopt -p yes)
-	if empty "$PATHPREFIX"
+	if isempty "$PATHPREFIX"
 	then
 		PATHPREFIX=$LOGDIR/$FILENAME
 	fi
 	log $FILENAME $PATHPREFIX
 fi
+
+return 0
 
 
 

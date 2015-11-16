@@ -1,6 +1,5 @@
 #!/bin/bash
-DEBUG_METAPARAM="$@"
-debug "DEBUG_METAPARAM: $DEBUG_METAPARAM"
+# A place to mock functions for debugging
 
 function apt-get() {
 	ARGARR=($@)
@@ -15,3 +14,5 @@ function service() {
 	debug "This is a fake service call"
 	info "starting ${ARGARR[$LASTARG]}"
 }
+
+return 0

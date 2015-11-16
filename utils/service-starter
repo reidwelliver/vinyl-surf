@@ -1,8 +1,8 @@
 #!/bin/bash
-source $UTILDIR/common "$@"
+source $UTILDIR/link "$@"
 
 #TODO: richer arg collection
-checkopt -f yes
+requireopt -f yes
 FILE=$(getopt -f yes)
 
 NUMLN=0
@@ -17,7 +17,7 @@ function service-start() {
 	LINEARRAY=($1)
 	SERVICENAME="${LINEARRAY[0]}"
 	((NUMLN++))
-	if empty "$SERVICENAME"
+	if isempty "$SERVICENAME"
 	then
 		warn "Malformed line in service file, skipping line $NUMLN."
 	# TODO: Package name regex for safety, this just falls through all the time currently

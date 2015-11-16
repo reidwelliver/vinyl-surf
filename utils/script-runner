@@ -1,9 +1,9 @@
 #!/bin/bash
-source $UTILDIR/common "$@"
+source $UTILDIR/link "$@"
 
 # script-runner - sanely runs all scripts in a folder
 
-checkopt -d yes
+requireopt -d yes
 INDIR=$(getopt -d yes)
 
 CONTDIR=`basename $INDIR`
@@ -20,7 +20,7 @@ ISEMPTY=$(ls -al $INDIR | grep '^[^d][\-rw]*x')
 if [ -d "$INDIR" ] || ! empty "$ISEMPTY"
 then
 	info "Running all scripts from $INDIR"
-elif ! empty "$SKIPDEF"
+elif ! isempty "$SKIPDEF"
 then
 	info "$INDIR does not exist, is not a directory, or is empty."
 	info "The flag to skip running defaults has been set, exiting."
