@@ -50,7 +50,7 @@ function contains() {
 
 }
 
-# getopt
+# fetchopt
 # This searches the parameters that we sourced into this script from the caller
 # you give it a flag and whether it has an option, and it returns an exit code
 # it also echoes the option (if selected) for capture
@@ -58,7 +58,7 @@ function contains() {
 # @Param $2: (optional) non-null value signifying to echo the option
 ## Caveat: if you tell this function to find an option after the last parameter, it will exit code 1
 ## I think this is pretty sane behavior
-function getopt() {
+function fetchopt() {
 	FLAG=$1
 	HASOPTION=$2
 	ITER=0
@@ -90,11 +90,11 @@ function getopt() {
 	fi
 }
 
-#like getopt, but this will fail if it can't get an option
+#like fetchopt, but this will fail if it can't get an option
 # @Param $1: string flag to search for
 # @Param $2: (optional) non-null value signifying to echo the option
 function requireopt() {
-	OPT=$(getopt $1 $2)
+	OPT=$(fetchopt $1 $2)
 	RETVAL=$?
 	if [ $RETVAL -ne 0 ]
 	then
@@ -110,7 +110,7 @@ function requireopt() {
 # @Param $1: string flag to search for
 # @Param $2: (optional) non-null value signifying to echo the option
 function hasopt() {
-	OPT=$(getopt $1 $2)
+	OPT=$(fetchopt $1 $2)
 	return $?
 }
 

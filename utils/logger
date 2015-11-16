@@ -75,8 +75,8 @@ function debug() {
 if iscaller "logger"
 then
 	requireopt -f yes
-	FILENAME=$(getopt -f yes)
-	PATHPREFIX=$(getopt -p yes)
+	FILENAME=$(fetchopt -f yes)
+	PATHPREFIX=$(fetchopt -p yes)
 	
 	if isempty "$PATHPREFIX"
 	then

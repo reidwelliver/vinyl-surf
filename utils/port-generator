@@ -8,7 +8,7 @@ source $UTILDIR/link "$@"
 
 
 requireopt -f yes
-FILE=$(getopt -f yes)
+FILE=$(fetchopt -f yes)
 
 NUMLN=0
 NUMINS=0

@@ -4,7 +4,7 @@ source $UTILDIR/link "$@"
 # node-runner - sanely runs all scripts in a folder
 
 requireopt -d yes
-INDIR=$(getopt -d yes)
+INDIR=$(fetchopt -d yes)
 
 NUMINS=0
 

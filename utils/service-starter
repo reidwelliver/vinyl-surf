@@ -3,7 +3,7 @@ source $UTILDIR/link "$@"
 
 #TODO: richer arg collection
 requireopt -f yes
-FILE=$(getopt -f yes)
+FILE=$(fetchopt -f yes)
 
 NUMLN=0
 NUMINS=0

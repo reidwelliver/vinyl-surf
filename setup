@@ -5,7 +5,7 @@ source $UTILDIR/link "$@"
 #absolute path to bind to docker
 if hasopt --gitpath yes
 then
-	GITPATH=$(getopt --gitpath yes)
+	GITPATH=$(fetchopt --gitpath yes)
 else
 	GITPATH=$(pwd $(dirname "$0"))
 fi
@@ -13,12 +13,12 @@ fi
 
 if hasopt --utildir yes
 then
-	UTILDIR=$(getopt --utildir yes)
+	UTILDIR=$(fetchopt --utildir yes)
 fi
 
 if hasopt --utildir yes
 then
-	BUILD_DEBUG="--build-arg BUILD_DEBUG=$(getopt --build-debug yes)"
+	BUILD_DEBUG="--build-arg BUILD_DEBUG=$(fetchopt --build-debug yes)"
 else
 	BUILD_DEBUG=""
 fi
@@ -28,7 +28,7 @@ fi
 
 #Server Directory
 requireopt -p yes
-SERVDIR=$(getopt -p yes)
+SERVDIR=$(fetchopt -p yes)
 
 
 if [ ! -d $SERVDIR ]

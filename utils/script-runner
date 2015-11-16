@@ -4,10 +4,10 @@ source $UTILDIR/link "$@"
 # script-runner - sanely runs all scripts in a folder
 
 requireopt -d yes
-INDIR=$(getopt -d yes)
+INDIR=$(fetchopt -d yes)
 
 CONTDIR=`basename $INDIR`
-SKIPDEF=$(getopt -s)
+SKIPDEF=$(fetchopt -s)
 
 NUMLN=0
 NUMINS=0

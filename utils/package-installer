@@ -2,7 +2,7 @@
 source $UTILDIR/link "$@"
 
 requireopt -f yes
-FILE=$(getopt -f yes)
+FILE=$(fetchopt -f yes)
 
 NUMPKG=0
 NUMINS=0
