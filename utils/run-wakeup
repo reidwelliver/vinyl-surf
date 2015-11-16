@@ -1,6 +1,6 @@
 #!/bin/bash
-UTILDIR="/utils"
-LOGDIR="/log"
+export UTILDIR="/utils"
+export LOGDIR="/log"
 source $UTILDIR/link "$@"
 
 # start services
