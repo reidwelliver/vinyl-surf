@@ -27,7 +27,7 @@ do
 	CONTDIR=$(basename $(dirname $SCRIPT))
 	((NUMINS++))
 	info "Running $SCRIPT, logging to $(normalize $CONTDIR)"
-	node "$SCRIPT" | log "$CONTDIR"
+	node "$SCRIPT" | log "$CONTDIR" &
 done
 
 info "Ran $NUMINS node scripts."

@@ -2,7 +2,7 @@ FROM reidwelliver/vs-base:latest
 MAINTAINER Reid Welliver
 
 ARG BUILD_DEBUG=""
-ARG GITMOUNT=/git
+ARG GITMOUNT=/git-build
 
 ARG LOGDIR=$GITMOUNT/build/$SERV/log
 ARG SERV=test-component
@@ -48,4 +48,4 @@ RUN $UTILDIR/script-runner -d $GITMOUNT/$SERV/scripts/post | $UTILDIR/logger -f 
 
 # Entrypoint command
 ENTRYPOINT ["/bin/bash"]
-CMD ["ls"]
+CMD ["/git/utils/run-wakeup"]
