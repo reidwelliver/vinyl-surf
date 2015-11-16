@@ -1,5 +1,7 @@
 #!/bin/bash
-source /git/utils/link "$@"
+$UTILDIR="/utils"
+$LOGDIR="/log"
+source $UTILDIR/link "$@"
 
 # start services
 /utils/service-starter -f /project/config/services | /utils/logger -f service-starter
