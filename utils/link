@@ -41,7 +41,7 @@ then
 
 	isempty "$LIB_LINK_COMMON" && LIB_LINK_COMMON=1 && source $UTILDIR/common "$LIB_CALLER_PARAM"
 	isempty "$LIB_LINK_LOGGER" && LIB_LINK_LOGGER=1 && source $UTILDIR/logger "$LIB_CALLER_PARAM"
-	isempty "$LIB_LINK_DEBUG"  && ( hasopt "--util-debug" || ! isempty "$UTILDBG" ) && LIB_LINK_DEBUG=1 && source $UTILDIR/debug "$LIB_CALLER_PARAM"
+	isempty "$LIB_LINK_DEBUG"  && ( hasopt "--util-debug" || ! isempty "$BUILD_DEBUG" ) && LIB_LINK_DEBUG=1 && source $UTILDIR/debug "$LIB_CALLER_PARAM"
 fi
 
 return 0

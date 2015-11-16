@@ -1,18 +1,10 @@
 FROM reidwelliver/vs-base:latest
 MAINTAINER Reid Welliver
 
-ARG SERV=test
-ARG GITPATH=./
-ARG GITMOUNT=/git
-ARG UTILDBG=""
-
-ARG LOGDIR=$GITMOUNT/build/$SERV/log
-ARG SERVDIR=$GITMOUNT/$SERV
-ARG UTILDIR=$GITMOUNT/utils
-
-#mounts current directory to /git in container
-VOLUME $GITPATH:/git
-
+ARG BUILD_DEBUG=""
+ARG LOGDIR=build/$SERV/log
+ARG SERVDIR=test-component
+ARG UTILDIR=utils
 
 # Things to create
 # TODO: sql example data installer

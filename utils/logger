@@ -40,7 +40,7 @@ function normalize() {
 
 
 function log() {
-	OUTPATH=$(normalize $1)
+	OUTPATH=$(normalize $1 $2)
 	while read LINE
 	do
 		echo "$LINE" >> "$OUTPATH"
@@ -76,13 +76,16 @@ if iscaller "logger"
 then
 	requireopt -f yes
 	FILENAME=$(getopt -f yes)
-	
 	PATHPREFIX=$(getopt -p yes)
+	
 	if isempty "$PATHPREFIX"
 	then
 		PATHPREFIX=$LOGDIR/$FILENAME
 	fi
+
 	log $FILENAME $PATHPREFIX
+
+	exit 0
 fi
 
 return 0

@@ -1,20 +1,33 @@
 #!/bin/bash
+UTILDIR="$(pwd $(dirname "$0"))/utils"
+source $UTILDIR/link "$@"
 
 #absolute path to bind to docker
-GITPATH=$(pwd $(dirname "$0"))
-UTILDIR="$GITPATH/utils"
+if hasopt --gitpath yes
+then
+	GITPATH=$(getopt --gitpath yes)
+else
+	GITPATH=$(pwd $(dirname "$0"))
+fi
 
-source $UTILDIR/common "$@"
 
+if hasopt --utildir yes
+then
+	UTILDIR=$(getopt --utildir yes)
+fi
 
-#TODO: allow gitpath to be entered
-#TODO: improve parameter gathering (gatheropts)
+if hasopt --utildir yes
+then
+	BUILD_DEBUG="--build-arg BUILD_DEBUG=$(getopt --build-debug yes)"
+else
+	BUILD_DEBUG=""
+fi
+
 #TODO: if project subdir has a dockerfile, override call to this one
-#TODO: map ports here
 
 
 #Server Directory
-checkopt -p yes
+requireopt -p yes
 SERVDIR=$(getopt -p yes)
 
 
@@ -29,5 +42,7 @@ PORTCMD=$($UTILDIR/port-generator -f $SERVDIR/config/ports)
 #todo: portcmd validation
 
 #gathers argument and feeds to docker file
-IMAGEID=$(docker build --build-arg SERV=$SERVDIR --build-arg GITPATH=$GITPATH ./utils )
+docker build --build-arg SERVDIR=$SERVDIR $BUILD_DEBUG ./
+
+#TODO: map ports here
 #docker run $PORTCMD -i -t /bin/bash
