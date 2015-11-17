@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # link - sources all bash directories, only once
 # source this file to include all libs safely - use the following line
 # source $UTILDIR/link "$@"

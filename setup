@@ -2,6 +2,9 @@
 UTILDIR="$(pwd $(dirname "$0"))/utils"
 source $UTILDIR/link "$@"
 
+#currently need sudo for docker commands
+checksudo
+
 #absolute path to bind to docker
 if hasopt --gitpath yes
 then
@@ -16,7 +19,7 @@ then
 	UTILDIR=$(fetchopt --utildir yes)
 fi
 
-if hasopt --utildir yes
+if hasopt --build-debug yes
 then
 	BUILD_DEBUG="--build-arg BUILD_DEBUG=$(fetchopt --build-debug yes)"
 else
