@@ -20,6 +20,11 @@ then
 	UTILDIR=$(fetchopt --utildir yes)
 fi
 
+if hasopt --fresh
+then
+	DOBUILD=1
+fi
+
 if hasopt --build-debug yes
 then
 	BUILD_DEBUG="--build-arg BUILD_DEBUG=$(fetchopt --build-debug yes)"
@@ -43,35 +48,44 @@ fi
 
 
 PORTCMD=$($UTILDIR/port-generator -f $SERVDIR/config/ports)
-#todo: portcmd validation
 
 
-#start:
-# There's a running container to attach to
-if ! isempty "$(docker ps | grep vs-$SERVDIR-build)"
+#Reuse VMs
+if isempty "$DOBUILD"
 then
-	docker attach vs-$SERVDIR-build
-
-# There's a stopped container to start and attach to
-elif ! isempty "$(docker ps -a | grep vs-$SERVDIR-build)"
-then
-	docker start -ai vs-$SERVDIR-build
-
-# There's an image to build a container from
-elif ! isempty "$(docker ps -a | grep vs-$SERVDIR-build)"
-then
-	docker run --name vs-$SERVDIR-build $PORTCMD -v $GITPATH/$SERVDIR:/project -v $GITPATH/utils:/utils -i -t reidwelliver/vs-base:$SERVDIR-build /utils/run-wakeup
-else
-	# we need to build an image
-	# prompt to run setup
-	info "No suitable image or container found, run setup to build? [Y/N]: (N)"
-	read DOSETUP
-	if contains "$DOSETUP" "Y" || contains "$DOSETUP" "y"
+	# There's a running container to attach to
+	if ! isempty "$(docker ps | grep vs-$SERVDIR-build)"
 	then
-		info "Ok, running setup"
-		./setup --gitpath "$GITPATH" --utildir "$UTILDIR" "$BUILD_DEBUG" -p "$SERVDIR"
+		echo docker attach vs-$SERVDIR-build
+
+	# There's a stopped container to start and attach to
+	elif ! isempty "$(docker ps -a | grep vs-$SERVDIR-build)"
+	then
+		echo docker start -ai vs-$SERVDIR-build
+
+	# There's an image to build a container from
+	elif ! isempty "$(docker ps -a | grep vs-$SERVDIR-build)"
+	then
+		echo docker run --name vs-$SERVDIR-build $PORTCMD -v $GITPATH/$SERVDIR:/project -v $GITPATH/utils:/utils -i -t reidwelliver/vs-base:$SERVDIR-build /utils/run-wakeup
 	else
-		info "Not running setup, exiting."
-		exit 0
+		# we need to build an image
+		# prompt to run setup
+		info "No suitable image or container found, run setup to build? [Y/N]: (N)"
+		read DOSETUP
+		if contains "$DOSETUP" "Y" || contains "$DOSETUP" "y"
+		then
+			info "Ok, running setup"
+			DOBUILD=1
+		else
+			info "Not running setup, exiting."
+			exit 0
+		fi
 	fi
+fi
+
+if ! isempty "$DOBUILD"
+then
+	#gathers argument and feeds to docker file
+	echo docker build -t reidwelliver/vs-base:$SERVDIR-build --build-arg SERV=$SERVDIR $BUILD_DEBUG ./
+	echo docker run --name vs-$SERVDIR-build $PORTCMD -v $GITPATH/$SERVDIR:/project -v $GITPATH/utils:/utils -i -t reidwelliver/vs-base:$SERVDIR-build /utils/run-wakeup
 fi
