@@ -39,13 +39,13 @@ fi
 requireopt -p yes
 SERVDIR=$(fetchopt -p yes)
 
+SERVDIR="$(basename $SERVDIR)"
 
 if [ ! -d $SERVDIR ]
 then
 	error "Your selected server is not a directory in the git project!"
 	exit 1
 fi
-
 
 PORTCMD=$($UTILDIR/port-generator -f $SERVDIR/config/ports)
 
