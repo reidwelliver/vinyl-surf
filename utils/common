@@ -40,7 +40,7 @@ function contains() {
 	REGEX=$2
 
 	MATCH=`echo "$STRING" | grep "$REGEX"` 
-	
+
 	if isempty $MATCH
 	then
 		return 1
@@ -76,7 +76,7 @@ function fetchopt() {
 				OPTION=1
 			fi
 
-			break	
+			break
 		fi
 	done
 
@@ -116,9 +116,18 @@ function hasopt() {
 
 
 function checksudo() {
-	if [ "$(id -u)" -ne 0 ]
-		then error "Please run $LIB_CALLER_NAME as root or with sudo"
-		exit 1
+	if [ "$(id -u)" -ne 0 ] && ! hasopt "--no-root"
+	then
+		info "You have run setup without root access. Doing so may be necessary for kitematic/mac/windows installations, but won't work linux installations."
+		info "Continue without root access? [Y/N] (N):"
+		read DOCONTINUE
+		if contains "$DOCONTINUE" "Y" || contains "$DOCONTINUE" "y"
+		then
+			info "Ok, proceeding without root"
+		else
+			error "Please run $LIB_CALLER_NAME as root or with sudo"
+			exit 1
+		fi
 	else
 		return 0
 	fi
