@@ -56,17 +56,17 @@ then
 	# There's a running container to attach to
 	if ! isempty "$(docker ps | grep vs-$SERVDIR-build)"
 	then
-		echo docker attach vs-$SERVDIR-build
+		docker attach vs-$SERVDIR-build
 
 	# There's a stopped container to start and attach to
 	elif ! isempty "$(docker ps -a | grep vs-$SERVDIR-build)"
 	then
-		echo docker start -ai vs-$SERVDIR-build
+		docker start -ai vs-$SERVDIR-build
 
 	# There's an image to build a container from
 	elif ! isempty "$(docker ps -a | grep vs-$SERVDIR-build)"
 	then
-		echo docker run --name vs-$SERVDIR-build $PORTCMD -v $GITPATH/$SERVDIR:/project -v $GITPATH/utils:/utils -i -t reidwelliver/vs-base:$SERVDIR-build /utils/run-wakeup
+		docker run --name vs-$SERVDIR-build $PORTCMD -v $GITPATH/$SERVDIR:/project -v $GITPATH/utils:/utils -i -t reidwelliver/vs-base:$SERVDIR-build /utils/run-wakeup
 	else
 		# we need to build an image
 		# prompt to run setup
@@ -86,6 +86,6 @@ fi
 if ! isempty "$DOBUILD"
 then
 	#gathers argument and feeds to docker file
-	echo docker build -t reidwelliver/vs-base:$SERVDIR-build --build-arg SERV=$SERVDIR $BUILD_DEBUG ./
-	echo docker run --name vs-$SERVDIR-build $PORTCMD -v $GITPATH/$SERVDIR:/project -v $GITPATH/utils:/utils -i -t reidwelliver/vs-base:$SERVDIR-build /utils/run-wakeup
+	docker build -t reidwelliver/vs-base:$SERVDIR-build --build-arg SERV=$SERVDIR $BUILD_DEBUG ./
+	docker run --name vs-$SERVDIR-build $PORTCMD -v $GITPATH/$SERVDIR:/project -v $GITPATH/utils:/utils -i -t reidwelliver/vs-base:$SERVDIR-build /utils/run-wakeup
 fi
