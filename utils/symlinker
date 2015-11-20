@@ -1,0 +1,49 @@
+#!/bin/bash
+source $UTILDIR/link "$@"
+
+
+requireopt -f yes
+FILE=$(fetchopt -f yes)
+
+NUMLN=0
+NUMINS=0
+# Package-install: installs from apt with logging
+# @Param $1: line beginning with packagename
+## I.e. "curl"
+## You can put things after it, I don't care
+## I.e. "curl #comment about curl"
+function symlink-callback() {
+	LINEARRAY=($1)
+
+	SOURCENODE="${LINEARRAY[0]}"
+	DESTNODE="${LINEARRAY[1]}"
+	#TODO: currently unused, we're gonna make all links soft for the time being
+	HARDNESS="${LINEARRAY[2]}"
+
+	((NUMLN++))
+	if isempty "$SOURCENODE" || isempty "$DESTNODE"
+	then
+		warn "Malformed line in package file, skipping line $NUMLN."
+	elif [ ! -e $SOURCENODE ]
+	then
+		warn "Source doesn't exist, skipping line $NUMLN."
+	elif [ -e $DESTNODE ]
+	then
+		warn "Destination of link already exists, skipping line $NUMLN."
+	# TODO: dir name regex for safety, this just falls through all the time currently
+	elif ! contains "$DESTNODE" "[A-Za-z]"
+	then
+		error "Bad destination node name, skipping line $NUMLN."
+	else
+		BASESOURCE=$(basename $SOURCENODE)
+		BASEDEST=$(basename $DESTNODE)
+		((NUMINS++))
+		info "Linking node $BASESOURCE to $BASEDEST, logging to $(normalize $BASESOURCE-$BASEDEST)"
+		ln -s $SOURCENODE $DESTNODE | log "$BASESOURCE-$BASEDEST"
+	fi
+}
+
+
+#invoke file processing with our above function as a per-line callback
+processfile "$FILE" symlink-callback
+info "Installed $NUMINS/$NUMLN packages."

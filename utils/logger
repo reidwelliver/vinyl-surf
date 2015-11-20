@@ -1,41 +1,95 @@
 #!/bin/bash
-# logger - sanely logs to a file
 
-#TODO: better arg collection
+# logger - sanely logs to a file
+source $UTILDIR/link "$@"
+
+
+# normalize
+# Does everything in its power to echo a normalized, safe file to log to
+# @Param $1: the filename of the file to log to
+# @Param $2: (optional) the path prefix
+function normalize() {
+	if isempty "$2"
+	then
+		NORMDIR="$LOGDIR/$LIB_CALLER_NAME"
+		NORMBASE="$1"
+	else
+		NORMDIR="$2"
+		NORMBASE="$1"
+	fi
+
+	DATE=`date +%s`
+
+	if [[ ! -e $NORMDIR ]]
+	then
+		mkdir -p $NORMDIR
+	fi
+
+	if [[ -e "$NORMDIR/$NORMBASE" && ! -f "$NORMDIR/$NORMBASE" ]]
+	then	
+		NORMDIR="$NORMDIR/$NORMBASE"
+	fi
+
+	if [[ -z `echo "$NORMBASE" | grep '.log$'` ]]
+	then
+		NORMBASE="$NORMBASE.$DATE.log"
+	fi
+
+	echo "$NORMDIR/$NORMBASE"
+}
+
+
+function log() {
+	OUTPATH=$(normalize $1 $2)
+	while read LINE
+	do
+		echo "$LINE" >> "$OUTPATH"
+	done
+}
+
+
+#cosmetic logging functions
+#TODO: give these color and shit!
+# They all take in 1 param and print it
+# @Param $1: String to print as warning
+function warn() {
+	echo "[  WARN ]: $1"
+}
+
+function info() {
+	echo "[  INFO ]: $1"
+}
+
+function error() {
+	echo "[ ERROR ]: $1"
+}
+
+function debug() {
+	echo "[ DEBUG ]: $1"
+}
+
+
 #TODO: different debug levels
 
-OUTFILE=$1
-DATE=`date +%s`
-
-OUTDIR=`dirname $OUTFILE`
-if [[ ! -e $OUTDIR ]]
+#only run manually if called directly as a utility
+if iscaller "logger"
 then
-	mkdir -p $OUTDIR
-fi
-
-if [[ -e $OUTFILE ]]
-then	
-	if [[ ! -f $OUTFILE ]]
+	requireopt -f yes
+	FILENAME=$(fetchopt -f yes)
+	PATHPREFIX=$(fetchopt -p yes)
+	
+	if isempty "$PATHPREFIX"
 	then
-		echo "LOGWARN: output file is path to a directory, inserting into directory with appended .log"
-		BASE=`basename $OUTFILE`
-		OUTFILE="$OUTFILE/$BASE.$DATE.log"
+		PATHPREFIX=$LOGDIR/$FILENAME
 	fi
 
-	if [[ -f $OUTFILE ]]
-	then
-		OUTDIR=`dirname $OUTFILE`
-		BASE=`basename $OUTFILE`
-		OUTFILE="$OUTDIR/$BASE.$DATE.log"
-	fi
+	log $FILENAME $PATHPREFIX
+
+	exit 0
 fi
 
-if [[ -z `echo "$OUTFILE" | grep '.log$'` ]]
-then
-	OUTFILE="$OUTFILE.$DATE.log"
-fi
+return 0
 
-while read line
-do
-	echo "${line}" >> "$OUTFILE"
-done
+
+
+

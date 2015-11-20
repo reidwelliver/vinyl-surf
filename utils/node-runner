@@ -1,0 +1,33 @@
+#!/bin/bash
+source $UTILDIR/link "$@"
+
+# node-runner - sanely runs all scripts in a folder
+
+requireopt -d yes
+INDIR=$(fetchopt -d yes)
+
+NUMINS=0
+
+#check if directory has executable scripts
+NODEFILES=$(find $INDIR | grep "server.js")
+
+
+#check if input file exists, otherwise try to use base
+if ! isempty "$NODEFILES"
+then
+	info "Running all scripts from $INDIR"
+else
+	error "Could not find any server.js files in this directory (or subs), exiting."
+	exit 0
+fi
+
+
+for SCRIPT in "$NODEFILES"
+do
+	CONTDIR=$(basename $(dirname $SCRIPT))
+	((NUMINS++))
+	info "Running $SCRIPT, logging to $(normalize $CONTDIR)"
+	node "$SCRIPT" | log "$CONTDIR" &
+done
+
+info "Ran $NUMINS node scripts."

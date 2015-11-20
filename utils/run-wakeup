@@ -1,0 +1,10 @@
+#!/bin/bash
+export UTILDIR="/utils"
+export LOGDIR="/log"
+source $UTILDIR/link "$@"
+
+# start services
+/utils/service-starter -f /project/config/services | /utils/logger -f service-starter
+/utils/node-runner -d /project/node | /utils/logger -f node-runner
+
+/bin/bash
