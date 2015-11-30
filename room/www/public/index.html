@@ -7,8 +7,9 @@
 	<title>vinyl.surf - social radio</title>
 	
 	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-	<link rel="stylesheet" href="assets/css/room.css">
 	<link href='http://fonts.googleapis.com/css?family=Wire+One' rel='stylesheet' type='text/css'>
+
+	<link rel="stylesheet" href="css/room.css">
 </head>
 
 <body class="theme-invert">
@@ -33,7 +34,7 @@
 	<div class="row" style="height: 5em"></div>
 	<div class="row">
 		<div class="col-sm-2 col-md-2 chat" style="background-color:white; margin-left: 1em;">
-			<table style="margin:.5em">
+			<table id="chatcontainer" style="margin:.5em">
 				<tr>
 					<td class="chat-user-username">Bob:</td>
 					<td class="chat-user-message">Dope track g</td>
@@ -46,10 +47,8 @@
 					<td class="chat-user-username">Ralph:</td>
 					<td class="chat-user-message">not enjoying this one</td>
 				</tr>
-				<tr>
-					<td><input type="text" class="form-control" placeholder="chat message"></input></td>
-				</tr>
 			</table>
+			<input type="text" class="form-control" placeholder="chat message" style="margin-bottom: 1em"></input>
 		</div>
 
 		<div class="col-sm-9 col-md-8 main col-md-offset-1">
@@ -140,10 +139,11 @@
 	<!-- postloading scripts -->
     <script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+	<!-- my scripts -->
     <script src="js/room.js"></script>
     <script src="js/chat.js"></script>
-	<script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
-	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
 
 </body>
 </html>

@@ -27,7 +27,7 @@ function YoutubePlayer(optsIn, readyCallback){
 	this.seekTo = function(seconds){
 		console.log("seeking to second " + seconds);
 		thisPlayer.player.seekTo(seconds, true);
-		thisPlayer.player.play();
+		thisPlayer.player.playVideo();
 	}
 
 	this.queue = function(track){
@@ -39,7 +39,7 @@ function YoutubePlayer(optsIn, readyCallback){
 	this.playNow = function(track){
 		console.log("playing");
 		thisPlayer.player.loadVideoById(track.videoId);
-		thisPlayer.player.play();
+		thisPlayer.player.playVideo();
 
 	}
 

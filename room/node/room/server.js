@@ -59,6 +59,7 @@ function Track(optsIn){
 		if (!thisTrack.isPlaying){
 			thisTrack.playIntervalId = setInterval( function(){
 				thisTrack.currentTime++;
+				console.log("inc trackid "+thisTrack.id + " : " + thisTrack.currentTime + " : " + thisTrack.playTime);
 				if(thisTrack.currentTime > thisTrack.playTime){
 					thisTrack.stop();
 				}
@@ -69,9 +70,9 @@ function Track(optsIn){
 	}
 
 	this.stop = function(){
-		thisTrack.stopCallback();
 		thisTrack.isPlaying = false;
 		thisTrack.resetTrack();
+		thisTrack.stopCallback();
 	}
 
 	this.resetTrack = function(){
@@ -187,8 +188,9 @@ function Room(optsIn){
 				thisRoom.currentQueue = 0;
 				thisRoom.currentQueuePos = 0;
 
-				thisRoom.currentTrack = thisRoom.queues[0].tracks[0]; //TODO: this will break with empty queue
-				thisRoom.nextTrack = thisRoom.queues[0].tracks[1];
+				thisRoom.nextTrack = thisRoom.queues[0].tracks[0];
+
+				thisRoom.playNext();
 			}
 		});
 
