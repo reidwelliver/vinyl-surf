@@ -59,7 +59,7 @@ function Track(optsIn){
 		if (!thisTrack.isPlaying){
 			thisTrack.playIntervalId = setInterval( function(){
 				thisTrack.currentTime++;
-				console.log("inc trackid "+thisTrack.id + " : " + thisTrack.currentTime + " : " + thisTrack.playTime);
+				//console.log("inc trackid "+thisTrack.id + " : " + thisTrack.currentTime + " : " + thisTrack.playTime);
 				if(thisTrack.currentTime > thisTrack.playTime){
 					thisTrack.stop();
 				}
@@ -188,7 +188,8 @@ function Room(optsIn){
 				thisRoom.currentQueue = 0;
 				thisRoom.currentQueuePos = 0;
 
-				thisRoom.nextTrack = thisRoom.queues[0].tracks[0];
+				thisRoom.currentTrack = thisRoom.queues[0].tracks[0];
+				thisRoom.nextTrack = thisRoom.queues[0].tracks[1];
 
 				thisRoom.playNext();
 			}
@@ -240,6 +241,46 @@ function RoomStore(optsIn){
 
 
 
+//chat - had to move in here for now
+function Chat(optsIn){
+	var thisChat = this;
+
+	this.init = function(opts){
+		this.id = opts.id || 0;
+
+		thisChat.socket = opts.socket || io.of('/chat/'+thisChat.id);
+
+		thisChat.socket.on('connection', function(socket){
+			console.log("client connected to chat ");
+
+			socket.on('message', function(message){
+				thisChat.receiveMessage(message);
+			});
+		});
+	}
+
+	this.getInputBoxContents = function(){
+		return inputBox.value;
+	}
+
+	this.sendMessage = function(message){
+		thisChat.socket.emit('message', message);
+
+	}
+
+	this.receiveMessage = function(message){
+		thisChat.sendMessage(message);
+	}
+
+	thisChat.init(optsIn);
+}
+
+
+
+var testChat = new Chat({id: 0});
+
+
+
 
 //test stuff - move or remove later (probably mock in DB)
 var testTrack = new Track({
@@ -272,7 +313,7 @@ var testTrack3 = new Track({
 var testQueue = new Queue({
 	name: "Test Queue",
 	tracks: [
-		//testTrack, 
+		testTrack, 
 		testTrack2, 
 		testTrack3
 	]

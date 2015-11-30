@@ -91,26 +91,26 @@ function Room(optsIn){
 
 		//socket callbacks - move these eventually
 		thisRoom.socket.on('firstLoad', function(data){
-			console.log("Firstload callback reached");	
-			console.log(data.data);
+			//console.log("Firstload callback reached");	
+			//console.log(data.data);
 			thisRoom.receiveFirstLoad(data.data);
 		});
 
 		thisRoom.socket.on('trackUpdate', function(data){
-			console.log("trackUpdate callback reached");
-			console.log(data.data);
+			//console.log("trackUpdate callback reached");
+			//console.log(data.data);
 			thisRoom.receiveTrackUpdate(data.data);
 		});
 
 		thisRoom.socket.on('nextTrack', function(data){
-			console.log("nextTrack callback reached");
-			console.log(data.data);
+			//console.log("nextTrack callback reached");
+			//console.log(data.data);
 			thisRoom.receiveNextTrack(data.data);
 		});
 
 		thisRoom.socket.on('trackStart', function(data){
-			console.log("trackStart callback reached");
-			console.log(data.data);
+			//console.log("trackStart callback reached");
+			//console.log(data.data);
 			thisRoom.receiveTrackUpdate(data.data);
 		});
 	};
@@ -124,6 +124,7 @@ function Room(optsIn){
 			if(thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
+				thisRoom.updateTrackBar();
 			}
 		}, track);
 	};
@@ -133,12 +134,14 @@ function Room(optsIn){
 			if(thisRoom.players[track.player].getCurrentVideoURL().indexOf(track.videoId) === -1){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
+				thisRoom.updateTrackBar();
 			}
 
 			var difference = (track.currentTime - thisRoom.getCurrentTrackTime()) - ((Date.now()/1000) - track.stamp);
 
 			if( ( difference > 1 || difference < -1 ) && thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.players[track.player].seekTo(track.currentTime);
+				thisRoom.updateTrackBar();
 			}
 		}, track);
 	};
@@ -160,6 +163,11 @@ function Room(optsIn){
 		else{
 			callback(params);
 		}
+	}
+
+	this.updateTrackBar = function(){
+		var span = thisRoom.currentTrack.name + "<br>" + thisRoom.currentTrack.artist;
+		$("#trackinfo").html(span);
 	}
 
 	thisRoom.init(optsIn);

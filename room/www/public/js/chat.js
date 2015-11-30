@@ -3,8 +3,8 @@ function Chat(optsIn){
 
 	this.init = function(opts){
 		thisChat.elems = {
-			messageBox: $(".chat-messagebox"),
-			inputBox: $(".chat-inputbox")
+			messageBox: $("#chatcontainer"),
+			inputBox: $("#chatinput")
 		}
 
 		thisChat.user = new User({
@@ -12,19 +12,20 @@ function Chat(optsIn){
 		})
 
 		//send chat message on return key
-		inputBox.keyup( function(ev){
+		thisChat.elems.inputBox.keyup( function(ev){
 			if(ev.keyCode === 13) {
+				console.log("enter key pressed")
 				thisChat.sendMessage();
 			}
 		});
 
 		thisChat.id = opts.id || 0;
 
-		thisChat.socket = opts.socket || io.connect(':12382/chat/'+thisChat.id);
+		thisChat.socket = opts.socket || io.connect(':12381/chat/'+thisChat.id);
 	}
 
 	this.getInputBoxContents = function(){
-		return inputBox.value;
+		return thisChat.elems.inputBox.value;
 	}
 
 	this.sendMessage = function(){
@@ -33,6 +34,7 @@ function Chat(optsIn){
 			message: thisChat.getInputBoxContents()
 		};
 
+		console.log("emitting chat message");
 		thisChat.socket.emit('message', {
 			data: message
 		});
@@ -41,11 +43,14 @@ function Chat(optsIn){
 
 	this.receiveMessage = function(message){
 		var template =
-			"<div class='message'>"+
-				message.user + ": " + message.text +
-			"</div>"
+			'<tr>' +
+				'<td class="chat-user-username">' + message.user.nick + '</td>' +
+				'<td class="chat-user-message">'  + message.text + '</td>' +
+			'</tr>'
 		;
 
+		console.log("inserting chat message");
+		console.log(template);
 		thisChat.elems.messageBox.appendChild(template);
 	}
 

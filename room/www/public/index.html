@@ -35,20 +35,8 @@
 	<div class="row">
 		<div class="col-sm-2 col-md-2 chat" style="background-color:white; margin-left: 1em;">
 			<table id="chatcontainer" style="margin:.5em">
-				<tr>
-					<td class="chat-user-username">Bob:</td>
-					<td class="chat-user-message">Dope track g</td>
-				</tr>
-				<tr>
-					<td class="chat-user-username">Dan:</td>
-					<td class="chat-user-message">Dope track g</td>
-				</tr>
-				<tr>
-					<td class="chat-user-username">Ralph:</td>
-					<td class="chat-user-message">not enjoying this one</td>
-				</tr>
 			</table>
-			<input type="text" class="form-control" placeholder="chat message" style="margin-bottom: 1em"></input>
+			<input type="text" class="form-control" placeholder="chat message" style="margin-bottom: 1em" id="chatinput"></input>
 		</div>
 
 		<div class="col-sm-9 col-md-8 main col-md-offset-1">
@@ -109,7 +97,8 @@
 		<div class="navbar-header">
 			<a class="navbar-brand">
 				<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
-				Them Belly Full - Bob Marley
+				<a class="navbar-brand" id="trackinfo">
+				</a>
 			</a>
 		</div>
 		<div id="navbar2" class="navbar">
