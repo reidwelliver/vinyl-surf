@@ -94,7 +94,7 @@ function Room(optsIn){
 		thisRoom.dj = opts.dj || "";
 		thisRoom.users = opts.users || [];
 
-		thisRoom.currentQueue = thisRoom.queues[0] || [];
+		thisRoom.currentQueue = 0;
 		thisRoom.currentQueuePos = 0;
 
 		thisRoom.currentTrack = thisRoom.queues[0].tracks[0] || ""; //TODO: this will break with empty queue
@@ -141,9 +141,11 @@ function Room(optsIn){
 	}
 
 	this.broadcastNextTrack = function(){
-		thisRoom.socket.emit('nextTrack', {
-			data: thisRoom.nextTrack.getInfo()
-		});
+		if(thisRoom.nextTrack){
+			thisRoom.socket.emit('nextTrack', {
+				data: thisRoom.nextTrack.getInfo()
+			});
+		}
 	}
 
 	this.initUpdateIntervals = function(){
@@ -157,15 +159,35 @@ function Room(optsIn){
 
 	this.playNext = function(){
 		thisRoom.currentTrack.setStopCallback(function(){
-			thisRoom.
+			if(thisRoom.nextTrack && thisRoom.queues.length > thisRoom.currentQueue ){
+				thisRoom.currentTrack = thisRoom.nextTrack;
+
+				if (thisRoom.currentQueuePos >= thisRoom.queues[thisRoom.currentQueue].tracks.length ) {
+					thisRoom.currentQueue++;
+					thisRoom.currentQueuePos = 0;
+				}
+				else {
+					thisRoom.currentQueuePos++;
+				}
+
+				if(thisRoom.queues[thisRoom.currentQueue]){
+					thisRoom.nextTrack = thisRoom.queues[thisRoom.currentQueue].tracks[thisRoom.currentQueuePos+1];
+					
+				}
+
+				thisRoom.playNext();
+			}
+			else{
+				thisRoom.stop();
+			}
 		});
 
 		thisRoom.currentTrack.play();
 	}
 
 	this.stop = function(){
-		clearInterval(this.intervalIds.trackUpdate);
-		clearInterval(this.intervalIds.nextTrack);
+		clearInterval(thisRoom.intervalIds.trackUpdate);
+		clearInterval(thisRoom.intervalIds.nextTrack);
 		thisRoom.currentTrack.stop();
 	}
 
@@ -226,7 +248,7 @@ var testTrack = new Track({
 	name: "Never Gonna Give You Up",
 	url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 	player: "YT",
-	playTime: 212
+	playTime: 20
 });
 
 var testTrack2 = new Track({
@@ -235,7 +257,7 @@ var testTrack2 = new Track({
 	name: "Never Gonna Give You Up",
 	url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 	player: "YT",
-	playTime: 212
+	playTime: 20
 });
 
 var testQueue = new Queue({
