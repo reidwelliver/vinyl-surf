@@ -23,6 +23,8 @@ RUN $UTILDIR/script-runner -d $GITMOUNT/$SERV/scripts/pre | $UTILDIR/logger -f s
 # symlink directories from git
 RUN $UTILDIR/symlinker -f $GITMOUNT/$SERV/config/symlinks | $UTILDIR/logger -f symlinks
 
+# copy any nginx configs
+RUN cp $GITMOUNT/$SERV/www/config/* /etc/nginx/sites-enabled/ | $UTILDIR/logger -f cp-nginx-conf 
 
 # start services
 RUN $UTILDIR/service-starter -f $GITMOUNT/$SERV/config/services | /$UTILDIR/logger -f service-starter
@@ -40,7 +42,7 @@ RUN $UTILDIR/package-installer -f $GITMOUNT/$SERV/config/packages | $UTILDIR/log
 
 
 #run nodejs projects
-RUN $UTILDIR/node-runner -d $GITMOUNT/$SERV/node | $UTILDIR/logger -f node-runner
+#RUN $UTILDIR/node-runner -d $GITMOUNT/$SERV/node | $UTILDIR/logger -f node-runner
 
 
 # run post-install scripts

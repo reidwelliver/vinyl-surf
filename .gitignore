@@ -3,3 +3,6 @@
 
 #The ever-annoying DS_STORE from macs
 .DS_Store
+
+#node modules
+node_modules

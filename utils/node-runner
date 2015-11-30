@@ -24,9 +24,12 @@ fi
 
 for SCRIPT in "$NODEFILES"
 do
+	SCRIPTDIR=$(dirname $SCRIPT)
 	CONTDIR=$(basename $(dirname $SCRIPT))
 	((NUMINS++))
 	info "Running $SCRIPT, logging to $(normalize $CONTDIR)"
+	cd "$CONTDIR"
+	npm install | log "$CONTDIR"
 	node "$SCRIPT" | log "$CONTDIR" &
 done
 
