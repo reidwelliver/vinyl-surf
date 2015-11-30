@@ -49,8 +49,9 @@ function Chat(optsIn){
 		thisChat.elems.messageBox.appendChild(template);
 	}
 
-
+	thisChat.init(optsIn);
 }
+
 
 function User(optsIn){
 	var thisUser = this;
@@ -59,3 +60,6 @@ function User(optsIn){
 		thisUser.nick = opts.nick || "bob";
 	}
 }
+
+
+var chat = new Chat({id: 0});

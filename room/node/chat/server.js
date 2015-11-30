@@ -14,7 +14,7 @@ function Chat(optsIn){
 
 		thisChat.socket = opts.socket || io.of('/chat/'+thisChat.id);
 
-		thisRoom.socket.on('connection', function(socket){
+		thisChat.socket.on('connection', function(socket){
 			console.log("client connected to chat ");
 
 			socket.on('message', function(message){
@@ -36,9 +36,10 @@ function Chat(optsIn){
 		thisChat.sendMessage(message);
 	}
 
-
+	thisChat.init(optsIn);
 }
 
+var testChat = new Chat({id: 0});
 
 http.listen(1338, function(){
   console.log('listening on localhost:1338');
