@@ -21,6 +21,8 @@ function Track(optsIn){
 		thisTrack.currentTime = 0;
 		thisTrack.timeStarted = 0;
 		thisTrack.playIntervalId = -1;
+
+		thisTrack.isPlaying = false;
 	};
 
 	this.getUpdate = function(){
@@ -54,16 +56,21 @@ function Track(optsIn){
 	this.play = function(){
 		thisTrack.timeStarted = (Date.now()/1000);
 
-		thisTrack.playIntervalId = setInterval( function(){
-			thisTrack.currentTime++;
-			if(thisTrack.currentTime > thisTrack.playTime){
-				thisTrack.stop();
-			}
-		}, 1000);
+		if (!thisTrack.isPlaying){
+			thisTrack.playIntervalId = setInterval( function(){
+				thisTrack.currentTime++;
+				if(thisTrack.currentTime > thisTrack.playTime){
+					thisTrack.stop();
+				}
+			}, 1000);
+		}
+
+		thisTrack.isPlaying = true;
 	}
 
 	this.stop = function(){
 		thisTrack.stopCallback();
+		thisTrack.isPlaying = false;
 		thisTrack.resetTrack();
 	}
 
