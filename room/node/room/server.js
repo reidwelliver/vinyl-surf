@@ -78,6 +78,7 @@ function Track(optsIn){
 		clearInterval(thisTrack.playIntervalId);
 		thisTrack.currentTime = 0;
 		thisTrack.timeStarted = 0;
+		thisTrack.isPlaying = false;
 	}
 
 	this.setStopCallback = function(callback){
@@ -191,6 +192,10 @@ function Room(optsIn){
 			}
 		});
 
+		thisRoom.socket.emit('trackStart',{
+			data: thisRoom.currentTrack.getInfo()
+		});
+
 		thisRoom.currentTrack.play();
 	}
 
@@ -246,25 +251,29 @@ var testTrack = new Track({
 
 var testTrack2 = new Track({
 	id: 2,
-	artist: "FFF",
-	name: "Never Gonna Give You Up",
-	videoId: "dQw4w9WgXcQ",
+	artist: "He-Man",
+	name: "Hey (what's going on)",
+	videoId: "ZZ5LpwO-An4",
 	player: "YT",
-	playTime: 212
+	playTime: 126
 });
 
 var testTrack3 = new Track({
 	id: 3,
-	artist: "QQQ",
-	name: "Never Gonna Give You Up",
-	videoId: "dQw4w9WgXcQ",
+	artist: "Drake vs. Epic Sax Guy",
+	name: "Hotline Sax",
+	videoId: "z1rvXAlz5ao",
 	player: "YT",
-	playTime: 212
+	playTime: 231
 });
 
 var testQueue = new Queue({
 	name: "Test Queue",
-	tracks: [testTrack, testTrack2, testTrack3]
+	tracks: [
+		//testTrack, 
+		testTrack2, 
+		testTrack3
+	]
 });
 
 var testRoom = new Room({

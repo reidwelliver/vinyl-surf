@@ -27,6 +27,7 @@ function YoutubePlayer(optsIn, readyCallback){
 	this.seekTo = function(seconds){
 		console.log("seeking to second " + seconds);
 		thisPlayer.player.seekTo(seconds, true);
+		thisPlayer.player.play();
 	}
 
 	this.queue = function(track){
@@ -38,11 +39,16 @@ function YoutubePlayer(optsIn, readyCallback){
 	this.playNow = function(track){
 		console.log("playing");
 		thisPlayer.player.loadVideoById(track.videoId);
+		thisPlayer.player.play();
 
 	}
 
 	this.getCurrentTime = function(){
 		return thisPlayer.player.getCurrentTime();
+	}
+
+	this.getCurrentVideoURL = function(){
+		return thisPlayer.player.getVideoUrl();
 	}
 
 	this.init(optsIn);
@@ -80,23 +86,32 @@ function Room(optsIn){
 		}
 
 		thisRoom.players = {
-			YT: new YoutubePlayer(opts.players.YT,youtubePlayerCallback)
+			YT: new YoutubePlayer(opts.players.YT, youtubePlayerCallback)
 		}
 
 		//socket callbacks - move these eventually
 		thisRoom.socket.on('firstLoad', function(data){
 			console.log("Firstload callback reached");	
+			console.log(data.data);
 			thisRoom.receiveFirstLoad(data.data);
 		});
 
 		thisRoom.socket.on('trackUpdate', function(data){
 			console.log("trackUpdate callback reached");
+			console.log(data.data);
 			thisRoom.receiveTrackUpdate(data.data);
 		});
 
 		thisRoom.socket.on('nextTrack', function(data){
 			console.log("nextTrack callback reached");
+			console.log(data.data);
 			thisRoom.receiveNextTrack(data.data);
+		});
+
+		thisRoom.socket.on('trackStart', function(data){
+			console.log("trackStart callback reached");
+			console.log(data.data);
+			thisRoom.receiveTrackUpdate(data.data);
 		});
 	};
 
@@ -114,24 +129,33 @@ function Room(optsIn){
 	};
 
 	this.receiveTrackUpdate = function(track){
-		console.log(track);
-		var difference = (track.currentTime - thisRoom.getCurrentTrackTime()) - ((Date.now()/1000) - track.stamp);
-		if( ( difference > 1 || difference < -1 ) && thisRoom.players.hasOwnProperty(track.player)){
-			thisRoom.players[track.player].seekTo(track.currentTime);
-		}
+		thisRoom.whenPlayerReady(function(track){
+			if(thisRoom.players[track.player].getCurrentVideoURL().indexOf(track.videoId) === -1){
+				thisRoom.currentTrack = new Track(track);
+				thisRoom.players[track.player].playNow(track);
+			}
+
+			var difference = (track.currentTime - thisRoom.getCurrentTrackTime()) - ((Date.now()/1000) - track.stamp);
+
+			if( ( difference > 1 || difference < -1 ) && thisRoom.players.hasOwnProperty(track.player)){
+				thisRoom.players[track.player].seekTo(track.currentTime);
+			}
+		}, track);
 	};
 
 	this.receiveNextTrack = function(track){
-		if(thisRoom.nextTrack.id != track.id && thisRoom.players.hasOwnProperty(track.player)){
-			thisRoom.nextTrack = new Track(track);
-			thisRoom.players[thisRoom.nextTrack.player].queue(thisRoom.nextTrack);
-		}
+		thisRoom.whenPlayerReady(function(track){
+			if(thisRoom.nextTrack.id != track.id && thisRoom.players.hasOwnProperty(track.player)){
+				thisRoom.nextTrack = new Track(track);
+				thisRoom.players[thisRoom.nextTrack.player].queue(thisRoom.nextTrack);
+			}
+		}, track);
 	};
 
 	this.whenPlayerReady = function(callback, params){
 		if(!thisRoom.playerReady){
 			console.log("waiting for player to be ready");
-			setTimeout(thisRoom.whenPlayerReady,1000,callback,params);
+			setTimeout(thisRoom.whenPlayerReady,200,callback,params);
 		}
 		else{
 			callback(params);
@@ -157,18 +181,6 @@ function Track(optsIn){
 		thisTrack.timeStarted = 0;
 
 		thisTrack.queued = false;
-	};
-
-	this.getUpdate = function(){
-		return {
-			name: thisTrack.name,
-			stamp: (Date.now()/1000),
-			time: thisTrack.currentTime 
-		};
-	};
-
-	this.getInfo = function(){
-		return thisTrack;
 	};
 
 	thisTrack.init(optsIn);
