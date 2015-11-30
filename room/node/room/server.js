@@ -27,6 +27,7 @@ function Track(optsIn){
 		return {
 			id: thisTrack.id,
 			name: thisTrack.name,
+			player: thisTrack.player,
 			stamp: (Date.now()/1000),
 			time: thisTrack.currentTime 
 		}
@@ -114,26 +115,14 @@ function Room(optsIn){
 				data: thisRoom.currentTrack.getInfo()
 			});
 
-		thisRoom.initUpdateIntervals();
+		
 
 		});
 
-
+		thisRoom.initUpdateIntervals();
+		thisRoom.playNext();
 	};
 
-/*
-	this.onTrackUpdate = function(update){
-
-	};
-
-	this.onAuth = function(update){
-
-	};
-
-	this.onDeauth = function(update){
-
-	};
-*/
 	this.broadcastTrackUpdate = function(){
 		thisRoom.socket.emit('trackUpdate', {
 			data: thisRoom.currentTrack.getUpdate()
@@ -178,7 +167,11 @@ function Room(optsIn){
 				thisRoom.playNext();
 			}
 			else{
-				thisRoom.stop();
+				thisRoom.currentQueue = 0;
+				thisRoom.currentQueuePos = 0;
+
+				thisRoom.currentTrack = thisRoom.queues[0].tracks[0]; //TODO: this will break with empty queue
+				thisRoom.nextTrack = thisRoom.queues[0].tracks[1];
 			}
 		});
 
@@ -188,13 +181,11 @@ function Room(optsIn){
 	this.stop = function(){
 		clearInterval(thisRoom.intervalIds.trackUpdate);
 		clearInterval(thisRoom.intervalIds.nextTrack);
-		thisRoom.currentTrack.stop();
 	}
 
 	thisRoom.init(optsIn);
-
-	thisRoom.playNext();
 }
+
 
 function User(optsIn){
 	var thisUser = this;
@@ -220,49 +211,44 @@ function RoomStore(optsIn){
 	this.addRoom = function(roomIn){
 		thisRoomStore.rooms[roomIn.id] = roomIn;
 	};
-/*
-	this.onTrackUpdate = function(update){
-		if (thisRoomStore.rooms.hasOwnProperty(update.room.id)) {
-			thisRoomStore.rooms[update.room.id].onTrackUpdate(update);
-		};
-	};
 
-	this.onAuth = function(auth){
-		if (thisRoomStore.rooms.hasOwnProperty(auth.room.id)) {
-			thisRoomStore.rooms[update.room.id].onAuth(auth);
-		};
-	};
-
-	this.onDeauth = function(auth){
-		if (thisRoomStore.rooms.hasOwnProperty(auth.room.id)) {
-			thisRoomStore.rooms[update.room.id].onDeauth(auth);
-		};
-	};
-*/
 	thisRoomStore.init(optsIn);
 }
 
+
+
+
+//test stuff - move or remove later (probably mock in DB)
 var testTrack = new Track({
 	id: 1,
 	artist: "Rick Astley",
 	name: "Never Gonna Give You Up",
 	url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 	player: "YT",
-	playTime: 20
+	playTime: 212
 });
 
 var testTrack2 = new Track({
-	id: 69,
-	artist: "Rick Astley",
+	id: 2,
+	artist: "FFF",
 	name: "Never Gonna Give You Up",
 	url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
 	player: "YT",
-	playTime: 20
+	playTime: 212
+});
+
+var testTrack3 = new Track({
+	id: 3,
+	artist: "QQQ",
+	name: "Never Gonna Give You Up",
+	url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	player: "YT",
+	playTime: 212
 });
 
 var testQueue = new Queue({
 	name: "Test Queue",
-	tracks: [testTrack, testTrack2, testTrack]
+	tracks: [testTrack, testTrack2, testTrack3]
 });
 
 var testRoom = new Room({

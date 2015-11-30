@@ -28,9 +28,9 @@ do
 	CONTDIR=$(basename $(dirname $SCRIPT))
 	((NUMINS++))
 	info "Running $SCRIPT, logging to $(normalize $CONTDIR)"
-	cd "$CONTDIR"
+	cd "$SCRIPTDIR"
 	npm install | log "$CONTDIR"
-	node "$SCRIPT" | log "$CONTDIR" &
+	node server.js | log "$CONTDIR" &
 done
 
 info "Ran $NUMINS node scripts."
