@@ -1,4 +1,4 @@
-function YoutubePlayer(optsIn){
+function YoutubePlayer(optsIn, readyCallback){
 	var thisPlayer = this;
 
 	this.init = function(opts){
@@ -14,29 +14,35 @@ function YoutubePlayer(optsIn){
 		window.onYouTubeIframeAPIReady = function() {
 			thisPlayer.player = new YT.Player('player', {
 				height: '390',
-				width: '640'
+				width: '640',
+				videoId: 'dQw4w9WgXcQ',
+				events: {}
 			});
 
-			//thisRoom.playerReady = true;
-
 			console.log("loaded YoutubePlayer!");
+			readyCallback();
 		};
 	};
 
 	this.seekTo = function(seconds){
-		console.log("seeking");
+		console.log("seeking to second " + seconds);
 		thisPlayer.player.seekTo(seconds, true);
 	}
 
 	this.queue = function(track){
 		console.log("queueing");
 		track.queued = true;
-		thisPlayer.player.cueVideoByUrl(track.url);
+		//thisPlayer.player.cueVideoById(track.videoId);
 	}
 
 	this.playNow = function(track){
 		console.log("playing");
-		thisPlayer.player.loadVideoByUrl(track.url);
+		thisPlayer.player.loadVideoById(track.videoId);
+
+	}
+
+	this.getCurrentTime = function(){
+		return thisPlayer.player.getCurrentTime();
 	}
 
 	this.init(optsIn);
@@ -67,8 +73,14 @@ function Room(optsIn){
 		thisRoom.socket = opts.socket || io.connect(':12381/room/'+thisRoom.id);
 
 		opts.players = opts.players || {};
+
+		var youtubePlayerCallback = function(){
+			console.log("calling player callback");
+			thisRoom.playerReady = true;
+		}
+
 		thisRoom.players = {
-			YT: new YoutubePlayer(opts.players.YT)
+			YT: new YoutubePlayer(opts.players.YT,youtubePlayerCallback)
 		}
 
 		//socket callbacks - move these eventually
@@ -88,32 +100,38 @@ function Room(optsIn){
 		});
 	};
 
+	this.getCurrentTrackTime = function(){
+		return thisRoom.players["YT"].getCurrentTime();
+	}
+
 	this.receiveFirstLoad = function(track){
-		if(thisRoom.players.hasOwnProperty(track.player)){
-			thisRoom.players[track.player].playNow(track);
-		}
+		thisRoom.whenPlayerReady(function(track){
+			if(thisRoom.players.hasOwnProperty(track.player)){
+				thisRoom.currentTrack = new Track(track);
+				thisRoom.players[track.player].playNow(track);
+			}
+		}, track);
 	};
 
 	this.receiveTrackUpdate = function(track){
-		thisRoom.playerReadyWait();
-		var difference = (track.time - thisRoom.currentTrack.currentTrack) - ((Date.now()/1000) - track.stamp)
-		if( difference > 1 || difference < 1 && thisRoom.players.hasOwnProperty(track.player)){
+		console.log(track);
+		var difference = (track.currentTime - thisRoom.getCurrentTrackTime()) - ((Date.now()/1000) - track.stamp);
+		if( ( difference > 1 || difference < -1 ) && thisRoom.players.hasOwnProperty(track.player)){
 			thisRoom.players[track.player].seekTo(track.currentTime);
 		}
 	};
 
 	this.receiveNextTrack = function(track){
-		thisRoom.playerReadyWait();
 		if(thisRoom.nextTrack.id != track.id && thisRoom.players.hasOwnProperty(track.player)){
 			thisRoom.nextTrack = new Track(track);
-			thisRoom.players[tempTrack.player].queue(thisRoom.nextTrack);
+			thisRoom.players[thisRoom.nextTrack.player].queue(thisRoom.nextTrack);
 		}
 	};
 
 	this.whenPlayerReady = function(callback, params){
 		if(!thisRoom.playerReady){
 			console.log("waiting for player to be ready");
-			setInterval(thisRoom.whenPlayerReady,500,callback,params);
+			setTimeout(thisRoom.whenPlayerReady,1000,callback,params);
 		}
 		else{
 			callback(params);
@@ -132,11 +150,10 @@ function Track(optsIn){
 		thisTrack.artist = opts.artist || "";
 		thisTrack.name = opts.name || "";
 
-		thisTrack.url = opts.url || "";
+		thisTrack.videoId = opts.videoId || "";
 		thisTrack.player = opts.player || "YT";
 
 		thisTrack.playTime = opts.length || 0;
-		thisTrack.currentTime = 0;
 		thisTrack.timeStarted = 0;
 
 		thisTrack.queued = false;

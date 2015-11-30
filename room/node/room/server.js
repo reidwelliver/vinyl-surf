@@ -14,7 +14,7 @@ function Track(optsIn){
 		thisTrack.artist = opts.artist || "";
 		thisTrack.name = opts.name || "";
 
-		thisTrack.url = opts.url || "";
+		thisTrack.videoId = opts.videoId || "";
 		thisTrack.player = opts.player || "YT";
 
 		thisTrack.playTime = opts.playTime || 0;
@@ -26,10 +26,14 @@ function Track(optsIn){
 	this.getUpdate = function(){
 		return {
 			id: thisTrack.id,
+			artist: thisTrack.artist,
 			name: thisTrack.name,
+			videoId: thisTrack.videoId,
 			player: thisTrack.player,
-			stamp: (Date.now()/1000),
-			time: thisTrack.currentTime 
+			playTime: thisTrack.playTime,
+			currentTime: thisTrack.currentTime,
+			timeStarted: thisTrack.timeStarted,
+			stamp: (Date.now()/1000)
 		}
 	}
 
@@ -38,16 +42,17 @@ function Track(optsIn){
 			id: thisTrack.id,
 			artist: thisTrack.artist,
 			name: thisTrack.name,
-			url: thisTrack.url,
+			videoId: thisTrack.videoId,
 			player: thisTrack.player,
 			playTime: thisTrack.playTime,
 			currentTime: thisTrack.currentTime,
-			timeStarted: thisTrack.timeStarted
+			timeStarted: thisTrack.timeStarted,
+			stamp: (Date.now()/1000)
 		};
 	}
 
 	this.play = function(){
-		thisTrack.timeStarted = Date.now();
+		thisTrack.timeStarted = (Date.now()/1000);
 
 		thisTrack.playIntervalId = setInterval( function(){
 			thisTrack.currentTime++;
@@ -58,10 +63,14 @@ function Track(optsIn){
 	}
 
 	this.stop = function(){
+		thisTrack.stopCallback();
+		thisTrack.resetTrack();
+	}
+
+	this.resetTrack = function(){
 		clearInterval(thisTrack.playIntervalId);
 		thisTrack.currentTime = 0;
 		thisTrack.timeStarted = 0;
-		this.stopCallback();
 	}
 
 	this.setStopCallback = function(callback){
@@ -223,7 +232,7 @@ var testTrack = new Track({
 	id: 1,
 	artist: "Rick Astley",
 	name: "Never Gonna Give You Up",
-	url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	videoId: "dQw4w9WgXcQ",
 	player: "YT",
 	playTime: 212
 });
@@ -232,7 +241,7 @@ var testTrack2 = new Track({
 	id: 2,
 	artist: "FFF",
 	name: "Never Gonna Give You Up",
-	url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	videoId: "dQw4w9WgXcQ",
 	player: "YT",
 	playTime: 212
 });
@@ -241,7 +250,7 @@ var testTrack3 = new Track({
 	id: 3,
 	artist: "QQQ",
 	name: "Never Gonna Give You Up",
-	url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	videoId: "dQw4w9WgXcQ",
 	player: "YT",
 	playTime: 212
 });
