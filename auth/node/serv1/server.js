@@ -22,8 +22,13 @@ function Auth(callback) {
         
         thisAuth.socket.on('connection', function(socket){
             console.log("Someone connected"); 
-            socket.on('Login', function(username, password){
-                thisAuth.Login("test1", "test", function(err, token) {
+            socket.on('Login', function(data){
+                var username = data.username;
+                var password = data.password;
+                
+                if (username == undefined || password == undefined ||  username.length < 4 || password.length < 4)
+                    return;
+                thisAuth.Login(username, password, function(err, token) {
                     if (err)
                         console.log(err);
                     else {

@@ -10,6 +10,10 @@ function Authentication(readyCallback) {
         });
         
         thisAuth.socket.on('Token', function(data) {
+            if (data.token == undefined) {
+                console.log("Login failed!");
+                return;
+            }
             console.log('Received token', data.token);
             thisAuth.token = data.token;
         });
