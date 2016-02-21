@@ -1,11 +1,14 @@
 FROM reidwelliver/vs-base:latest
 MAINTAINER Reid Welliver
 
-# Add this folder to the container's image at /git
-COPY . /build/
+ARG PROJECT
 
-RUN /build/utils/builder
+# Add this folder to the container's image at /git
+COPY ./buildutils/utils/ /utils/
+COPY ./$PROJECT/ /project/
+
+RUN /utils/builder
 
 # Entrypoint command
 ENTRYPOINT ["/bin/bash"]
-CMD ["/build/utils/run-wakeup"]
+CMD ["/utils/run-wakeup"]
