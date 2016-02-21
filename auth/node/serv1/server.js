@@ -9,7 +9,6 @@ var fs = require('fs');
 
 function Auth(callback) {
     var thisAuth = this;
-    var socket = io.of('auth');
     var connect = mysql.createConnection({
       host     : 'localhost',
       user     : 'root',
@@ -17,6 +16,33 @@ function Auth(callback) {
       database : 'surf'
     });   
     
+    this.SocketEvents = function () {
+        thisSocketEvents = this;
+        console.log("Creating socket events");
+        
+        thisAuth.socket.on('connection', function(socket){
+            console.log("Someone connected"); 
+            socket.on('Login', function(username, password){
+                thisAuth.Login("test1", "test", function(err, token) {
+                    if (err)
+                        console.log(err);
+                    else {
+                        console.log("Successful Login. Token =", token);
+                        socket.emit("Token", {token: token});
+                    }
+                }); 
+            });
+        
+            socket.on('Message', function(data){
+                console.log("test", data);
+            });     
+        });
+                 
+    }
+    this.init = function() {
+        thisAuth.socket = io.of('/auth');
+        thisAuth.SocketEvents();
+    }
     this.User = function(username, password, email) {
         this.username = username;
         this.password = password;
@@ -112,12 +138,9 @@ function Auth(callback) {
                 console.log("user already registered");
         });        
     }
+    thisAuth.init();
 }
 
-app.post('/login', function(req, res) {
-    console.log(req);
- // res.send('You sent the name "' + req.body.name + '".');
-});
 
 var auth = new Auth(null);
 //auth.Register("test1", "test", "test@test.com");
