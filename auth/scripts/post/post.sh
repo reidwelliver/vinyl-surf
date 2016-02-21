@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "This should have been run late on"
+mysql -uroot -e "create database 'surf'"
