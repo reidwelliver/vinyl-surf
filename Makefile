@@ -4,7 +4,8 @@ buildutils:
 	rm master.zip
 	mv docker-deployer-master buildutils
 
-clean:
+
+buildutil-clean:
 	@ rm -r buildutils 2>/dev/null || true
 
 docker-clean: docker-container-clean docker-image-clean
@@ -15,12 +16,18 @@ docker-container-clean:
 docker-image-clean:
 	docker images | grep "vs-base" | grep build | awk '{print $$2}' | xargs -I {} docker rmi reidwelliver/vs-base:{}
 
+clean: buildutil-clean docker-clean
+
+
+
 room: buildutils
 	./buildutils/start -d room -r vs-base
 
 auth: buildutils
 	./buildutils/start -d auth -r vs-base
+
 admin: buildutils
 	./buildutils/start -d admin -r vs-base
 
-.PHONY: clean room auth
+
+.PHONY: clean room auth admin
