@@ -18,4 +18,9 @@ docker-image-clean:
 room: buildutils
 	./buildutils/start -d room -r vs-base
 
-.PHONY: clean room
+auth: buildutils
+	./buildutils/start -d auth -r vs-base
+admin: buildutils
+	./buildutils/start -d admin -r vs-base
+
+.PHONY: clean room auth
