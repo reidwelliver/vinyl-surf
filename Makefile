@@ -29,5 +29,8 @@ auth: buildutils
 admin: buildutils
 	./buildutils/start -d admin -r vs-base
 
+trackqueue: buildutils
+	./buildutils/start -d trackqueue -r vs-base
 
-.PHONY: clean room auth admin
+
+.PHONY: clean room auth admin trackqueue
