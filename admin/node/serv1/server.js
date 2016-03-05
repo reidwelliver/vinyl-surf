@@ -7,6 +7,126 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 
 
+function Admin(callback) {
+    var thisAdmin = this;
+    var connect = mysql.createConnection({
+      host     : 'localhost',
+      user     : 'root',
+      password : '',
+      database : 'surf'
+    });   
+    
+    this.SocketEvents = function () {
+        var thisSocketEvents = this;
+        console.log("Creating socket events");
+        
+        thisAuth.socket.on('connection', function(socket){
+            console.log("Someone connected"); 
+        
+            socket.on('Message', function(data){
+                console.log("test", data);
+            }); 
+            socket.on('CheckAdmin', function(data) {
+                var token = data.token;
+                thisAdmin.CheckAdmin(token, function(err, result) {
+                    if (err) {
+                        
+                    }
+                    else { //successfully verified
+                        
+                    }
+                });
+            })
+        });
+                 
+    }
+    
+    this.CheckAdmin = function (token, callback) { //if its an admin we need to send it back to the proxy server so it can set the user as an admin
+        connect.query("SELECT * FROM tokens WHERE token = ?", [token],  function (err, rows, fields) {
+            if (rows.length == 0 || err) //we need to drop the connection
+                callback(err, null);
+            
+            var row = rows[0];     
+            connect.query("SELECT * FROM users WHERE administrator = 1 AND id = ?", [row.userid], function (err, rows, fields) {
+                if (rows.length == 0) {
+                    callback(err, null);   
+                }
+                else { //user is an administrator, send something back
+                    callback(null, "success");
+                }
+            });
+        });
+        
+    }
+    this.GetAllReports = function (callback) {
+         connect.query("SELECT * FROM reports", function (err, rows, fields) {
+            callback(rows);    
+        });       
+    }
+    this.GetAllUsers = function (callback) {
+        connect.query("SELECT * FROM users", function (err, rows, fields) {
+            callback(err, rows);
+        });
+    }
+    this.BanUsers = function (users, ban_type, callback) {       
+        for (var i = 0; i < users.length; i++) {
+            if (ban_type == 0) { //Sitewide ban
+                 connect.query("UPDATE users SET ban_date = now() where id = ?", users[i].id, function (err, rows, fields) {
+                    if (err) {
+                        callback("error", null);
+                    }
+                    else { //success
+                        callback(null, "success");
+                    }
+                });           
+            }
+        }
+    }
+        this.SocketEvents = function () {
+        thisSocketEvents = this;
+        console.log("Creating socket events");
+        
+        thisAuth.socket.on('connection', function(socket){
+            console.log("Someone connected"); 
+            socket.on('Login', function(data){
+                var username = data.username;
+                var password = data.password;
+                
+                if (username == undefined || password == undefined ||  username.length < 4 || password.length < 4)
+                    return;
+                //change to return user object
+                thisAuth.Login(username, password, function(err, token) {
+                    if (err)
+                        console.log(err);
+                    else {
+                        console.log("Successful Login. Token =", token);
+                        socket.emit("Token", {token: token, });
+                    /*    thisAuth.VerifyToken(token, function(err, result) {
+                            
+                        });*/
+                    }
+                }); 
+            });
+        
+            socket.on('Message', function(data){
+                console.log("test", data);
+            }); 
+            socket.on('Verify', function(data) {
+                var token = data.token;
+                VerifyToken(token, function(err, result) {
+                    
+                });
+            })
+        });
+                 
+    }
+    this.init  = function() {
+        thisAdmin.socket = io.of('/admin');
+        thisAdmin.SocketEvents();
+    }
+    thisAdmin.init();
+}
+
 function Auth(callback) {
     var thisAuth = this;
     var connect = mysql.createConnection({
