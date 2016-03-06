@@ -1,8 +1,8 @@
 var SSR = [];
 var apikey = "AIzaSyAztbAWiJbAnn6JQ5hJ5oLEDYf7eW2mY0k";
 
-
-var socket = io.connect(':12381/track');
+//gotta make that connection you know?
+var socket = io.connect(':42081/track');
 
 
 
@@ -17,9 +17,12 @@ function OutputResults(object_to_output) {
 
 //done here
  console.log(SSR);
-socket.emit('message',
+ //this is where it sends messages to node
+socket.emit('addtracktodatabase',
     SSR["0"]
   );
+
+  //for results
     document.getElementById('box1').innerHTML="<textarea rows='40' cols='100'>"+JSON.stringify(SSR) +"</textarea>";
 }
 
@@ -172,6 +175,8 @@ function editTitle(VIDEODATA){
   document.getElementById("Theonlyform").elements[1].value = VIDEODATA["title"];
   document.getElementById('Message').innerHTML="Edit the title before hitting the other button to send";
 
+
+//this is dumb and I feel bad for using it
   SSR.push({
   "URL" : VIDEODATA.id,
    "Title" : VIDEODATA.title,
@@ -179,5 +184,13 @@ function editTitle(VIDEODATA){
    });
 
 
+
+}
+
+function ShowPlaylist(){
+  socket.emit('playlistlist',
+      'there will be someting here'
+    );
+    
 
 }

@@ -107,7 +107,7 @@ export default class PielSTOMP extends EventEmitter {
 			var responseQueue = 'RESP-' + parseInt( Math.random() * 10000000, 10 );
 			options[ 'reply-to' ] = responseQueue;
 
-			this.client.subscribe( '/queue/' + responseQueue, ( frame ) => {
+			this.client.subscribe( '/reply-queue/' + responseQueue, ( frame ) => {
 
 				var response;
 				if( frame.body && ( typeof frame.body === 'string' ) && ( frame.body.length > 2 ) )
