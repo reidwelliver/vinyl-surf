@@ -105,9 +105,9 @@ export default class PielSTOMP extends EventEmitter {
 				message = JSON.stringify( message );
 
 			var responseQueue = 'RESP-' + parseInt( Math.random() * 10000000, 10 );
-			options[ 'reply-to' ] = responseQueue;
+			options[ 'requeue' ] = responseQueue;
 
-			this.client.subscribe( '/reply-queue/' + responseQueue, ( frame ) => {
+			this.client.subscribe( '/queue/' + responseQueue, ( frame ) => {
 
 				var response;
 				if( frame.body && ( typeof frame.body === 'string' ) && ( frame.body.length > 2 ) )
@@ -176,12 +176,12 @@ export default class PielSTOMP extends EventEmitter {
 			if( typeof message === 'object' )
 				message = JSON.stringify( message );
 
-			if( ! options[ 'reply-to' ] )
+			if( ! options[ 'requeue' ] )
 				reject({
 					"error": "invalid reply-to queue"
 				});
 
-			this.client.send( '/queue/' + options[ 'reply-to' ], options, message );
+			this.client.send( '/queue/' + options[ 'requeue' ], {}, message );
 
 			resolve({
 				"success": true
@@ -278,3 +278,5 @@ export default class PielSTOMP extends EventEmitter {
 		});
 	}
 }
+
+module.exports = PielSTOMP;
