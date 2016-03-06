@@ -6,18 +6,25 @@ buildutils:
 
 
 buildutil-clean:
+	@ echo "removing build utilities..."
 	@ rm -r buildutils 2>/dev/null || true
 
 docker-clean: docker-container-clean docker-image-clean
 
 docker-container-clean:
-	docker ps -a | grep "vs-base-" | awk '{print $$NF}' | xargs -I {} docker rm {}
+	@ echo "removing docker containers..."
+	@ docker ps -a | grep "vs-base-" | awk '{print $$NF}' | xargs -I {} docker rm {}
 
 docker-image-clean:
-	docker images | grep "vs-base" | grep build | awk '{print $$2}' | xargs -I {} docker rmi reidwelliver/vs-base:{}
+	@ echo "removing docker images..."
+	@ docker images | grep "vs-base" | grep build | awk '{print $$2}' | xargs -I {} docker rmi reidwelliver/vs-base:{}
 
 clean: buildutil-clean docker-clean
 
+
+rabbitmq:
+	docker build -t reidwelliver/vs-rabbit:latest rabbitmq/
+	docker run -d --net=host --name vs-rabbit reidwelliver/vs-rabbit:latest
 
 
 room: buildutils
@@ -32,5 +39,4 @@ admin: buildutils
 trackqueue: buildutils
 	./buildutils/start -d trackqueue -r vs-base
 
-
-.PHONY: clean room auth admin trackqueue
+.PHONY: clean room auth admin trackqueue rabbitmq
