@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import Stomp from 'stompjs';
 import NodeWebSocket from 'ws';
 
+
 export default class PielSTOMP extends EventEmitter {
 
 	/**
@@ -11,6 +12,7 @@ export default class PielSTOMP extends EventEmitter {
 		@param { string } props.endpoint the STOMP service endpoint
 		@param { string } props.user
 		@param { string } props.pass
+		@param { string } props.mode whether to run in client (browser) or server (node) mode
 
 	**/
 	constructor( props ) {
@@ -32,7 +34,8 @@ export default class PielSTOMP extends EventEmitter {
 	setInitialState() {
 
 		this.state = {
-			connected: false
+			connected: false,
+			subscriptions : {}
 		};
 
 	}
@@ -40,22 +43,17 @@ export default class PielSTOMP extends EventEmitter {
 	/**
 		Connect the stomp service.
 
-		@param Object props The properties object
-		@param String props.endpoint The endpoint for this MQ connection ( eg. 'ws://services.piel.io/stomp/websocket' )
-		@param String props.user - the user for this connection
-		@param String props.pass - the password for this connection
-
-		@param Function callback a Callback when connected.
+		@param Function callback - OPTIONAL a Callback when connected.
 
 		@return Promise resolves true when connected
 	**/
-	connect( props, callback ){
+	connect( callback ){
 
 		return new Promise( ( resolve, reject ) => {
 
 			var ws;
 
-			if(this.props.mode === 'service'){
+			if(this.props.mode === 'server'){
 				ws = new NodeWebSocket( this.props.endpoint );
 			} else {
 				this.props.mode = 'client';
@@ -90,7 +88,7 @@ export default class PielSTOMP extends EventEmitter {
 		@param String queue - the name of the queue youd like to invoke
 		@param Object message - the props object for this invocation. eg { username: 'bren', password: 'mypass' }
 		@param Function callback - OPTIONAL, a callback to fire with the response ; the response will be JSON parsed
-		@param Object options - OPTIONAL, no in use just yet.
+		@param Object options - OPTIONAL header options to pass on with your STOMP request - see https://www.rabbitmq.com/stomp.html for details
 
 		@return Promise - resolves with the JSON parsed reponse from the server.
 	**/
@@ -106,7 +104,7 @@ export default class PielSTOMP extends EventEmitter {
 			if( typeof message === 'object' )
 				message = JSON.stringify( message );
 
-			var responseQueue = 'REQ-' + parseInt( Math.random() * 10000000, 10 );
+			var responseQueue = 'RESP-' + parseInt( Math.random() * 10000000, 10 );
 			options[ 'reply-to' ] = responseQueue;
 
 			this.client.subscribe( '/queue/' + responseQueue, ( frame ) => {
@@ -122,13 +120,58 @@ export default class PielSTOMP extends EventEmitter {
 
 			});
 
-			this.client.send( '/queue/' + queue + '-service', options, message );
+			this.client.send( '/queue/' + queue, options, message );
 
 		});
 	}
 
 
-	respond( queue, message, options ) {
+	/**
+		Provide a method in an RPC ( REST-LIKE ) means.
+		in other words, advertise as an endpoint
+
+		@param String queue - the name of the queue youd like provide a service for
+		@param Function callback - a callback to bind to requests of this type - recieves parameters: ( message, options, responsecallback	)
+
+		@return Promise - resolves with the JSON parsed reponse from the server.
+	**/
+	provide( queue, callback ) {
+		return new Promise( ( resolve, reject ) => {
+			this.client.subscribe( '/queue/' + queue, ( frame ) => {
+				var message, options;
+
+				if( frame.body && ( typeof frame.body === 'string' ) && ( frame.body.length > 2 ) )
+					message = JSON.parse( frame.body );
+
+				options = frame.headers || {}; //get headers/options from the request, I.E. reply-to queue
+
+
+				if( callback && typeof callback === 'function' )
+					callback( message, options, this.respond );
+			});
+
+			resolve({
+				"success" : true,
+				"queue" : queue
+			});
+		});
+	}
+
+	/**
+		todo: unprovide
+
+	**/
+
+	/**
+		respond in an RPC ( REST-LIKE ) means.
+		Passed as a parameter to callback of provide for convenience
+
+		@param Object message - the props object for this invocation. eg { username: 'bren', password: 'mypass' }
+		@param Object options - OPTIONAL header options to pass on with your STOMP request - see https://www.rabbitmq.com/stomp.html for details
+
+		@return Promise - resolves with the JSON parsed reponse from the server.
+	**/
+	respond( message, options ) {
 		return new Promise( ( resolve, reject ) => {
 			if( typeof message === 'object' )
 				message = JSON.stringify( message );
@@ -146,46 +189,88 @@ export default class PielSTOMP extends EventEmitter {
 		});
 	}
 
+
 	/**
-		Subscribe to a message queue, creating the queue response
+		Unsubscribe from a topic.
+
+		@param String topic the topic to subscribe/listen to.
+		@param Function callback
+		@param Object options the options object
+
+		@return Promise returns true if successfully subscribed
 	**/
-	subscribe( queue, callback, options ) {
+	subscribe( topic, callback, options ) {
 			return new Promise( ( resolve, reject ) => {
 
 				options = options || {};
-				options[ 'durable' ] = options.durable || false;
+				options[ 'durable' ] = options.durable || true; //this makes the subscription durable, not the topic
 				options[ 'auto-delete' ] = options.autoDelete || false;
-				options[ 'exclusive' ] = options.exclusive || false;
 
-				//e.g. /queue/bob-service or /queue/bob-client
-				this.client.subscribe( ('/queue/' + queue + '-' + this.props.mode) , ( frame ) => {
+				this.state.subscriptions = this.state.subscriptions || {};
+				this.state.subscriptions[topic] = this.client.subscribe( '/topic/' + topic, ( frame ) => {
 					var message;
 					if( frame.body && ( typeof frame.body === 'string' ) && ( frame.body.length > 2 ) )
 						message = JSON.parse( frame.body );
-						console.log("received message!");
 					if( callback && typeof callback === 'function' )
 						callback( message );
 				});
 
 				resolve({
 					"success" : true,
-					"queue" : queue
+					"topic" : topic //TODO: maybe replace with uniquely created queue id instead
 				});
 			});
 		}
 
-	/**
-		Publish a message to a queue, erroring if the queue doesn't exist ( if a queue doesnt exist, nothing is listening to it anyway )
 
+	/**
+		Unsubscribe from a topic.
+
+		@param String topic the topic to unsubscribe/stop listening to.
+		@param Function callback
+		@param Object options the options object
+		@param Object options.confirm, set true to check you are unsubscribed with the server. This costs performance to the server to confirm unsubscription but pays off with a garentee.
+
+		@return Promise returns true if successfully unsubscribed, OR if the subscription didn't exist in the first place ( we don't want to hard error , although we do want to warn in this case )
+	**/
+	unsubscribe( topic, callback, options ) {
+
+		options = options || {};
+
+		return new Promise( ( resolve, reject ) => {
+
+			var err;
+
+			if( this.state.subscriptions[ topic ] ) {
+
+				//would love to validate server confirmation that the client is no longer participating
+				//on the topic but stompjs offers nothing. We could provide an option which also checks.
+				this.state.subscriptions[ topic ].unsubscribe();
+				delete this.state.subscriptions[ topic ];
+
+			} else
+				console.warn( 'piel-stomp:: unsubscribe was performed against a non-existent topic [ ' + topic + ' ]' );
+
+			if( callback && typeof callback === 'function' )
+				callback( err );
+
+			resolve( true );
+
+		});
+	}
+
+	/**
+		Publish a message to a topic, erroring if the queue doesn't exist ( if a queue doesnt exist, nothing is listening to it anyway )
+		right now this doesn't check for queue existance, as I haven't found a way to do that with STOMP.
+		a lead might be to use dead-letter routing, but I don't know if that will work yet...
 		@todo Reid..
 	**/
-	publish( queue, message, options ) {
+	publish( topic, message, options ) {
 		options = options || {};
 		return new Promise( ( resolve, reject ) => {
 			if( typeof message === 'object' )
 				message = JSON.stringify( message );
-				console.log('publishing message');
-				this.client.send( '/queue/' + queue, options, message );
+				this.client.send( '/topic/' + topic, options, message );
 
 			resolve({
 				"success": true

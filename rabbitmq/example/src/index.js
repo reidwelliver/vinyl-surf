@@ -1,5 +1,8 @@
 import stomp from './stomp-client.js';
 
+window.
+
+
 window.mq = new stomp({
 			endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
 			user: 'vinyl-surf',

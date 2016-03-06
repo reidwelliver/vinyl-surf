@@ -25,14 +25,13 @@
     "file-loader": "^0.8.5",
     "invariant": "^2.2.0",
     "json-loader": "^0.5.4",
-    "piel-stomp": "^1.0.2",
-    "stompjs": "^2.3.3",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
     "webpack": "^1.12.14",
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
-    "ws": "^1.0.1"
+    "ws": "^1.0.1",
+    "stompjs": "^2.3.3"
   }
 }
