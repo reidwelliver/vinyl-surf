@@ -2,7 +2,7 @@ var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var serverConfig = require( './config/config' );
 var config = require('./webpack.config');
-var stomp = require('./stomp-client.min.js');
+var stomp = require('./src/stomp-client.min.js');
 
 
 new WebpackDevServer(webpack(config), {
