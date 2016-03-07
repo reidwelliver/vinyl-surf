@@ -21,28 +21,58 @@ function Auth(callback) {
     
     var userTokens = new Map();
     
+    this.TokenToUserHelper = function(user_id, callback) {
+        connect.query("SELECT id, username, email_address, administrator, upvotes, downvotes FROM users WHERE id = ?", [user_id],  function (err, rows, fields) {
+            if (err || rows.length == 0) {
+                 callback("Not found", null);
+            }            
+            var row = rows[0];
+            callback(null, row);
+        });       
+    }
+    
+    this.TokenToUser = function(token, callback) {       
+         connect.query("SELECT user_id FROM tokens WHERE token = ?", [token],  function (err, rows, fields) {
+            if (err || rows.length == 0) {
+                 callback("Not found", null);
+            }
+             
+            var row = rows[0];          
+            thisAuth.TokenToUserHelper(row.user_id, function(err, result) {
+                callback(err, result); 
+            });
+         });
+    }
+    
     this.VerifyToken = function (token, callback) {
         if (userTokens[token]) {
             var expire_time = userTokens[token].expire_time;
             var current_time = Date.now() / 1000;
             if (current_time >= expire_time) {
-                callback(null, token);
-                return;
-            }
-        }
-        
-        connect.query("SELECT * FROM tokens WHERE token = ?", [token],  function (err, rows, fields) {
-            var row = rows[0];
-            var current_time = Date.now() / 1000;
-            if (current_time >= row.expire_time) {
-                callback("Token expired", null);   
+                callback("Token expired", null); 
             }
             else {
-                userTokens[token] = row;
-                console.log(null, token);              
+                callback(null, token);
             }
-        });
-        callback("Not found", null);
+        }
+        else {        
+            connect.query("SELECT * FROM tokens WHERE token = ?", [token],  function (err, rows, fields) {
+                if (err || rows.length == 0) {
+                     callback("Not found", null);
+                }
+                else {
+                    var row = rows[0];
+                    var current_time = Date.now() / 1000;
+                    if (current_time >= row.expire_time) {
+                        callback("Token expired", null);   
+                    }
+                    else {
+                        userTokens[token] = row;
+                        callback(null, token);          
+                    }
+                }
+            });            
+        }
     }
     
     this.StompEvents = function () {
@@ -52,65 +82,77 @@ function Auth(callback) {
            messages.provide('isAuthenticated', function(message, options, respondMethod){
                console.log("Checking authetication for", message);
                if (message.xtoken != "") {
-                    VerifyToken(message.xtoken, function (err, result) {
+                    thisAuth.VerifyToken(message.xtoken, function (err, result) {
                         if (err) {
-                            message.respond({xtoken: "", error: err}, options);
-                            console.log(err);
+                            messages.respond({xtoken: "", error: err}, options);
+                            console.log("error", err);
                         } else {
-                            message.respond({xtoken: result, error: null}, options);
+                            messages.respond({xtoken: result, error: null}, options);
                         }
                     });                
                }
+               else {
+                   messages.respond({xtoken: "", error: "err"}, options);
+               }
             });
-            messages.provide('Login', function(message, options, respondMethod){
             
-            });
-        });
-    }
-                             
-    this.SocketEvents = function () {
-        thisSocketEvents = this;
-        console.log("Creating socket events");
-        
-        thisAuth.socket.on('connection', function(socket){
-            console.log("Someone connected"); 
-            socket.on('Login', function(data){
-                var username = data.username;
-                var password = data.password;
+            messages.provide('Login', function(message, options, respondMethod){
+                console.log("Checking login for", message);
+                
+                var username = message.username;
+                var password = message.password;
                 
                 if (username == undefined || password == undefined ||  username.length < 4 || password.length < 4)
                     return;
                 //change to return user object
-                thisAuth.Login(username, password, function(err, token) {
-                    if (err)
+                thisAuth.Login(username, password, function(err, result) {
+                    if (err) {
                         console.log(err);
+                        messages.respond({xtoken: "", user: null, error: err}, options);
+                    }
                     else {
-                        console.log("Successful Login. Token =", token);
-                        socket.emit("Token", {token: token, });
+                        console.log("Successful Login. Token =", result.xtoken);
+                        messages.respond({xtoken: result.xtoken, user: result.user, error: null}, options);
                     /*    thisAuth.VerifyToken(token, function(err, result) {
                             
                         });*/
                     }
-                }); 
+                });               
             });
-        
-            socket.on('Message', function(data){
-                console.log("test", data);
-            }); 
-            socket.on('Verify', function(data) {
-                var token = data.token;
-                VerifyToken(token, function(err, result) {
-                    
+            
+            messages.provide('TokenToUser', function(message, options, respondMethod) {
+                thisAuth.TokenToUser(message.xtoken, function (err, result) {
+                    messages.respond({user: result, error:null}, options);
                 });
-            })
+            });
+                            
+            messages.provide('Register', function(message, options, respondMethod){
+                console.log("Checking register for", message);
+                var username = message.username;
+                var password = message.password;
+                var email = message.email;
+                
+                if (username == undefined || password == undefined ||  username.length < 4 || password.length < 4)
+                    return;
+                //change to return user object
+                thisAuth.Register(username, password, email, function(err, result) {
+                    if (err) {
+                        console.log(err);
+                        messages.respond({xtoken: "", user: null, error: err}, options);
+                    }
+                    else {
+                        console.log("Successful Login to new registered user. Result =", result);
+                        messages.respond({xtoken: result.xtoken, user: result.user, error: null}, options);
+                    }
+                });               
+            });            
         });
-                 
     }
+                             
     this.init = function() {
-    //    thisAuth.socket = io.of('/auth');
-    //    thisAuth.SocketEvents();
         thisAuth.StompEvents();
     }
+    
     this.User = function(username, password, email) {
         this.username = username;
         this.password = password;
@@ -122,9 +164,18 @@ function Auth(callback) {
         this.expire_time = (Date.now() / 1000) + 900;
     }
         
-    this.SetToken = function(TokenUser, callback) {
+    this.SetToken = function(id, callback) {
+        var token = crypto.randomBytes(64).toString('hex');
+        var TokenUser = new thisAuth.TokenUser(id, token);
+        
         connect.query('INSERT INTO tokens SET ?', TokenUser, function (err, result) {
-            callback(err, result);
+            if (err) {
+                callback(err, null);
+            }
+            else {
+                userTokens[token] = TokenUser;
+                callback(null, token);
+            }
         });    
     }
     
@@ -136,13 +187,8 @@ function Auth(callback) {
                 callback(err, "");
             }
             else if (user_row) {
-                var token = crypto.randomBytes(64).toString('hex');
-                thisLogin.SetToken(new thisLogin.TokenUser(user_row['id'], token), function (err, result) {
-                    //console.log("error:", err);
-                    if (err)
-                        callback(err, null);
-                    else
-                        callback(err, token); 
+                thisAuth.SetToken(user_row['id'], function (err, token) {
+                    callback(err, {user: user_row, xtoken: token}); 
                 });
             }   
             else {
@@ -151,12 +197,12 @@ function Auth(callback) {
         });
     }
     this.DoLogin = function(username, password, callback) {
-        connect.query("SELECT * FROM users WHERE username = ? and password = ?", [username, password],  function (err, rows, fields) {
+        connect.query("SELECT id, username, email_address, administrator, upvotes, downvotes FROM users WHERE username = ? and password = ?", [username, password],  function (err, rows, fields) {
             if (err) {
                 callback(err, null);
             }
             else if (rows.length > 0) {
-                callback(err, rows[0]);
+                callback(null, rows[0]);
             }        
             else {
                 callback(err, null);
@@ -164,7 +210,7 @@ function Auth(callback) {
         });         
     }
     this.checkUsername = function(username, callback) {
-        connect.query("SELECT * FROM users WHERE username = ?", username, function (err, rows, fields) {
+        connect.query("SELECT id, username, email_address, administrator, upvotes, downvotes FROM users WHERE username = ?", username, function (err, rows, fields) {
             if (err) {
                 callback(err, false);
             }
@@ -180,29 +226,40 @@ function Auth(callback) {
         var qUser = {username: user.username, password: user.password, email_address: user.email};
         connect.query("INSERT INTO users SET ?", qUser, function (err, results) {
             if (err) {
-                callback(err, false);
+                callback(err, null);
             }
-            callback(err, true);
+            callback(null, results);
         });         
     }
-    this.Register = function(username, password, email) {
+    this.Register = function(username, password, email, callback) {
         var thisRegister = this;
         this.checkUsername(username, function(err, success) {
             if (err) {
                 console.log(new Error().stack);
             }
             if (success) {
-                thisRegister.SQLRegister(new thisRegister.User(username, password, email), function(err, success) {
+                var newUser = new thisAuth.User(username, password, email);
+                thisAuth.SQLRegister(newUser, function(err, results) {
                     if (err) {
                         console.log(err);
+                        callback(err, null);
                     }
-                    else if (success) {
-                        console.log("registered");
+                    else {
+                        thisAuth.SetToken(results.insertId, function (err, token) {
+                            if (err)
+                                callback(err, null);
+                            else {
+                                thisAuth.TokenToUser(token, function (err, result) {
+                                    callback(null, {user: result, xtoken: token});  
+                                });
+                            }
+                        });                      
                     }
                 });
             }
-            else
-                console.log("user already registered");
+            else {
+                callback("User already registered", null);
+            }
         });        
     }
     thisAuth.init();
@@ -210,7 +267,11 @@ function Auth(callback) {
 
 
 var auth = new Auth(null);
-
+/*auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
+    if (err)
+        console.log(err);
+    console.log(result);
+}); */
 
 /*auth.Login("test1", "test", function(err, token) {
     if (err)
