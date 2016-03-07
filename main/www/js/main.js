@@ -14,6 +14,12 @@ if(!window.messages.state.connected){
 }
 */
 
+window.popup = function (string) {
+    var snackbarContainer = $('#toast');
+    console.log(snackbarContainer.MaterialSnackbar);
+    snackbarContainer.MaterialSnackbar.showSnackbar({message: string});
+}
+
 function loadRoom(){
 	$.ajax("room/index.html",{
 		type:"GET",

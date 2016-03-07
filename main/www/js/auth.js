@@ -13,7 +13,9 @@ function Authentication(readyCallback) {
          messages.invoke('Register',{username: $("#reg-username").val(), password: $("#reg-password").val(), email: $("#reg-email").val()}, function(data){            
             console.log(data);
             if (data.err) {
-                console.log(err);
+                window.popup(data.err);
+                console.log(data.err);
+                
             }
             else {
                 token = data.xtoken;
@@ -40,7 +42,8 @@ function Authentication(readyCallback) {
         messages.invoke('Login',{username: $("#login-username").val(), password: $("#login-password").val()}, function(data){            
             console.log(data);
             if (data.err) {
-                console.log(err);
+                window.popup(data.err);
+                console.log(data.err);
             }
             else {
                 token = data.xtoken;
