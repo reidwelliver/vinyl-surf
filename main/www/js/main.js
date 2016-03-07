@@ -26,7 +26,7 @@ function loadRoom(){
 }
 
 function loadAuth(){
-	$.ajax("http://localhost:49080/atest/index.html",{
+	$.ajax("auth/index.html",{
 		type:"GET",
 		dataFilter: null,
 		dataType: "html",

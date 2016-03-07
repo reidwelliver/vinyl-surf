@@ -22,9 +22,11 @@ function Admin(callback) {
     this.isAdmin = function(admin) {
         if (admin) {
             console.log("Admin successfully authenticated");
+            return true;
         }
         else {
             console.log("Someones trying to hack us captain");
+            return false;
         }       
     }
     this.CheckAdmin = function (token, callback) {
@@ -38,16 +40,22 @@ function Admin(callback) {
             console.log("connected!");
             
            messages.provide('GetAllUsers', function(message, options, respondMethod){
-               thisAdmin.CheckAdmin(message.xtoken, function(isAdmin) {
+               thisAdmin.CheckAdmin(message.xtoken, function(admin) {
                    if (thisAdmin.isAdmin(admin)) {
-                        thisAdmin.GetAllUsers(function (results) {
-                            message.respond({users: results}, options); 
+                        thisAdmin.GetAllUsers(function (err, results) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            else {
+                                console.log("Response:", results);
+                                messages.respond({users: results}, options);    
+                            }
                         });
                    }
                });           
             });  
             
-            message.provide("BanUsers", function(message, options, respondMethod){
+            messages.provide("BanUsers", function(message, options, respondMethod){
                 thisAdmin.CheckAdmin(message.xtoken, function(admin) {  
                     thisAdmin.BanUsers(message.users, function(err, result){
                         messages.respond({users: results}, options);     
@@ -73,7 +81,9 @@ function Admin(callback) {
         });       
     }
     this.GetAllUsers = function (callback) {
+        console.log("Get all users");
         connect.query("SELECT id, username, administrator FROM users", function (err, rows, fields) {
+            console.log(rows);
             callback(err, rows);
         });
     }
