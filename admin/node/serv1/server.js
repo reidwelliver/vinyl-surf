@@ -36,7 +36,10 @@ function Admin(callback) {
                         
                     }
                 });
-            })
+            });
+            socket.on('CheckAdmin', function(data) {
+                 
+            });
         });
                  
     }
@@ -291,16 +294,9 @@ function Auth(callback) {
 }
 
 
-var auth = new Auth(null);
-//auth.Register("test1", "test", "test@test.com");
+var admin = new Admin(null);
+
 http.listen(1337, function(){
   console.log('listening on localhost:1337');
 });
 
-/*auth.Login("test1", "test", function(err, token) {
-    if (err)
-        console.log(err);
-    else {
-        console.log("Successful Login. Token =", token);
-    }
-}); */

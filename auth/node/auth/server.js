@@ -1,10 +1,15 @@
 var sql = require('sql');
 var mysql = require('mysql');
 var crypto = require('crypto');
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
 var fs = require('fs');
+var stomp = require('./stomp-client.js');
+
+messages = new stomp({
+	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
+	user: 'vinyl-surf',
+	pass: 'vinyl-surf',
+	mode: 'server'
+});
 
 
 function Auth(callback) {
@@ -31,6 +36,20 @@ function Auth(callback) {
         });
     }
     
+    this.StompEvents = function () {
+        messages.connect(function() {
+            console.log("connected!");
+            
+            messages.subscribe('isAuthenticated',function(message){
+		      console.log(message);
+	       });
+            
+            messages.provide('isAuthenticated', function(message, options, respondMethod){
+                console.log("Checking authetication for", message);
+            });
+        });
+    }
+                             
     this.SocketEvents = function () {
         thisSocketEvents = this;
         console.log("Creating socket events");
@@ -70,8 +89,9 @@ function Auth(callback) {
                  
     }
     this.init = function() {
-        thisAuth.socket = io.of('/auth');
-        thisAuth.SocketEvents();
+    //    thisAuth.socket = io.of('/auth');
+    //    thisAuth.SocketEvents();
+        thisAuth.StompEvents();
     }
     this.User = function(username, password, email) {
         this.username = username;
@@ -172,10 +192,7 @@ function Auth(callback) {
 
 
 var auth = new Auth(null);
-//auth.Register("test1", "test", "test@test.com");
-http.listen(1337, function(){
-  console.log('listening on localhost:1337');
-});
+
 
 /*auth.Login("test1", "test", function(err, token) {
     if (err)
