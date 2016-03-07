@@ -96,9 +96,9 @@ var PielSTOMP = function (_EventEmitter) {
 					if (callback && typeof callback === 'function') callback();
 					resolve(true);
 				}, function (err) {
-					_this2.emit('error');
+					console.log(err);
+					_this2.emit('error', err);
 					reject(err);
-					console.log(err.headers.message);
 				});
 			});
 		}
@@ -121,7 +121,7 @@ var PielSTOMP = function (_EventEmitter) {
 
 				options = options || {};
 				options['durable'] = options.durable || false;
-				options['auto-delete'] = options.autoDelete || false;
+				options['auto-delete'] = options.autoDelete || true;
 				options['exclusive'] = options.exclusive || false;
 
 				if ((typeof message === 'undefined' ? 'undefined' : _typeof(message)) === 'object') message = JSON.stringify(message);
@@ -137,7 +137,7 @@ var PielSTOMP = function (_EventEmitter) {
 					if (callback && typeof callback === 'function') callback(response);
 
 					resolve(response);
-				});
+				}, options);
 
 				_this3.client.send('/queue/' + queue, options, message);
 			});
@@ -153,19 +153,24 @@ var PielSTOMP = function (_EventEmitter) {
 
 	}, {
 		key: 'provide',
-		value: function provide(queue, callback) {
+		value: function provide(queue, callback, options) {
 			var _this4 = this;
+
+			options = options || {};
+			options['durable'] = options.durable || false;
+			options['auto-delete'] = options.autoDelete || true;
+			options['exclusive'] = options.exclusive || false;
 
 			return new Promise(function (resolve, reject) {
 				_this4.client.subscribe('/queue/' + queue, function (frame) {
-					var message, options;
+					var message, headers;
 
 					if (frame.body && typeof frame.body === 'string' && frame.body.length > 2) message = JSON.parse(frame.body);
 
-					options = frame.headers || {}; //get headers/options from the request, I.E. reply-to queue
+					headers = frame.headers || {}; //get headers/options from the request, I.E. reply-to queue
 
-					if (callback && typeof callback === 'function') callback(message, options, _this4.respond);
-				});
+					if (callback && typeof callback === 'function') callback(message, headers, _this4.respond);
+				}, options);
 
 				resolve({
 					"success": true,
@@ -198,7 +203,13 @@ var PielSTOMP = function (_EventEmitter) {
 					"error": "invalid reply-to queue"
 				});
 
-				_this5.client.send('/queue/' + options['requeue'], {}, message);
+				var newOpts = {
+					'durable': options['durable'],
+					'auto-delete': options['auto-delete'],
+					'exclusive': options['exclusive']
+				};
+
+				_this5.client.send('/queue/' + options['requeue'], newOpts, message);
 
 				resolve({
 					"success": true
@@ -222,15 +233,15 @@ var PielSTOMP = function (_EventEmitter) {
 			return new Promise(function (resolve, reject) {
 
 				options = options || {};
-				options['durable'] = options.durable || true; //this makes the subscription durable, not the topic
-				options['auto-delete'] = options.autoDelete || false;
+				options['durable'] = false; //this makes the subscription durable, not the topic
+				options['auto-delete'] = options.autoDelete || true;
 
 				_this6.state.subscriptions = _this6.state.subscriptions || {};
 				_this6.state.subscriptions[topic] = _this6.client.subscribe('/topic/' + topic, function (frame) {
 					var message;
 					if (frame.body && typeof frame.body === 'string' && frame.body.length > 2) message = JSON.parse(frame.body);
 					if (callback && typeof callback === 'function') callback(message);
-				});
+				}, options);
 
 				resolve({
 					"success": true,
@@ -286,6 +297,9 @@ var PielSTOMP = function (_EventEmitter) {
 			var _this8 = this;
 
 			options = options || {};
+			options['durable'] = options.durable || false; //this makes the subscription durable, not the topic
+			options['auto-delete'] = options.autoDelete || true;
+
 			return new Promise(function (resolve, reject) {
 				if ((typeof message === 'undefined' ? 'undefined' : _typeof(message)) === 'object') message = JSON.stringify(message);
 				_this8.client.send('/topic/' + topic, options, message);
