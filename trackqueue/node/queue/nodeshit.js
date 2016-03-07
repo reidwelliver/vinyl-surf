@@ -29,9 +29,14 @@ sock.on('connection', function(socket){
     playlistlist(recieveddata);
   });
 
-  socket.on('removetrackfromdatabase', function(recieveddata){
+  socket.on('RemoveTrack', function(recieveddata){
       //recieved data should be track ID
     removetrackfromdatabase(recieveddata);
+  });
+
+  socket.on('RetrievePlaylists', function(recieveddata){
+      //recieved data should be track ID
+    retrieveplaylists(recieveddata);
   });
 
 
@@ -95,7 +100,7 @@ function addtracktodatabase(stufftopass){
 function removetrackfromdatabase(stufftopass){
 
 
-  var sqlquery = "DELETE FROM playlist1 WHERE ID '"+ stufftopass  +"' ";
+  var sqlquery = "DELETE FROM playlist1 WHERE ID="+ stufftopass  +" ";
   connection.query( sqlquery, function (error, results, fields) {
     // error will be an Error if one occurred during the query
     // results will contain the results of the query
@@ -107,6 +112,36 @@ function removetrackfromdatabase(stufftopass){
       console.log( sqlquery);
 
       return;
+    }
+    console.log('connected as id ' + connection.threadId);
+  });
+
+}
+//for getting all the playlists a user has
+function retrieveplaylists(USERNAME){
+
+  var sqlquery = "SELECT * FROM listofplaylists WHERE user='"+ USERNAME +"';";
+
+
+  connection.query( sqlquery, function (error, results, fields) {
+    // error will be an Error if one occurred during the query
+    // results will contain the results of the query
+    // fields will contain information about the returned results fields (if any)
+
+    if (error) {
+      //this will dump a bunch of shit that you can't understand, look near the top for the actual issue
+      console.error('error connecting: ' + error.stack);
+      console.log( sqlquery);
+
+      return;
+    }
+
+    if (results){
+      console.log(results);
+      sock.emit('USERSPLAYLISTS',
+          results
+        );
+
     }
     console.log('connected as id ' + connection.threadId);
   });

@@ -13,33 +13,47 @@
 
 
           socket.on('askedforplaylistresults', function(recieveddata){
-          //recieved data for this one should be a json
-          console.log(recieveddata);
+            //recieved data for this one should be a json
+            console.log(recieveddata);
 
-          //for the for loop
-          var trackamount=recieveddata.length;
+            //for the for loop
+            var trackamount=recieveddata.length;
 
-          console.log(trackamount);
-          //begining of the table for output
-          var tableforoutput = "<table><tr><td>Track Name</td><td>URL</td><td>Length</td>";
+            console.log(trackamount);
+            //begining of the table for output
+            var tableforoutput = "<table><tr><td>Track Name</td><td>URL</td><td>Length</td>";
 
-          //the datacomes as objects inside of an array. This loops through the array and splits each apart so the table can be formed.
-          for (i = 0; i < trackamount; i++) {
-            tableforoutput += "<tr>";
-            tableforoutput += "<td>"+recieveddata[i]["NAME"]+"</td><td>"+recieveddata[i]["URL"]+"</td><td>"+recieveddata[i]["length"]+"</td><td><button type='button' onclick='RemoveTrack("+ recieveddata[i]['ID'] +")' class='button'>Remove</button></td>";
-            tableforoutput += "</tr>";
-            console.log(tableforoutput);
+            //the datacomes as objects inside of an array. This loops through the array and splits each apart so the table can be formed.
+            for (i = 0; i < trackamount; i++) {
+                tableforoutput += "<tr>";
+                tableforoutput += "<td>"+recieveddata[i]["NAME"]+"</td><td>"+recieveddata[i]["URL"]+"</td><td>"+recieveddata[i]["length"]+"</td><td><button type='button' onclick='RemoveTrack("+ recieveddata[i]['ID'] +")' class='button'>Remove</button></td>";
+                tableforoutput += "</tr>";
+                console.log(tableforoutput);
 
-          }
-          tableforoutput += "</table>";
-          document.getElementById('Message').innerHTML=tableforoutput;
-
-
-          });
+              }
+              tableforoutput += "</table>";
+              document.getElementById('Message').innerHTML=tableforoutput;
 
 
+            });
 
-        })
+
+            socket.on('USERSPLAYLISTS', function(recieveddata){
+              //recieved data for this one should be an json,
+              console.log(recieveddata);
+
+              var playlisttotal=recieveddata.length;
+
+              for (i = 0; i < playlisttotal; i++) {
+
+                var x = document.getElementById("PlaylistSelecter");
+                var option = document.createElement("option");
+                option.text = recieveddata[i]["name"];
+                x.add(option);
+
+              }
+            });
+        });
         </script>
     </head>
     <body>
@@ -47,12 +61,22 @@
         <button type="button" onclick="YoutubeInfo()" class="button">Single URL test</button>
         <button type="button" onclick="OutputResults()" class="button">Output and send results</button>
         <button type="button" onclick="ShowPlaylist()" class="button">Show Playlist</button>
+        <button type="button" onclick="RetrievePlaylists()" class="button">Retrieve Playlists</button>
+        <button type="button" onclick="AddPlaylist()" class="button">Add Playlist</button>
+
 
         <form id="Theonlyform">
             Test URL: <input type="text"><br>
             Title Edit: <input type="text"><br>
-
+            Playlist: <input type="text"><br>
+            User: <input type="text"><br>
         </form>
+
+
+        <select name="PlaylistSelecter" id="PlaylistSelecter" form="Theonlyform">
+
+        </select>
+
 
         <p id="Message">
 
