@@ -1,3 +1,21 @@
+function loadChat(){
+	$.ajax("chat/index.html",{
+		type:"GET",
+		dataFilter: null,
+		dataType: "html",
+		converters: {},
+		success:function(data, textStatus, jqXHR) {
+      $("#chat-wrap").html(data);
+      console.log('success-chat');
+      componentHandler.upgradeAllRegistered();
+    },
+		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
+	});
+}
+	if(!window.chat){
+			loadChat();
+	}
+
 function YoutubePlayer(optsIn, readyCallback){
 	var thisPlayer = this;
 
@@ -192,21 +210,4 @@ function Track(optsIn){
 	thisTrack.init(optsIn);
 };
 
-window.room;
-
-if(!window.messages){
-	window.messages = new stomp({
-		endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
-		user: 'vinyl-surf',
-		pass: 'vinyl-surf'
-	});
-}
-
-if(!window.messages.state.connected){
-	window.messages.connect(function(){
-		console.log("connected!");
-		window.room = new Room({id: 0});
-	});
-} else {
-	window.room = new Room({id: 0});
-}
+window.room = new Room({id:0});

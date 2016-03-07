@@ -1,35 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-	<title>vinyl.surf - social radio</title>
-</head>
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
-<script defer src="https://code.getmdl.io/1.1.1/material.min.js"></script>
-
-<html
-    <body>
-			<div style="position:fixed; padding:5px; bottom:0px; ">
-				<table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp">
-				  <tbody id="chat-container">
-				  </tbody>
-				</table>
-	        <div class="mdl-textfield mdl-js-textfield">
-	          <input id="chat-input" class="mdl-textfield__input" type="text" id="password">
-	          <label class="mdl-textfield__label" for="password">Message</label>
-	        </div>
-	        <div>
-	      </div>
-			</div>
-    </body>
+<html>
+<body>
+	<div style="position:fixed; padding:5px; bottom:0px; ">
+		<table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp">
+			<tbody id="chat-container">
+			</tbody>
+		</table>
+	  <div class="mdl-textfield mdl-js-textfield">
+	    	<input id="chat-input" class="mdl-textfield__input" type="text"/>
+	      <label class="mdl-textfield__label">Message</label>
+	  </div>
 	</div>
-	<!-- my scripts -->
-		<script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
-    <script src="js/stomp-web-bundle.js"></script>
-    <script src="js/chat.js"></script>
 </body>
+<script src="js/chat.js"></script>
 </html>

@@ -11,25 +11,29 @@ function Chat(opts){
 		console.log("elems", $("#chat-input"));
 
 		thisChat.user = new User({
-			nick: "bob"
+			nick: ("user" + Math.floor(Math.random() * (100 - 1)) + 1)
 		})
 
 		//send chat message on return key
 		thisChat.elems.inputBox.keyup( function(ev){
 			if(ev.keyCode === 13) {
-				console.log("enter key pressed")
+				console.log("enter key pressed");
 				thisChat.sendMessage();
 			}
 		});
 
 		messages.subscribe('chat'+thisChat.id,function(message){
-			console.log(message);
+			console.log('f?!?!?',message);
 			thisChat.receiveMessage(message);
 		});
 	}
 
 	this.getInputBoxContents = function(){
 		return thisChat.elems.inputBox.val();
+	}
+
+	this.clearInputBoxContents = function(){
+		return thisChat.elems.inputBox.val("");
 	}
 
 	this.sendMessage = function(){
@@ -40,6 +44,8 @@ function Chat(opts){
 
 		console.log("emitting chat message", message);
 		messages.publish('chat'+thisChat.id, message);
+
+		thisChat.clearInputBoxContents();
 	}
 
 	this.receiveMessage = function(message){
@@ -50,8 +56,6 @@ function Chat(opts){
 			'</tr>'
 		;
 
-		console.log("inserting chat message");
-		console.log(template);
 		thisChat.elems.messageBox.append(template);
 	}
 
@@ -69,15 +73,4 @@ function User(opts){
 	this.init();
 }
 
-
-window.messages = new stomp({
-	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
-	user: 'vinyl-surf',
-	pass: 'vinyl-surf'
-});
-
-
-window.messages.connect(function(){
-	console.log("connected!");
-	var chat = new Chat({id: 2});
-});
+window.chat = new Chat({id:0});
