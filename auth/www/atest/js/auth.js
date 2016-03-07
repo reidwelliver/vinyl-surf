@@ -1,4 +1,4 @@
-window.messages = new stomp({
+messages = new stomp({
 	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
 	user: 'vinyl-surf',
     pass: 'vinyl-surf'
@@ -26,11 +26,11 @@ function Authentication(readyCallback) {
         
     }
     thisAuth.newinit = function() {
-        window.messages.connect(function(){
+        messages.connect(function(){
             console.log("connected!");
-            window.messages.invoke('isAuthenticated',{data: 2}, function(data){
+            messages.invoke('isAuthenticated',{xtoken: token}, function(data){
                 console.log('success!');
-            },{}); 
+            }); 
         });
     }
     
