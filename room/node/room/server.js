@@ -137,13 +137,11 @@ function Room(optsIn){
 	}
 
 	this.broadcastTrackUpdate = function(){
-		console.log('publishing update');
 		messages.publish('room-' + thisRoom.id + '-update', thisRoom.currentTrack.getUpdate());
 	}
 
 	this.broadcastNextTrack = function(){
 		if(thisRoom.nextTrack){
-			console.log('publishing next');
 			messages.publish('room-' + thisRoom.id + '-next', thisRoom.nextTrack.getInfo());
 		}
 	}
@@ -231,7 +229,6 @@ function RoomStore(optsIn){
 }
 
 var test;
-console.log('wuuut');
 
 messages.connect(function(){
 	console.log("connected!");
