@@ -12,9 +12,9 @@ function Authentication(readyCallback) {
     this.Register = function() {
          messages.invoke('Register',{username: $("#reg-username").val(), password: $("#reg-password").val(), email: $("#reg-email").val()}, function(data){            
             console.log(data);
-            if (data.err) {
-                window.popup(data.err);
-                console.log(data.err);
+            if (data.error) {
+                window.popup(data.error);
+                console.log(data.error);
                 
             }
             else {
@@ -41,9 +41,9 @@ function Authentication(readyCallback) {
     this.Login = function() {        
         messages.invoke('Login',{username: $("#login-username").val(), password: $("#login-password").val()}, function(data){            
             console.log(data);
-            if (data.err) {
-                window.popup(data.err);
-                console.log(data.err);
+            if (data.error) {
+                window.popup(data.error);
+                console.log(data.error);
             }
             else {
                 token = data.xtoken;

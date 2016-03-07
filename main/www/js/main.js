@@ -14,10 +14,20 @@ if(!window.messages.state.connected){
 }
 */
 
+if(!window.messages){
+	window.messages = new stomp({
+		endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
+		user: 'vinyl-surf',
+		pass: 'vinyl-surf'
+	});
+}
+
 window.popup = function (string) {
-    var snackbarContainer = $('#toast');
-    console.log(snackbarContainer.MaterialSnackbar);
-    snackbarContainer.MaterialSnackbar.showSnackbar({message: string});
+    var container = $("#popup");
+    if (!container.is(":visible")) {
+        container.show();   
+    }
+    container.text(string);
 }
 
 function loadRoom(){
