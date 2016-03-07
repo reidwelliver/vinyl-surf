@@ -1,4 +1,3 @@
-var sql = require('sql');
 var mysql = require('mysql');
 var crypto = require('crypto');
 var fs = require('fs');
@@ -11,7 +10,6 @@ messages = new stomp({
 	mode: 'server'
 });
 
-
 function Auth(callback) {
     var thisAuth = this;
     var connect = mysql.createConnection({
@@ -21,31 +19,51 @@ function Auth(callback) {
       database : 'surf'
     });   
     
+    var userTokens = new Map();
+    
     this.VerifyToken = function (token, callback) {
+        if (userTokens[token]) {
+            var expire_time = userTokens[token].expire_time;
+            var current_time = Date.now() / 1000;
+            if (current_time >= expire_time) {
+                callback(null, token);
+                return;
+            }
+        }
+        
         connect.query("SELECT * FROM tokens WHERE token = ?", [token],  function (err, rows, fields) {
             var row = rows[0];
             var current_time = Date.now() / 1000;
             if (current_time >= row.expire_time) {
-                console.log("Expired");
-                callback("Token expired", "");   
+                callback("Token expired", null);   
             }
             else {
-                console.log("Token verified");
-                
+                userTokens[token] = row;
+                console.log(null, token);              
             }
         });
+        callback("Not found", null);
     }
     
     this.StompEvents = function () {
-        messages.connect(function() {
+        messages.connect( function() {
             console.log("connected!");
+                     
+           messages.provide('isAuthenticated', function(message, options, respondMethod){
+               console.log("Checking authetication for", message);
+               if (message.xtoken != "") {
+                    VerifyToken(message.xtoken, function (err, result) {
+                        if (err) {
+                            message.respond({xtoken: "", error: err}, options);
+                            console.log(err);
+                        } else {
+                            message.respond({xtoken: result, error: null}, options);
+                        }
+                    });                
+               }
+            });
+            messages.provide('Login', function(message, options, respondMethod){
             
-            messages.subscribe('isAuthenticated',function(message){
-		      console.log(message);
-	       });
-            
-            messages.provide('isAuthenticated', function(message, options, respondMethod){
-                console.log("Checking authetication for", message);
             });
         });
     }
