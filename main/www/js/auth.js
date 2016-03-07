@@ -10,6 +10,7 @@ function Authentication(readyCallback) {
     var connected = false;
     
     this.Register = function() {
+         window.popup("hide");
          messages.invoke('Register',{username: $("#reg-username").val(), password: $("#reg-password").val(), email: $("#reg-email").val()}, function(data){            
             console.log(data);
             if (data.error) {
@@ -39,6 +40,7 @@ function Authentication(readyCallback) {
     
     
     this.Login = function() {        
+        window.popup("hide");
         messages.invoke('Login',{username: $("#login-username").val(), password: $("#login-password").val()}, function(data){            
             console.log(data);
             if (data.error) {
@@ -47,6 +49,7 @@ function Authentication(readyCallback) {
             }
             else {
                 token = data.xtoken;
+                window.popup("Logged in");
                 localStorage.setItem("token", token);
            /*     messages.invoke('isAuthenticated',{xtoken: token}, function(data){
                     thisAuth.connected = true;

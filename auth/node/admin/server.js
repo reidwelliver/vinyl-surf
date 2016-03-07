@@ -31,6 +31,7 @@ function Admin(callback) {
     }
     this.CheckAdmin = function (token, callback) {
         messages.invoke('TokenToUser',{xtoken:token}, function(data){  
+            console.log(data);
             callback(data.user.administrator);
         });;
     }
@@ -41,16 +42,21 @@ function Admin(callback) {
             
            messages.provide('GetAllUsers', function(message, options, respondMethod){
                thisAdmin.CheckAdmin(message.xtoken, function(admin) {
+                   
                    if (thisAdmin.isAdmin(admin)) {
                         thisAdmin.GetAllUsers(function (err, results) {
-                            if (err) {
+                            if (err) {                             
                                 console.log(err);
+                                messages.respond({users: null, error: err}, options);   
                             }
                             else {
                                 console.log("Response:", results);
-                                messages.respond({users: results}, options);    
+                                messages.respond({users: results, error: null}, options);    
                             }
                         });
+                   }
+                   else {
+                        messages.respond({users: null, error: "Not Authorized"}, options);   
                    }
                });           
             });  
@@ -66,9 +72,10 @@ function Admin(callback) {
             messages.provide('GetAllReports', function(message, options, respondMethod){
                thisAdmin.CheckAdmin(message.xtoken, function(admin) {
                     if (thisAdmin.isAdmin(admin)) {
-                        thisAdmin.GetAllReports(function (results) {
-                            messages.respond({reports: results}, options); 
-                        });                        
+                        var reports = [];
+                        reports.push({id: 1, username: "test", room: "test-room", reason: "flames"});
+                        reports.push({id: 2, username: "test1", room: "test-room", reason: "bad words"});
+                        messages.respond({reports: reports, error: null}, options);                      
                     }
                });           
             });            
@@ -82,7 +89,7 @@ function Admin(callback) {
     }
     this.GetAllUsers = function (callback) {
         console.log("Get all users");
-        connect.query("SELECT id, username, administrator FROM users", function (err, rows, fields) {
+        connect.query("SELECT id, username, administrator, create_date FROM users", function (err, rows, fields) {
             console.log(rows);
             callback(err, rows);
         });
