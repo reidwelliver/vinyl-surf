@@ -121,7 +121,7 @@ var PielSTOMP = function (_EventEmitter) {
 
 				options = options || {};
 				options['durable'] = options.durable || false;
-				options['auto-delete'] = options.autoDelete || false;
+				options['auto-delete'] = options.autoDelete || true;
 				options['exclusive'] = options.exclusive || false;
 
 				if ((typeof message === 'undefined' ? 'undefined' : _typeof(message)) === 'object') message = JSON.stringify(message);
