@@ -5,12 +5,14 @@ var config = require( './config/config' );
 module.exports = {
   devtool: 'eval',
   entry: [
-    './src/stomp-client'
+    './src/main'
   ],
   output: {
     path: path.join( __dirname, 'dist' ),
     filename: 'bundle.js',
-    publicPath: '/dist/'
+    publicPath: '/dist/',
+    libraryTarget: "var",
+    library: "stomp"
   },
   module: {
     loaders: [
