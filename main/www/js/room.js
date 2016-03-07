@@ -55,10 +55,10 @@ function YoutubePlayer(optsIn, readyCallback){
 };
 
 
-function Room(opts){
+function Room(optsIn){
 	var thisRoom = this;
 
-	this.init = function(){
+	this.init = function(opts){
 		opts = opts || {};
 		thisRoom.name = opts.name || "";
 		thisRoom.id = opts.id || 0;
@@ -87,28 +87,28 @@ function Room(opts){
 			YT: new YoutubePlayer(opts.players.YT, youtubePlayerCallback)
 		}
 
+		//socket callbacks - move these eventually
+		window.messages.invoke('room-load',{id: thisRoom.id},function(data){
+			console.log(data);
+			thisRoom.receiveFirstLoad(data.data);
+		});
+
 		window.messages.subscribe('room-' + thisRoom.id + '-update', function(data){
 			//console.log("trackUpdate callback reached");
-			console.log('update',data);
-			thisRoom.receiveTrackUpdate(data);
+			//console.log(data.data);
+			thisRoom.receiveTrackUpdate(data.data);
 		});
 
 		window.messages.subscribe('room-' + thisRoom.id + '-next', function(data){
 			//console.log("nextTrack callback reached");
-			console.log('next',data);
-			thisRoom.receiveNextTrack(data);
+			//console.log(data.data);
+			thisRoom.receiveNextTrack(data.data);
 		});
 
 		window.messages.subscribe('room-' + thisRoom.id + '-start', function(data){
 			//console.log("trackStart callback reached");
-			console.log('next',data);
-			thisRoom.receiveTrackUpdate(data);
-		});
-
-		//socket callbacks - move these eventually
-		window.messages.invoke('room-load',{id: thisRoom.id},function(data){
-			console.log('load',data);
-			thisRoom.receiveFirstLoad(data);
+			//console.log(data.data);
+			thisRoom.receiveTrackUpdate(data.data);
 		});
 	};
 
@@ -128,7 +128,6 @@ function Room(opts){
 
 	this.receiveTrackUpdate = function(track){
 		thisRoom.whenPlayerReady(function(track){
-			console.log('updating track');
 			if(thisRoom.players[track.player].getCurrentVideoURL().indexOf(track.videoId) === -1){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
@@ -137,7 +136,7 @@ function Room(opts){
 
 			var difference = (track.currentTime - thisRoom.getCurrentTrackTime()) - ((Date.now()/1000) - track.stamp);
 
-			if( ( difference > 2 || difference < -2 ) && thisRoom.players.hasOwnProperty(track.player)){
+			if( ( difference > 1 || difference < -1 ) && thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.players[track.player].seekTo(track.currentTime);
 				thisRoom.updateTrackBar();
 			}
@@ -168,7 +167,7 @@ function Room(opts){
 		$("#trackinfo").html(span);
 	}
 
-	thisRoom.init();
+	thisRoom.init(optsIn);
 };
 
 
@@ -205,8 +204,8 @@ if(!window.messages){
 if(!window.messages.state.connected){
 	window.messages.connect(function(){
 		console.log("connected!");
-		window.room = new Room({id: 0});
+		window.room = new Room({id: 2});
 	});
 } else {
-	window.room = new Room({id: 0});
+	window.room = new Room({id: 2});
 }

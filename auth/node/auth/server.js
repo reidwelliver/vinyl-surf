@@ -17,10 +17,10 @@ function Auth(callback) {
       user     : 'root',
       password : '',
       database : 'surf'
-    });   
-    
+    });
+
     var userTokens = new Map();
-    
+
     this.VerifyToken = function (token, callback) {
         if (userTokens[token]) {
             var expire_time = userTokens[token].expire_time;
@@ -30,25 +30,25 @@ function Auth(callback) {
                 return;
             }
         }
-        
+
         connect.query("SELECT * FROM tokens WHERE token = ?", [token],  function (err, rows, fields) {
             var row = rows[0];
             var current_time = Date.now() / 1000;
             if (current_time >= row.expire_time) {
-                callback("Token expired", null);   
+                callback("Token expired", null);
             }
             else {
                 userTokens[token] = row;
-                console.log(null, token);              
+                console.log(null, token);
             }
         });
         callback("Not found", null);
     }
-    
+
     this.StompEvents = function () {
         messages.connect( function() {
             console.log("connected!");
-                     
+
            messages.provide('isAuthenticated', function(message, options, respondMethod){
                console.log("Checking authetication for", message);
                if (message.xtoken != "") {
@@ -59,25 +59,25 @@ function Auth(callback) {
                         } else {
                             message.respond({xtoken: result, error: null}, options);
                         }
-                    });                
+                    });
                }
             });
             messages.provide('Login', function(message, options, respondMethod){
-            
+
             });
         });
     }
-                             
+
     this.SocketEvents = function () {
         thisSocketEvents = this;
         console.log("Creating socket events");
-        
+
         thisAuth.socket.on('connection', function(socket){
-            console.log("Someone connected"); 
+            console.log("Someone connected");
             socket.on('Login', function(data){
                 var username = data.username;
                 var password = data.password;
-                
+
                 if (username == undefined || password == undefined ||  username.length < 4 || password.length < 4)
                     return;
                 //change to return user object
@@ -88,23 +88,23 @@ function Auth(callback) {
                         console.log("Successful Login. Token =", token);
                         socket.emit("Token", {token: token, });
                     /*    thisAuth.VerifyToken(token, function(err, result) {
-                            
+
                         });*/
                     }
-                }); 
+                });
             });
-        
+
             socket.on('Message', function(data){
                 console.log("test", data);
-            }); 
+            });
             socket.on('Verify', function(data) {
                 var token = data.token;
                 VerifyToken(token, function(err, result) {
-                    
+
                 });
             })
         });
-                 
+
     }
     this.init = function() {
     //    thisAuth.socket = io.of('/auth');
@@ -121,13 +121,13 @@ function Auth(callback) {
         this.token = token;
         this.expire_time = (Date.now() / 1000) + 900;
     }
-        
+
     this.SetToken = function(TokenUser, callback) {
         connect.query('INSERT INTO tokens SET ?', TokenUser, function (err, result) {
             callback(err, result);
-        });    
+        });
     }
-    
+
     this.Login = function(username, password, callback) {
         var thisLogin = this;
         this.DoLogin(username, password, function(err, user_row) {
@@ -142,9 +142,9 @@ function Auth(callback) {
                     if (err)
                         callback(err, null);
                     else
-                        callback(err, token); 
+                        callback(err, token);
                 });
-            }   
+            }
             else {
                 callback("Login Failed", "");
             }
@@ -157,11 +157,11 @@ function Auth(callback) {
             }
             else if (rows.length > 0) {
                 callback(err, rows[0]);
-            }        
+            }
             else {
                 callback(err, null);
             }
-        });         
+        });
     }
     this.checkUsername = function(username, callback) {
         connect.query("SELECT * FROM users WHERE username = ?", username, function (err, rows, fields) {
@@ -170,11 +170,11 @@ function Auth(callback) {
             }
             else if (rows.length > 0) {
                callback(err, false);
-            }        
+            }
             else {
                 callback(err, true);
             }
-        });          
+        });
     }
     this.SQLRegister = function(user, callback) {
         var qUser = {username: user.username, password: user.password, email_address: user.email};
@@ -183,7 +183,7 @@ function Auth(callback) {
                 callback(err, false);
             }
             callback(err, true);
-        });         
+        });
     }
     this.Register = function(username, password, email) {
         var thisRegister = this;
@@ -203,7 +203,7 @@ function Auth(callback) {
             }
             else
                 console.log("user already registered");
-        });        
+        });
     }
     thisAuth.init();
 }

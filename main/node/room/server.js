@@ -3,8 +3,7 @@ var stomp = require('./stomp-client.js');
 var messages = new stomp({
 	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
 	user: 'vinyl-surf',
-	pass: 'vinyl-surf',
-	mode: 'server'
+	pass: 'vinyl-surf'
 });
 
 function Track(optsIn){
@@ -125,7 +124,7 @@ function Room(optsIn){
 
 		messages.provide('room-' + thisRoom.id + '-load', function(message, options, respondMethod){
 			console.log("client connected to room " + thisRoom.name);
-			messages.respond(thisRoom.firstLoadData(), options);
+			message.respond(thisRoom.firstLoadData(), options);
 		});
 
 		thisRoom.initUpdateIntervals();
@@ -137,14 +136,12 @@ function Room(optsIn){
 	}
 
 	this.broadcastTrackUpdate = function(){
-		console.log('publishing update');
-		messages.publish('room-' + thisRoom.id + '-update', thisRoom.currentTrack.getUpdate());
+		message.publish('room-' + thisRoom.id + '-update', thisRoom.currentTrack.getUpdate());
 	}
 
 	this.broadcastNextTrack = function(){
 		if(thisRoom.nextTrack){
-			console.log('publishing next');
-			messages.publish('room-' + thisRoom.id + '-next', thisRoom.nextTrack.getInfo());
+			message.publish('room-' + thisRoom.id + '-update', thisRoom.nextTrack.getInfo());
 		}
 	}
 
@@ -188,7 +185,7 @@ function Room(optsIn){
 			}
 		});
 
-		messages.publish('room-' + thisRoom.id + '-start', thisRoom.currentTrack.getInfo());
+		message.publish('room-' + thisRoom.id + '-start', thisRoom.currentTrack.getInfo());
 
 		thisRoom.currentTrack.play();
 	}
@@ -230,12 +227,8 @@ function RoomStore(optsIn){
 	thisRoomStore.init(optsIn);
 }
 
-var test;
-console.log('wuuut');
 
-messages.connect(function(){
-	console.log("connected!");
-
+function TestStuff(){
 	//test stuff - move or remove later (probably mock in DB)
 	testTrack = new Track({
 		id: 1,
@@ -285,4 +278,11 @@ messages.connect(function(){
 	this.roomStore = new RoomStore({
 		rooms: [testRoom]
 	});
+}
+
+var test;
+
+messages.connect(function(){
+	console.log("connected!");
+	test = new TestStuff();
 });

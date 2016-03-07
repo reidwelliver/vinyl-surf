@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "description": "Server for Vinyl.surf rooms",
   "dependencies": {
-    "socket.io": "~1.3.5",
-    "express": "~4.12.3"
-  }
+        "express": "~4.12.3",
+        "socket.io": "~1.3.5",
+        "stompjs": "^2.3.3",
+        "ws": "^1.0.1",
+        "crypto": "*",
+        "sql":"*",
+        "mysql":"*"
+    }
 }
