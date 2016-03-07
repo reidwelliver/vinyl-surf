@@ -1,12 +1,14 @@
-/*
-function Chat(optsIn){
+function Chat(opts){
 	var thisChat = this;
+	thisChat.id = opts.id || 0;
 
-	this.init = function(opts){
+	this.init = function(){
 		thisChat.elems = {
-			messageBox: $("#chatcontainer"),
-			inputBox: $("#chatinput")
+			messageBox: $("#chat-container"),
+			inputBox: $("#chat-input")
 		}
+
+		console.log("elems", $("#chat-input"));
 
 		thisChat.user = new User({
 			nick: "bob"
@@ -20,13 +22,14 @@ function Chat(optsIn){
 			}
 		});
 
-		thisChat.id = opts.id || 0;
-
-		thisChat.socket = opts.socket || io.connect(':12381/chat/'+thisChat.id);
+		messages.subscribe('chat'+thisChat.id,function(message){
+			console.log(message);
+			thisChat.receiveMessage(message);
+		});
 	}
 
 	this.getInputBoxContents = function(){
-		return thisChat.elems.inputBox.value;
+		return thisChat.elems.inputBox.val();
 	}
 
 	this.sendMessage = function(){
@@ -35,74 +38,46 @@ function Chat(optsIn){
 			message: thisChat.getInputBoxContents()
 		};
 
-		console.log("emitting chat message");
-		thisChat.socket.emit('message', {
-			data: message
-		});
-
+		console.log("emitting chat message", message);
+		messages.publish('chat'+thisChat.id, message);
 	}
 
 	this.receiveMessage = function(message){
 		var template =
 			'<tr>' +
-				'<td class="chat-user-username">' + message.user.nick + '</td>' +
-				'<td class="chat-user-message">'  + message.text + '</td>' +
+				'<td class="mdl-data-table__cell--non-numeric chat-user-username">' + message.user.nick + '</td>' +
+				'<td class="mdl-data-table__cell--non-numeric chat-user-message">'  + message.message + '</td>' +
 			'</tr>'
 		;
 
 		console.log("inserting chat message");
 		console.log(template);
-		thisChat.elems.messageBox.appendChild(template);
+		thisChat.elems.messageBox.append(template);
 	}
 
-	thisChat.init(optsIn);
+	thisChat.init();
 }
 
 
-function User(optsIn){
+function User(opts){
 	var thisUser = this;
 
-	this.init = function(opts){
+	this.init = function(){
 		thisUser.nick = opts.nick || "bob";
 	}
+
+	this.init();
 }
 
 
-var chat = new Chat({id: 0});
-*/
-
-messages = new stomp({
+window.messages = new stomp({
 	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
 	user: 'vinyl-surf',
 	pass: 'vinyl-surf'
 });
 
-//console.log(messages);
-messages.connect(function(){
+
+window.messages.connect(function(){
 	console.log("connected!");
-	messages.subscribe('Room-1234',function(message){
-		console.log(message);
-	});
-
-	messages.provide('wft', function(message, options, respondMethod){
-		console.log('doubling server side');
-		var output = message.data * 2;
-		messages.respond({data:output},options);
-	});
-
-
-	setTimeout(function(){
-		console.log('doubling 2 on queue');
-		messages.invoke('wft', {data: 2}, function(response){
-			console.log('doubling service returned '+response.data+' with input of 2');
-		},{});
-	},2000);
-
-	setTimeout(function(){
-		messages.publish('Room-1234',{"data":"hi guys!"});
-	},1000);
+	var chat = new Chat({id: 2});
 });
-
-setTimeout(function(){
-	console.log(messages.state);
-},5000);

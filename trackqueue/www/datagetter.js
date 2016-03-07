@@ -1,4 +1,4 @@
-var SSR = [];
+var SSR = {};
 var apikey = "AIzaSyAztbAWiJbAnn6JQ5hJ5oLEDYf7eW2mY0k";
 
 //gotta make that connection you know?
@@ -12,19 +12,21 @@ var socket = io.connect(':42081/track');
 //Could merge, like having the button
 function OutputResults(object_to_output) {
 
-  SSR["0"].Title = document.getElementById("Theonlyform").elements[1].value;
+  SSR.Title = document.getElementById("Theonlyform").elements[1].value;
+  SSR.Playlist = document.getElementById("PlaylistSelecter").value;
+  SSR.USERSNAME = document.getElementById("Theonlyform").elements[3].value;
   //gets name of playlist for output
 
 //done here
  console.log(SSR);
  //this is where it sends messages to node
-socket.emit('addtracktodatabase',
-    SSR["0"]
+ socket.emit('addtracktodatabase',
+    SSR
   );
 
   //for results
     document.getElementById('box1').innerHTML="<textarea rows='40' cols='100'>"+JSON.stringify(SSR) +"</textarea>";
-}
+  }
 
 
 
@@ -176,25 +178,34 @@ function editTitle(VIDEODATA){
   document.getElementById('Message').innerHTML="Edit the title before hitting the other button to send";
 
 
-//this is dumb and I feel bad for using it
-  SSR.push({
+//See aren't objects better?
+  SSR ={
   "URL" : VIDEODATA.id,
    "Title" : VIDEODATA.title,
    "Length" : VIDEODATA.length
-   });
+   };
 
 
 
 }
 
+
+//shows tracks on playlists
 function ShowPlaylist(){
+
+  var Playlistname =  document.getElementById("PlaylistSelecter").value;
+  var USERtoREMOVE =  document.getElementById("Theonlyform").elements[3].value;
+  var Objectforpassing = {playlist:Playlistname,user:USERtoREMOVE};
+
+  console.log (Objectforpassing);
   socket.emit('playlistlist',
-      'there will be someting here'
+      Objectforpassing
     );
 
 
 }
 
+//removes track from playlist
 function RemoveTrack(IDtoremove){
 console.log("removed");
   socket.emit('RemoveTrack',
@@ -204,6 +215,8 @@ console.log("removed");
 
 }
 
+
+//shows all the playlists belonging to user
 function RetrievePlaylists(){
   console.log("RetrievePlaylists");
 
@@ -221,12 +234,14 @@ function AddPlaylist(){
 
   console.log("RetrievePlaylists");
 
-  //grabs from Playlist: field
+  //grabs from Playlist: field and User: field
     var PLAYLISTtoCREATE =  document.getElementById("Theonlyform").elements[2].value;
     var USERwhoCREATED = document.getElementById("Theonlyform").elements[3].value;
+    var objectforDATA = {name: PLAYLISTtoCREATE, user:USERwhoCREATED};
+
     console.log(PLAYLISTtoCREATE);
     socket.emit('CreatePlaylist',
-        PLAYLISTtoCREATE
+          objectforDATA
       );
 
 

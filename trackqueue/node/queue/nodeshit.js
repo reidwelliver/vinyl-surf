@@ -39,13 +39,22 @@ sock.on('connection', function(socket){
     retrieveplaylists(recieveddata);
   });
 
+  socket.on('CreatePlaylist', function(recieveddata){
+      //recieved data should be track ID
+    CreatePlaylist(recieveddata);
+  });
+
 
 });
 
-
+//retrieves tracks in a playlist
 function playlistlist(stufftopass){
 
-  var sqlquery = "SELECT * FROM playlist1";
+  var playlistname = stufftopass["playlist"];
+  var username = stufftopass["user"];
+
+  var sqlquery = "SELECT track_ids FROM listofplaylists WHERE name ='"+ playlistname +"' and user = '"+ username +"'; ";
+  console.log(sqlquery);
   connection.query( sqlquery, function (error, results, fields) {
     // error will be an Error if one occurred during the query
     // results will contain the results of the query
@@ -60,24 +69,77 @@ function playlistlist(stufftopass){
     }
     if (results){
       console.log(results);
-      sock.emit('askedforplaylistresults',
-          results
-        );
 
+      splitandlist(results);
     }
     console.log('connected as id ' + connection.threadId);
   });
 
 }
+
+//this is going to split what's returned when a playlist gotten from the databae, and then runs throught the array
+function splitandlist(stufftopass){
+
+  //  var arrayforqueryresults = [];
+    console.log(stufftopass[0]["track_ids"]);
+  //  var arraysplit = stufftopass[0]["track_ids"].split(",");
+  //  console.log(arraysplit);
+  //  var previousqueryarraycount= arraysplit.length;
+  //  console.log(previousqueryarraycount);
+
+
+  //  for (i = 0; i < previousqueryarraycount; i++) {
+
+    //  var queryidnumber = arraysplit[i];
+
+    //  console.log(queryidnumber);
+
+      var sqlquery = "SELECT * FROM playlist1 WHERE ID IN ("+ stufftopass[0]['track_ids'] +"); ";
+      connection.query( sqlquery, function (error, results, fields) {
+        if (error) {
+          //this will dump a bunch of shit that you can't understand, look near the top for the actual issue
+          console.error('error connecting: ' + error.stack);
+          console.log( sqlquery);
+
+          return;
+        }
+        if (results){
+          console.log(results);
+          console.log("succeed");
+        //  arrayforqueryresults.push(results);
+        sock.emit('askedforplaylistresults',
+            results
+          );
+
+
+
+        }
+
+
+      })
+  //  };
+    console.log("finishedfinally");
+  //  console.log (arrayforqueryresults);
+
+
+  //
+
+}
+
+
 function addtracktodatabase(stufftopass){
 
   var title = stufftopass["Title"];
   var youtubeid = stufftopass["URL"];
   var length = stufftopass["Length"];
+  var playlisttopass = stufftopass["Playlist"];
+  var userwhosadding = stufftopass["USERSNAME"];
 
   console.log(title);
   console.log(youtubeid);
   console.log(length);
+  console.log(playlisttopass);
+  console.log(userwhosadding);
   //remeber how much fun you had figuring out that you needed to put that second set of '' around the "", pepperidge farm remebers
   var sqlquery = "INSERT INTO playlist1 (URL,NAME,length)  VALUES ('"+ youtubeid +"','"+ title +"','"+ length +"')";
   connection.query( sqlquery, function (error, results, fields) {
@@ -91,6 +153,12 @@ function addtracktodatabase(stufftopass){
       console.log( sqlquery);
 
       return;
+    }
+    if (results){
+      console.log(results.insertId)
+
+      var objectforpassing = { IDresult: results.insertId, user: userwhosadding, playlist: playlisttopass  }
+      modifyplaylist(objectforpassing);
     }
     console.log('connected as id ' + connection.threadId);
   });
@@ -145,6 +213,95 @@ function retrieveplaylists(USERNAME){
     }
     console.log('connected as id ' + connection.threadId);
   });
+
+}
+
+function CreatePlaylist(DataforCreation){
+
+  //splitting out the object
+  var playlistname = DataforCreation["name"];
+  console.log (playlistname);
+  var usernameforplaylistcreation = DataforCreation["user"]
+  console.log (usernameforplaylistcreation);
+
+  var sqlquery = "INSERT INTO listofplaylists (user,name )  VALUES ('"+ usernameforplaylistcreation +"','"+ playlistname +"');";
+
+
+  connection.query( sqlquery, function (error, results, fields) {
+    // error will be an Error if one occurred during the query
+    // results will contain the results of the query
+    // fields will contain information about the returned results fields (if any)
+
+    if (error) {
+      //this will dump a bunch of shit that you can't understand, look near the top for the actual issue
+      console.error('error connecting: ' + error.stack);
+      console.log( sqlquery);
+
+      return;
+    }
+
+    if (results){
+      retrieveplaylists(usernameforplaylistcreation);
+
+    }
+    console.log('connected as id ' + connection.threadId);
+  });
+
+}
+
+//this is to add newly added tracks to a playlist
+function modifyplaylist(objecttoadd){
+  console.log(objecttoadd.playlist);
+
+  var sqlquery = "SELECT track_ids FROM listofplaylists WHERE user='"+ objecttoadd.user +"' and name='"+objecttoadd.playlist+"';";
+  connection.query( sqlquery, [objecttoadd], function (error, results, fields) {
+    // error will be an Error if one occurred during the query
+    // results will contain the results of the query
+    // fields will contain information about the returned results fields (if any)
+
+    if (error) {
+      //this will dump a bunch of shit that you can't understand, look near the top for the actual issue
+      console.error('error connecting: ' + error.stack);
+      console.log( sqlquery);
+
+      return;
+    }
+    if (results){
+
+     var modfiedplaylist = results;
+      modfiedplaylist += ",'";
+      modfiedplaylist += objectoadd.IDresult;
+      modfiedplaylist += "'"
+
+      var sqlquery = "INSERT INTO listofplaylists (track_ids )  VALUES ('"+ modifedplaylist +"');";
+      connection.query( sqlquery,function (error, results, fields) {
+        // error will be an Error if one occurred during the query
+        // results will contain the results of the query
+        // fields will contain information about the returned results fields (if any)
+
+        if (error) {
+          //this will dump a bunch of shit that you can't understand, look near the top for the actual issue
+          console.error('error connecting: ' + error.stack);
+          console.log( sqlquery);
+
+          return;
+        }
+        if (results){
+          console.log("success")
+
+
+        }
+        console.log('connected as id ' + connection.threadId);
+      });
+
+
+
+    }
+    console.log('connected as id ' + connection.threadId);
+  });
+
+
+
 
 }
 //this makes sure your client can hear you

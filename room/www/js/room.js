@@ -91,7 +91,7 @@ function Room(optsIn){
 
 		//socket callbacks - move these eventually
 		thisRoom.socket.on('firstLoad', function(data){
-			//console.log("Firstload callback reached");	
+			//console.log("Firstload callback reached");
 			//console.log(data.data);
 			thisRoom.receiveFirstLoad(data.data);
 		});
