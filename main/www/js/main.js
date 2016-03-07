@@ -15,12 +15,17 @@ if(!window.messages.state.connected){
 */
 
 function loadRoom(){
-	$.ajax("http://localhost:12380/index.html",{
+	$.ajax("room/index.html",{
 		type:"GET",
 		dataFilter: null,
 		dataType: "html",
 		converters: {},
-		success:function(data, textStatus, jqXHR) {$("#room").html(data); console.log('success');},
+		success:function(data, textStatus, jqXHR) {
+            $("#page-content").html(data); 
+            console.log('success');
+            componentHandler.upgradeAllRegistered();
+        
+        },
 		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
 	});
 }
@@ -31,7 +36,12 @@ function loadAuth(){
 		dataFilter: null,
 		dataType: "html",
 		converters: {},
-		success:function(data, textStatus, jqXHR) {$("#auth").html(data); console.log('success');},
+		success:function(data, textStatus, jqXHR) {
+            $("#page-content").html(data); 
+            componentHandler.upgradeAllRegistered();
+            console.log('success');
+        
+        },
 		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
 	});
 }
