@@ -191,6 +191,43 @@ function ShowPlaylist(){
   socket.emit('playlistlist',
       'there will be someting here'
     );
-    
+
+
+}
+
+function RemoveTrack(IDtoremove){
+console.log("removed");
+  socket.emit('RemoveTrack',
+      IDtoremove
+    );
+
+
+}
+
+function RetrievePlaylists(){
+  console.log("RetrievePlaylists");
+
+  //grabs from the  USER: field
+    var USERtoREMOVE =  document.getElementById("Theonlyform").elements[3].value;
+    console.log(USERtoREMOVE);
+    socket.emit('RetrievePlaylists',
+        USERtoREMOVE
+      );
+
+
+}
+
+function AddPlaylist(){
+
+  console.log("RetrievePlaylists");
+
+  //grabs from Playlist: field
+    var PLAYLISTtoCREATE =  document.getElementById("Theonlyform").elements[2].value;
+    var USERwhoCREATED = document.getElementById("Theonlyform").elements[3].value;
+    console.log(PLAYLISTtoCREATE);
+    socket.emit('CreatePlaylist',
+        PLAYLISTtoCREATE
+      );
+
 
 }
