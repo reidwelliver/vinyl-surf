@@ -3,136 +3,24 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 	<title>vinyl.surf - social radio</title>
-
-	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-	<link href='http://fonts.googleapis.com/css?family=Wire+One' rel='stylesheet' type='text/css'>
-
-	<link rel="stylesheet" href="css/room.css">
 </head>
 
-<body class="theme-invert">
-	<nav class="navbar navbar-inverse navbar-fixed-top">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<a class="navbar-brand" href="#">
-			<span class="glyphicon glyphicon-cd" aria-hidden="true"></span>
-			vinyl.surf
-			</a>
-		</div>
-		<div class="navbar-collapse collapse">
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#">Settings</a></li>
-				<li><a href="#">Profile</a></li>
-			</ul>
-		</div>
-	</div>
-	</nav>
-
-	<div class="container-fluid">
-	<div class="row" style="height: 5em"></div>
-	<div class="row">
-		<div class="col-sm-2 col-md-2 chat" style="background-color:white; margin-left: 1em;">
-			<table id="chatcontainer" style="margin:.5em">
-			</table>
-			<input type="text" class="form-control" placeholder="chat message" style="margin-bottom: 1em" id="chatinput"></input>
-		</div>
-
-		<div class="col-sm-9 col-md-8 main col-md-offset-1">
-			<div class="tagHolder" style="padding: 1.5em; background-color:white" >
-				<h3 class="sub-header" style="display: inline">You're Listening to </h3>
-				<button class="btn btn-default">#rock</button>
-				<button class="btn btn-default">#reggae</button>
-				<button class="btn btn-default">#jams</button>
-				<button class="btn btn-default">#happy</button>
-			</div>
-
-			<br>
-			<div id="player"></div>
-
-			<br>
-
-			<div style="padding: 1.5em; background-color:white" >
-				<h2 class="sub-header">Track History</h2>
-				<div class="table-responsive">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Title</th>
-					 			<th>Artist</th>
-								<th>Length</th>
-								<th>DJ</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-					 			<td>Lorem</td>
-								<td>ipsum</td>
-								<td>dolor</td>
-								<td>@reid</td>
-							</tr>
-							<tr>
-								<td>amet</td>
-								<td>consectetur</td>
-								<td>adipiscing</td>
-								<td>@reid</td>
-							</tr>
-							<tr>
-								<td>Integer</td>
-								<td>nec</td>
-								<td>odio</td>
-								<td>@andrew</td>
-							</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<nav class="navbar navbar-inverse navbar-fixed-bottom">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<a class="navbar-brand">
-				<span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
-				<a class="navbar-brand" id="trackinfo">
-				</a>
-			</a>
-		</div>
-		<div id="navbar2" class="navbar">
-			<ul class="nav navbar-nav navbar-playctl">
-				<button type="button" class="btn btn-default btn-lg" aria-label="Left Align">
-					<span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span>
-				</button>
-
-				<button type="button" class="btn btn-default btn-lg" aria-label="Left Align">
-					<span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-				</button>
-
-				<button type="button" class="btn btn-default btn-lg" aria-label="Left Align">
-					<span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
-				</button>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<button type="button" class="btn btn-default btn-lg" aria-label="Left Align">
-					<span class="glyphicon glyphicon-volume-up" aria-hidden="true"></span>
-				</button>
-			</ul>
-		</div>
-		</div>
-	</nav>
+<body>
 
 
-	<!-- postloading scripts -->
-    <script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+<button type="button" onclick="loadRoom()">load room</button>
+<button type="button" onclick="loadAuth()">load auth</button>
 
-	<!-- my scripts -->
-    <script src="js/room.js"></script>
-    <script src="js/chat.js"></script>
+<div id="room">
+</div>
+
+<div id="auth">
+</div>
 
 </body>
+<script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+<!-- my scripts -->
+<script src="js/stomp-web-bundle.js"></script>
+<script src="js/main.js"></script>
 </html>

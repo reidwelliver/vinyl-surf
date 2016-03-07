@@ -42,4 +42,7 @@ trackqueue: buildutils
 chat: buildutils
 	./buildutils/start -d chat -r vs-base
 
-.PHONY: clean room auth admin trackqueue rabbitmq chat
+main: buildutils
+	./buildutils/start -d main -r vs-base
+
+.PHONY: clean room auth admin trackqueue rabbitmq chat main
