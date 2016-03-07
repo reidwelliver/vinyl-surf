@@ -1,3 +1,5 @@
+var stomp = require('./stomp-client.js');
+
 messages = new stomp({
 	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
 	user: 'vinyl-surf',
@@ -34,7 +36,7 @@ messages.connect(function(){
 setTimeout(function(){
 	console.log(messages.state);
 },5000);
-
+/*
 
 //server.js
 function Chat(optsIn){
@@ -71,3 +73,4 @@ function Chat(optsIn){
 }
 
 var testChat = new Chat({id: 0});
+*/

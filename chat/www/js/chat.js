@@ -1,3 +1,4 @@
+/*
 function Chat(optsIn){
 	var thisChat = this;
 
@@ -68,3 +69,40 @@ function User(optsIn){
 
 
 var chat = new Chat({id: 0});
+*/
+
+messages = new stomp({
+	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
+	user: 'vinyl-surf',
+	pass: 'vinyl-surf'
+});
+
+//console.log(messages);
+messages.connect(function(){
+	console.log("connected!");
+	messages.subscribe('Room-1234',function(message){
+		console.log(message);
+	});
+
+	messages.provide('wft', function(message, options, respondMethod){
+		console.log('doubling server side');
+		var output = message.data * 2;
+		messages.respond({data:output},options);
+	});
+
+
+	setTimeout(function(){
+		console.log('doubling 2 on queue');
+		messages.invoke('wft', {data: 2}, function(response){
+			console.log('doubling service returned '+response.data+' with input of 2');
+		},{});
+	},2000);
+
+	setTimeout(function(){
+		messages.publish('Room-1234',{"data":"hi guys!"});
+	},1000);
+});
+
+setTimeout(function(){
+	console.log(messages.state);
+},5000);
