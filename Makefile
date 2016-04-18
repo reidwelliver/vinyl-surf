@@ -71,20 +71,20 @@ trackqueue-attach:
 
 
 
-# Targets to build main (web)
-.PHONY: main main-clean main-build main-attach
+# Targets to build web (web)
+.PHONY: web web-clean web-build web-attach
 
-main:
-	docker-compose -p main -f main/docker/compose.yml up -d
+web:
+	docker-compose -p web -f web/docker/compose.yml up -d
 
-main-clean:
-	docker-compose -p main -f main/docker/compose.yml down
+web-clean:
+	docker-compose -p web -f web/docker/compose.yml down
 
-main-build: docker-check docker-compose base-check
-	docker-compose -p main -f main/docker/compose.yml build
+web-build: docker-check docker-compose base-check
+	docker-compose -p web -f web/docker/compose.yml build
 
-main-attach:
-	docker exec -it vs-main /bin/bash
+web-attach:
+	docker exec -it vs-web /bin/bash
 
 
 
@@ -92,10 +92,10 @@ main-attach:
 .PHONY: all all-clean all-build all-attach
 
 all:
-	docker-compose -p all -f all/docker/compose.yml up -d
+	docker-compose -p vinyl-surf -f compose.yml up -d
 
 all-clean:
-	docker-compose -p all -f all/docker/compose.yml down
+	docker-compose -p vinyl-surf -f compose.yml down
 
 all-build: docker-check docker-compose base-check
-	docker-compose -p all -f all/docker/compose.yml build
+	docker-compose -p vinyl-surf -f compose.yml build

@@ -1,12 +1,14 @@
 version: '2'
 
 services:
-  vs-room:
-    hostname: vs-room
-    container_name: vs-room
-    image: reidwelliver/vs-base:room
+  vs-web:
+    hostname: vs-web
+    container_name: vs-web
+    image: reidwelliver/vs-base:web
     build:
       context: ../
       dockerfile: docker/Dockerfile
     volumes:
     - ../:/project
+    ports:
+    - 40080:80

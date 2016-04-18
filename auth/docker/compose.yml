@@ -1,10 +1,10 @@
 version: '2'
 
 services:
-  vs-room:
-    hostname: vs-room
-    container_name: vs-room
-    image: reidwelliver/vs-base:room
+  vs-auth:
+    hostname: vs-auth
+    container_name: vs-auth
+    image: reidwelliver/vs-base:auth
     build:
       context: ../
       dockerfile: docker/Dockerfile

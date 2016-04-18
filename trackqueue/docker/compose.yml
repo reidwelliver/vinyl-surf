@@ -1,10 +1,10 @@
 version: '2'
 
 services:
-  vs-room:
-    hostname: vs-room
-    container_name: vs-room
-    image: reidwelliver/vs-base:room
+  vs-trackqueue:
+    hostname: vs-trackqueue
+    container_name: vs-trackqueue
+    image: reidwelliver/vs-base:trackqueue
     build:
       context: ../
       dockerfile: docker/Dockerfile
