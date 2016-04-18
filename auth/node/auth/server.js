@@ -21,6 +21,12 @@ function Auth(callback) {
 
     var userTokens = new Map();
 
+    this.ExtendToken = function(token, callback) {
+        var expire_time = (Date.now() / 1000) + 900;
+        connect.query("UPDATE tokens SET expire_time = ? where token = ?", [expire_time, token], function (err, rows, fields) {
+            console.log(rows);        
+        });
+    }
     this.TokenToUserHelper = function(user_id, callback) {
         connect.query("SELECT id, username, email_address, administrator, upvotes, downvotes FROM users WHERE id = ?", [user_id],  function (err, rows, fields) {
             if (err || rows.length == 0) {
