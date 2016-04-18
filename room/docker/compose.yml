@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  web:
+    hostname: room
+    container_name: vs-room
+    image: reidwelliver/vs-base:room
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    volumes:
+    - ../:/project

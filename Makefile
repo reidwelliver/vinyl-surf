@@ -1,48 +1,38 @@
-buildutils:
-	curl -o master.zip https://codeload.github.com/reidwelliver/docker-deployer/zip/master
-	unzip master.zip
-	rm master.zip
-	mv docker-deployer-master buildutils
-
-
-buildutil-clean:
-	@ echo "removing build utilities..."
-	@ rm -r buildutils 2>/dev/null || true
-
-docker-clean: docker-container-clean docker-image-clean
-
-docker-container-clean:
-	@ echo "removing docker containers..."
-	@ docker ps -a | grep "vs-base-" | awk '{print $$NF}' | xargs -I {} docker rm {}
-
-docker-image-clean:
-	@ echo "removing docker images..."
-	@ docker images | grep "vs-base" | grep build | awk '{print $$2}' | xargs -I {} docker rmi reidwelliver/vs-base:{}
-
-clean: buildutil-clean docker-clean
-
-
 rabbitmq:
 	docker build -t reidwelliver/vs-rabbit:latest rabbitmq/
 	docker run -d --net=host --name vs-rabbit reidwelliver/vs-rabbit:latest
 
 
-room: buildutils
-	./buildutils/start -d room -r vs-base
+# Targets to build room
+.PHONY: room room-clean room-build room-attach
 
-auth: buildutils
-	./buildutils/start -d auth -r vs-base
+room:
+	docker-compose -p room -f room/docker/compose.yml up -d
 
-admin: buildutils
-	./buildutils/start -d admin -r vs-base
+room-clean:
+	docker-compose -p room -f room/docker/compose.yml down
 
-trackqueue: buildutils
-	./buildutils/start -d trackqueue -r vs-base
+room-build: docker-check docker-compose base-check
+	docker-compose -p room -f room/docker/compose.yml build
 
-chat: buildutils
-	./buildutils/start -d chat -r vs-base
+room-attach:
+	docker exec -it vs-room /bin/bash
 
-main: buildutils
-	./buildutils/start -d main -r vs-base
+
+
+auth:
+	.//start -d auth -r vs-base
+
+admin:
+	.//start -d admin -r vs-base
+
+trackqueue:
+	.//start -d trackqueue -r vs-base
+
+chat:
+	.//start -d chat -r vs-base
+
+main:
+	.//start -d main -r vs-base
 
 .PHONY: clean room auth admin trackqueue rabbitmq chat main
