@@ -1,5 +1,6 @@
 #!/bin/bash
 
 cd /project/node
-npm install
-node server.js
+npm install mysql stompjs crypto fs ws
+node auth/server.js
+/bin/bash

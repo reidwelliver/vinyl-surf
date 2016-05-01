@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: oscardog
+
+  vs-admin:
+    hostname: vs-admin
+    container_name: vs-admin
+    image: reidwelliver/vs-base:admin
+    build:
+      context: admin
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - db
+    volumes:
+    - ./admin/:/project
+
+  vs-auth:
+    hostname: vs-auth
+    container_name: vs-auth
+    image: reidwelliver/vs-base:auth
+    build:
+      context: auth
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - db
+    volumes:
+    - ./auth/:/project
+
+  vs-room:
+    hostname: vs-room
+    container_name: vs-room
+    image: reidwelliver/vs-base:room
+    build:
+      context: room
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - db
+    volumes:
+    - ./room/:/project
