@@ -9,7 +9,7 @@ services:
       context: database
       dockerfile: Dockerfile
     environment:
-      MYSQL_ROOT_PASSWORD: oscardog
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
 
 #  vs-admin:
 #    hostname: vs-admin
