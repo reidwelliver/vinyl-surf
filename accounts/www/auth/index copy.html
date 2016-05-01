@@ -1,0 +1,53 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
+<script defer src="https://code.getmdl.io/1.1.1/material.min.js"></script>
+
+<html
+    <body>
+        <form id="login-form"  action="javascript:auth.Login();">
+          <div class="mdl-textfield mdl-js-textfield">
+            <input id="login-username" class="mdl-textfield__input" type="text" id="username">
+            <label class="mdl-textfield__label" for="username">Username...</label>
+          </div>
+          <br>
+          <div class="mdl-textfield mdl-js-textfield"> 
+            <input id="login-password" class="mdl-textfield__input" type="text" id="password">
+            <label class="mdl-textfield__label" for="password">Password...</label>
+          </div>
+          <div>
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+              Login
+            </button>
+              
+          </div>
+        </form>
+        <form id="login-form"  action="javascript:auth.Register();">
+          <div class="mdl-textfield mdl-js-textfield">
+            <input id="reg-username" class="mdl-textfield__input" type="text" id="username">
+            <label class="mdl-textfield__label" for="username">Username...</label>
+          </div>
+          <br>
+          <div class="mdl-textfield mdl-js-textfield"> 
+            <input id="reg-password" class="mdl-textfield__input" type="text" id="password">
+            <label class="mdl-textfield__label" for="password">Password...</label>
+          </div>
+            <br>
+           <div class="mdl-textfield mdl-js-textfield"> 
+            <input id="reg-email" class="mdl-textfield__input" type="text" id="email">
+            <label class="mdl-textfield__label" for="email">Email..</label>
+          </div>           
+          <div>
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+              Reg
+            </button>
+              
+          </div>
+        </form>
+    </body>
+  <!--  <script src="https://cdn.socket.io/socket.io-1.3.7.js"></script> -->
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+	<!-- my scripts -->
+    <script src="./js/stomp-web-bundle.js"></script>
+    <script src="./js/auth.js"></script>
+</html>

@@ -2,7 +2,12 @@ version: '2'
 
 services:
   db:
+    image: vs-database
+    container_name: vs-database
     image: mysql:latest
+    build:
+      context: database
+      dockerfile: Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: oscardog
 
