@@ -18,7 +18,7 @@ services:
 #    volumes:
 #    - ./admin/:/project
 
-  vs-auth:
+  vs-accounts:
     hostname: vs-accounts
     container_name: vs-accounts
     image: reidwelliver/vs-base:accounts
