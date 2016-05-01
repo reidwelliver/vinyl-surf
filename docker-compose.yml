@@ -6,17 +6,17 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: oscardog
 
-  vs-admin:
-    hostname: vs-admin
-    container_name: vs-admin
-    image: reidwelliver/vs-base:admin
-    build:
-      context: admin
-      dockerfile: docker/Dockerfile
-    depends_on:
-      - db
-    volumes:
-    - ./admin/:/project
+#  vs-admin:
+#    hostname: vs-admin
+#    container_name: vs-admin
+#    image: reidwelliver/vs-base:admin
+#    build:
+#      context: admin
+#      dockerfile: docker/Dockerfile
+#    depends_on:
+#      - db
+#    volumes:
+#    - ./admin/:/project
 
   vs-auth:
     hostname: vs-auth
