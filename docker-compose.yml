@@ -19,16 +19,18 @@ services:
 #    - ./admin/:/project
 
   vs-auth:
-    hostname: vs-auth
-    container_name: vs-auth
-    image: reidwelliver/vs-base:auth
+    hostname: vs-accounts
+    container_name: vs-accounts
+    image: reidwelliver/vs-base:accounts
     build:
-      context: auth
+      context: accounts
       dockerfile: docker/Dockerfile
+    links:
+      - db:db
     depends_on:
       - db
     volumes:
-    - ./auth/:/project
+    - ./accounts/:/project
 
   vs-room:
     hostname: vs-room
