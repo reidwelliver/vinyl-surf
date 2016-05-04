@@ -1,5 +1,8 @@
 #!/bin/bash
+if [ -f "/project/config/nginx" ]
+then
+  rm /etc/nginx/sites-enabled/default
+  ln -s /project/config/nginx-site.conf /etc/nginx/sites-enabled/default
+fi
 
-cd /project/node
-npm install
-node server.js
+/usr/sbin/nginx -g "daemon off;"

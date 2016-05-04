@@ -10,5 +10,3 @@ services:
       dockerfile: docker/Dockerfile
     volumes:
     - ../:/project
-    ports:
-    - 40080:80

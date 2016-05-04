@@ -1,5 +1,5 @@
 FROM reidwelliver/vs-base:latest
-MAINTAINER reid@bluetrackmedia.com
+MAINTAINER reid@welliver.me
 
 ADD ./ /project
 ADD ./docker/entry.sh /entry.sh

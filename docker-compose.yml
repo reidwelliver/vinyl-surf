@@ -9,19 +9,7 @@ services:
       context: database
       dockerfile: Dockerfile
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: yes
-
-#  vs-admin:
-#    hostname: vs-admin
-#    container_name: vs-admin
-#    image: reidwelliver/vs-base:admin
-#    build:
-#      context: admin
-#      dockerfile: docker/Dockerfile
-#    depends_on:
-#      - db
-#    volumes:
-#    - ./admin/:/project
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
 
   vs-accounts:
     hostname: vs-accounts
@@ -48,3 +36,13 @@ services:
       - db
     volumes:
     - ./room/:/project
+
+  vs-web:
+    hostname: vs-web
+    container_name: vs-web
+    image: reidwelliver/vs-base:web
+    build:
+      context: web
+      dockerfile: docker/Dockerfile
+    volumes:
+    - ./web/:/project
