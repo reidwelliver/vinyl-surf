@@ -1,25 +1,15 @@
-messages = new stomp({
-	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
-	user: 'vinyl-surf',
-    pass: 'vinyl-surf'
-});
-
-
 function Admin(readyCallback) {
     var thisAdmin = this;
     var token = localStorage.getItem("token");
     console.log(token);
-    
-    this.StompEvents = function () {
-        messages.connect( function() {
-            console.log("connected!");
 
-            messages.invoke('GetAllUsers',{xtoken: token}, function(data){   
+    this.StompEvents = function () {
+            messages.invoke('GetAllUsers',{xtoken: token}, function(data){
                 if (data.error) {
                     window.popup(data.error);
                 }
                 else {
-                    console.log("Admin data:", data);  
+                    console.log("Admin data:", data);
                     var users = data.users;
                     for (var i = 0; i < users.length; i++) {
 
@@ -38,17 +28,17 @@ function Admin(readyCallback) {
                                 )
                                  .append($('<td>')
                                     .text(users[i].create_date)
-                                )                                    
-                            );                       
-                    }                       
+                                )
+                            );
+                    }
                 }
             });
-            messages.invoke('GetAllReports',{xtoken: token}, function(data){   
+            messages.invoke('GetAllReports',{xtoken: token}, function(data){
                 if (data.error) {
                     window.popup(data.error);
                 }
                 else {
-                    console.log("reports data:", data);  
+                    console.log("reports data:", data);
                     var reports = data.reports;
                     for (var i = 0; i < reports.length; i++) {
 
@@ -67,17 +57,16 @@ function Admin(readyCallback) {
                                 )
                                  .append($('<td>')
                                     .text(reports[i].reason)
-                                )                                    
-                            );                       
-                    }                       
+                                )
+                            );
+                    }
                 }
             });
-        });
     }
     this.init = function () {
         thisAdmin.StompEvents();
     }
     thisAdmin.init();
 }
-                    
+
 var admin = new Admin();

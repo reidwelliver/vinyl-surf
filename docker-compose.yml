@@ -45,4 +45,6 @@ services:
       context: web
       dockerfile: docker/Dockerfile
     volumes:
-    - ./web/:/project
+    - "./web/:/project"
+    ports:
+    - "36080:80"

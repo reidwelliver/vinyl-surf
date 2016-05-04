@@ -1,13 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-</head>
+<style>
+	.mdl-layout__content {
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-flex-flow: column nowrap;
+	-ms-flex-flow: column nowrap;
+	flex-flow: column nowrap;
+	}
 
-<body>
+	.mdl-layout__content > *:not(.mdl-layout-spacer) {
+	-webkit-flex: none;
+	-ms-flex: none;
+	flex: none;
+	}
+</style>
+<div>
 	<div class="mdl-grid">
-		<div id="chat-wrap" class="mdl-cell mdl-cell--4-col"></div>
 	  <div id="player" class="mdl-cell mdl-cell--8-col"></div>
 	</div>
-<body>
+
+	<div class="mdl-layout-spacer"></div>
+
+	<footer class="mdl-mini-footer">
+	<div class="mdl-mini-footer--middle-section">
+		<div class="mdl-logo">Title</div>
+			<ul class="mdl-mini-footer--link-list">
+				<li><a href="#">Help</a></li>
+				<li><a href="#">Privacy</a></li>
+			</ul>
+		</div>
+	</footer>
+</div>
 <script src="js/room.js"></script>
-</html>

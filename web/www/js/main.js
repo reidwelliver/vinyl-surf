@@ -1,4 +1,4 @@
-/*
+
 if(!window.messages){
 	window.messages = new stomp({
 		endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
@@ -12,15 +12,7 @@ if(!window.messages.state.connected){
 		console.log("connected!");
 	});
 }
-*/
 
-if(!window.messages){
-	window.messages = new stomp({
-		endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
-		user: 'vinyl-surf',
-		pass: 'vinyl-surf'
-	});
-}
 
 window.popup = function (string) {
     var container = $("#popup");
@@ -29,9 +21,9 @@ window.popup = function (string) {
     }
     else {
         if (!container.is(":visible")) {
-            container.show();   
+            container.show();
         }
-        container.text(string);   
+        container.text(string);
     }
 }
 
@@ -43,10 +35,10 @@ function loadRoom(){
 		dataType: "html",
 		converters: {},
 		success:function(data, textStatus, jqXHR) {
-            $("#page-content").html(data); 
+            $("#page-content").html(data);
             console.log('success');
             componentHandler.upgradeAllRegistered();
-        
+
         },
 		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
 	});
@@ -60,10 +52,10 @@ function loadAdmin(){
 		dataType: "html",
 		converters: {},
 		success:function(data, textStatus, jqXHR) {
-            $("#page-content").html(data); 
+            $("#page-content").html(data);
             console.log('success');
             componentHandler.upgradeAllRegistered();
-        
+
         },
 		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
 	});
@@ -78,10 +70,10 @@ function loadAuth(){
 		dataType: "html",
 		converters: {},
 		success:function(data, textStatus, jqXHR) {
-            $("#page-content").html(data); 
+            $("#page-content").html(data);
             componentHandler.upgradeAllRegistered();
             console.log('success');
-        
+
         },
 		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
 	});
