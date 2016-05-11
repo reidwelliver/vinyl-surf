@@ -1,3 +1,4 @@
+/*
 function loadChat(){
 	$.ajax("chat/index.html",{
 		type:"GET",
@@ -15,6 +16,8 @@ function loadChat(){
 	if(!window.chat){
 			loadChat();
 	}
+*/
+
 
 function YoutubePlayer(optsIn, readyCallback){
 	var thisPlayer = this;
@@ -24,49 +27,51 @@ function YoutubePlayer(optsIn, readyCallback){
 	};
 
 	this.initFrame = function(opts){
-		var tag = document.createElement('script');
-		tag.src = "https://www.youtube.com/iframe_api";
-		var firstScriptTag = document.getElementsByTagName('script')[0];
-		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+		var tubOpts = {
+        ratio: 16/9, // usually either 4/3 or 16/9 -- tweak as needed
+        videoId: 'ZCAnLxRvNNc', // toy robot in space is a good default, no?
+        mute: true,
+        repeat: true,
+        width: $(window).width(),
+        wrapperZIndex: 99,
+        playButtonClass: 'tubular-play',
+        pauseButtonClass: 'tubular-pause',
+        muteButtonClass: 'tubular-mute',
+        volumeUpClass: 'tubular-volume-up',
+        volumeDownClass: 'tubular-volume-down',
+        increaseVolumeBy: 10,
+        start: 0
+    };
 
-		window.onYouTubeIframeAPIReady = function() {
-			thisPlayer.player = new YT.Player('player', {
-				height: '390',
-				width: '640',
-				videoId: 'dQw4w9WgXcQ',
-				events: {}
-			});
-
-			console.log("loaded YoutubePlayer!");
-			readyCallback();
-		};
+		$('#youtube-frame').tubular(tubOpts);
+		console.log("Hello?!?!?!");
 	};
 
 	this.seekTo = function(seconds){
 		console.log("seeking to second " + seconds);
-		thisPlayer.player.seekTo(seconds, true);
-		thisPlayer.player.playVideo();
+		window.player.seekTo(seconds, true);
+		window.player.playVideo();
 	}
 
 	this.queue = function(track){
 		console.log("queueing");
 		track.queued = true;
-		//thisPlayer.player.cueVideoById(track.videoId);
+		//window.player.cueVideoById(track.videoId);
 	}
 
 	this.playNow = function(track){
 		console.log("playing");
-		thisPlayer.player.loadVideoById(track.videoId);
-		thisPlayer.player.playVideo();
+		window.player.loadVideoById(track.videoId);
+		window.player.playVideo();
 
 	}
 
 	this.getCurrentTime = function(){
-		return thisPlayer.player.getCurrentTime();
+		return window.player.getCurrentTime();
 	}
 
 	this.getCurrentVideoURL = function(){
-		return thisPlayer.player.getVideoUrl();
+		return window.player.getVideoUrl();
 	}
 
 	this.init(optsIn);
@@ -211,3 +216,4 @@ function Track(optsIn){
 };
 
 window.room = new Room({id:0});
+console.log("heeeeeeeeeeeeeeeeelloooo");
