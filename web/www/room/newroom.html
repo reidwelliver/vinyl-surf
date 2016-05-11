@@ -1,0 +1,96 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
+
+
+<style>
+/*
+.demo-layout-transparent {
+  background: url('../images/DPP_0001.JPG') center / cover;
+}
+*/
+.vs-body .mdl-layout__header,
+.vs-body .mdl-layout__drawer-button,
+.vs-body .mdl-navigation__link {
+  color: black;
+  opacity: .80;
+}
+
+.h5 .norm-text,
+.h6 .norm-text {
+  color: black;
+  opacity: .80;
+}
+</style>
+<body>
+  <div id="youtube-frame" style="position: absolute;"></div>
+
+  <div class="mdl-layout mdl-js-layout vs-body">
+    <header class="mdl-layout__header mdl-layout__header--scroll"  style="background-color: RGBA(255, 255, 255, .85);">
+      <div class="mdl-layout__header-row">
+        <!-- Title -->
+        <span class="mdl-layout-title">Vinyl.Surf</span>
+        <!-- Add spacer, to align navigation to the right -->
+        <div class="mdl-layout-spacer"></div>
+      </div>
+    </header>
+    <div class="mdl-layout__drawer">
+      <span class="mdl-layout-title">Vinyl.Surf</span>
+      <nav class="mdl-navigation">
+        <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+        <a class="mdl-navigation__link" href="">Link</a>
+      </nav>
+    </div>
+
+    <main class="mdl-layout__content">
+    </main>
+
+    <footer class="mdl-mini-footer mdl-grid--no-spacing" style="padding-top: .1em; padding-bottom: .1em; background-color: RGBA(255, 255, 255, 0.85);">
+      <div class="mdl-cell mdl-cell--1-col">
+        <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+          <i class="material-icons">recent_actors</i>
+        </button>
+      </div>
+        <div class="mdl-cell mdl-cell--2-col">
+            <h5 class="norm-text" style="margin:.1em;">Video Title</h5>
+            <h6 class="norm-text" style="margin:.1em;">Video Author</h6>
+        </div>
+        <div class="mdl-cell mdl-cell--1-col  mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
+        <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+          <i class="material-icons">thumb_down</i>
+        </button>
+        <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+          <i class="material-icons">play_circle_filled</i>
+        </button>
+        <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+          <i class="material-icons">thumb_up</i>
+        </button>
+        <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
+        <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
+        <div class="mdl-cell mdl-cell--1-col">
+          <button id="chat-show-button" class="mdl-button mdl-js-button mdl-button--fab">
+            <i class="material-icons" >textsms</i>
+          </button>
+        </div>
+        <div class="mdl-cell mdl-cell--1-col">
+          <button id="dj-menu-button" class="mdl-button mdl-js-button mdl-button--fab">
+            <i class="material-icons" >mic</i>
+          </button>
+        </div>
+    </footer>
+            <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" data-mdl-for="dj-menu-button">
+              <li disabled class="mdl-menu__item">1 DJs before you</li>
+              <li class="mdl-menu__item">Request DJ</li>
+              <li class="mdl-menu__item">Manage Queues</li>
+              <li class="mdl-menu__item">Quick Add</li>
+            </ul>
+  </div>
+</body>
+
+<script src="../js/stomp-web-bundle.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://code.getmdl.io/1.1.1/material.min.js"></script>
+<script src="../js/jquery.tubular.1.0.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/room.js"></script>
