@@ -18,7 +18,6 @@ function loadChat(){
 	}
 */
 
-
 function YoutubePlayer(optsIn, readyCallback){
 	var thisPlayer = this;
 
@@ -44,7 +43,6 @@ function YoutubePlayer(optsIn, readyCallback){
     };
 
 		$('#youtube-frame').tubular(tubOpts);
-		console.log("Hello?!?!?!");
 	};
 
 	this.seekTo = function(seconds){
@@ -99,6 +97,8 @@ function Room(opts){
 		thisRoom.currentQueue = thisRoom.queues[0] || [];
 		thisRoom.currentQueuePos = 0;
 
+		thisRoom.isPaused = false;
+
 		opts.players = opts.players || {};
 
 		var youtubePlayerCallback = function(){
@@ -149,6 +149,19 @@ function Room(opts){
 		}, track);
 	};
 
+	this.togglePlay = function(){
+		this.isPaused = !this.isPaused;
+		console.log("toggling play...");
+		if(this.isPaused){
+			$('#play-button-icon').html("play_circle_filled");
+			window.player.pauseVideo();
+		} else {
+			$('#play-button-icon').html("pause_circle_filled");
+			window.player.playVideo();
+		}
+	}
+
+
 	this.receiveTrackUpdate = function(track){
 		thisRoom.whenPlayerReady(function(track){
 			console.log('updating track');
@@ -160,7 +173,7 @@ function Room(opts){
 
 			var difference = (track.currentTime - thisRoom.getCurrentTrackTime()) - ((Date.now()/1000) - track.stamp);
 
-			if( ( difference > 2 || difference < -2 ) && thisRoom.players.hasOwnProperty(track.player)){
+			if( !thisRoom.isPaused && ( difference > 2 || difference < -2 ) && thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.players[track.player].seekTo(track.currentTime);
 				thisRoom.updateTrackBar();
 			}
@@ -215,5 +228,6 @@ function Track(optsIn){
 	thisTrack.init(optsIn);
 };
 
-window.room = new Room({id:0});
-console.log("heeeeeeeeeeeeeeeeelloooo");
+$(document).ready(function(){
+	window.room = new Room({id:0});
+})

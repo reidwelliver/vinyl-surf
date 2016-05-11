@@ -18,7 +18,7 @@
 .h5 .norm-text,
 .h6 .norm-text {
   color: black;
-  opacity: .80;
+  opacity: 1;
 }
 </style>
 <body>
@@ -57,13 +57,13 @@
             <h6 class="norm-text" style="margin:.1em;">Video Author</h6>
         </div>
         <div class="mdl-cell mdl-cell--1-col  mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
-        <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+        <button id="thumbsdown-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
           <i class="material-icons">thumb_down</i>
         </button>
-        <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
-          <i class="material-icons">play_circle_filled</i>
+        <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect" onclick="window.room.togglePlay()">
+          <i id="play-button-icon" class="material-icons">pause_circle_filled</i>
         </button>
-        <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+        <button id="thumbsup-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
           <i class="material-icons">thumb_up</i>
         </button>
         <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
@@ -80,10 +80,11 @@
         </div>
     </footer>
             <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" data-mdl-for="dj-menu-button">
-              <li disabled class="mdl-menu__item">1 DJs before you</li>
+              <li disabled class="mdl-menu__item">1 DJ before you</li>
               <li class="mdl-menu__item">Request DJ</li>
               <li class="mdl-menu__item">Manage Queues</li>
               <li class="mdl-menu__item">Quick Add</li>
+              <li class="mdl-menu__item">Change Nickname</li>
             </ul>
   </div>
 </body>
