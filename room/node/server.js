@@ -1,4 +1,3 @@
-var trackid-glob = 0;
 var stomp = require('./stomp-client.js');
 
 var messages = new stomp({
@@ -8,12 +7,17 @@ var messages = new stomp({
 	mode: 'server'
 });
 
+
+
+
+var trackIdGlob = 0;
+
 function Track(optsIn){
 	var thisTrack = this;
 
 	this.init = function(opts){
 		opts = opts || {};
-		thisTrack.id = opts.id || ++trackid-glob;
+		thisTrack.id = opts.id || ++trackIdGlob;
 		thisTrack.artist = opts.artist || "";
 		thisTrack.name = opts.name || "";
 
@@ -92,6 +96,10 @@ function Track(optsIn){
 	thisTrack.init(optsIn);
 }
 
+
+
+
+
 function Queue(optsIn){
 	var thisQueue = this;
 
@@ -103,6 +111,10 @@ function Queue(optsIn){
 
 	thisQueue.init(optsIn);
 }
+
+
+
+
 
 function Room(optsIn){
 	var thisRoom = this;
@@ -133,20 +145,30 @@ function Room(optsIn){
 		});
 
 		messages.provide('room-' + thisRoom.id + '-queue-add', function(message, options, respondMethod){
-			console.log("client added track to queue " + message);
-			//messages.respond(thisRoom.firstLoadData(), options);
+			console.log("client added track to queue ")
+			console.log(message);
+			thisRoom.addToQueue(message);
 		});
 
 		thisRoom.initUpdateIntervals();
 		thisRoom.playNext();
 	};
 
-
 	this.addToQueue = function(track){
+		if(!(track instanceof Track)){
+			track = new Track(track);
+		}
+
 		thisRoom.queue.tracks.push(track);
+
+		messages.publish('room-' + thisRoom.id + '-queue-add', track.getUpdate());
 	}
 
 	this.removeFromQueue = function(track){
+		if(!(track instanceof Track)){
+			track = new Track(track);
+		}
+
 		var newQueue = thisRoom.queue.tracks.filter(function(elem){
 			if(elem.videoId === track.videoId){
 				return false;
@@ -157,6 +179,8 @@ function Room(optsIn){
 			thisRoom.queue.tracks = newQueue;
 		});
 
+		messages.publish('room-' + thisRoom.id + '-queue-rm', track.getUpdate());
+	}
 
 	this.firstLoadData = function(){
 		return thisRoom.queue.tracks[thisRoom.currentQueuePos].getInfo();
@@ -167,9 +191,7 @@ function Room(optsIn){
 	}
 
 	this.broadcastNextTrack = function(){
-		if(thisRoom.nextTrack){
-			messages.publish('room-' + thisRoom.id + '-next', thisRoom.nextTrack.getInfo());
-		}
+		messages.publish('room-' + thisRoom.id + '-next', thisRoom.nextTrack().getInfo());
 	}
 
 	this.initUpdateIntervals = function(){
@@ -186,10 +208,10 @@ function Room(optsIn){
 	}
 
 	this.nextTrackPos = function(){
-		if(thisRoom.queue.length > thisRoom.currentQueuePos+1){
-			return currentQueuePos+1;
+		if(thisRoom.queue.tracks.length > thisRoom.currentQueuePos+1){
+			return thisRoom.currentQueuePos+1;
 		} else {
-			return thisRoom.queue.tracks[0];
+			return 0;
 		}
 	}
 
@@ -201,10 +223,9 @@ function Room(optsIn){
 		thisRoom.currentTrack().setStopCallback(function(){
 				thisRoom.currentQueuePos = thisRoom.nextTrackPos();
 				thisRoom.playNext();
-			}
-		});
+			});
 
-		messages.publish('room-' + thisRoom.id + '-start', thisRoom.currentTrack.getInfo());
+		messages.publish('room-' + thisRoom.id + '-start', thisRoom.currentTrack().getInfo());
 
 		thisRoom.currentTrack().play();
 	}
@@ -218,6 +239,7 @@ function Room(optsIn){
 }
 
 
+
 function User(optsIn){
 	var thisUser = this;
 
@@ -229,6 +251,8 @@ function User(optsIn){
 
 	thisUser.init(optsIn);
 }
+
+
 
 
 function RoomStore(optsIn){
@@ -246,54 +270,31 @@ function RoomStore(optsIn){
 	thisRoomStore.init(optsIn);
 }
 
-var test;
+
+
+
 
 messages.connect(function(){
 	console.log("connected!");
-/*
-	//test stuff - move or remove later (probably mock in DB)
-	testTrack = new Track({
-		id: 1,
-		artist: "Rick Astley",
-		name: "Never Gonna Give You Up",
-		videoId: "dQw4w9WgXcQ",
-		player: "YT",
-		playTime: 212
-	});
 
-	var testTrack2 = new Track({
-		id: 2,
-		artist: "He-Man",
-		name: "Hey (what's going on)",
-		videoId: "ZZ5LpwO-An4",
-		player: "YT",
-		playTime: 126
-	});
-
-	var testTrack3 = new Track({
-		id: 3,
-		artist: "Drake vs. Epic Sax Guy",
-		name: "Hotline Sax",
-		videoId: "z1rvXAlz5ao",
-		player: "YT",
-		playTime: 231
-	});
-*/
 	var testQueue = new Queue({
 		name: "Test Queue",
 		tracks: [
-/*
-			testTrack,
-			testTrack2,
-			testTrack3
-*/
+			new Track({
+				id: 1,
+				artist: "Shugo Tokumaru",
+				name: "Katachi",
+				videoId: "Q-WM-x__BOk",
+				player: "YT",
+				playTime: 184
+			})
 		]
 	});
 
 	var testRoom = new Room({
 		name: "hello",
-		id: 0,
-		queues: [testQueue],
+		id: 1,
+		queue: testQueue,
 		dj: "bob",
 		users: [],
 

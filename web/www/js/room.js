@@ -28,7 +28,7 @@ function YoutubePlayer(optsIn){
 	this.initFrame = function(opts){
 		var tubOpts = {
         ratio: 16/9, // usually either 4/3 or 16/9 -- tweak as needed
-        videoId: 'ZCAnLxRvNNc', // toy robot in space is a good default, no?
+        videoId: 'Q-WM-x__BOk',
         mute: false,
         repeat: true,
         width: $(window).width(),
@@ -84,7 +84,7 @@ function Room(opts){
 		thisRoom.name = opts.name || "";
 		thisRoom.id = opts.id || 0;
 
-		thisRoom.queues = opts.queues || [];
+		thisRoom.queue = opts.queue || [];
 		thisRoom.dj = opts.dj || "";
 		thisRoom.users = opts.users || [];
 
@@ -94,7 +94,6 @@ function Room(opts){
 		thisRoom.nextTrack = "";
 		thisRoom.nextPlayer = "";
 
-		thisRoom.currentQueue = thisRoom.queues[0] || [];
 		thisRoom.currentQueuePos = 0;
 
 		thisRoom.isPaused = false;
@@ -120,7 +119,7 @@ function Room(opts){
 		console.log("initializing message subscriptions");
 		window.messages.subscribe('room-' + thisRoom.id + '-update', function(data){
 			//console.log("trackUpdate callback reached");
-			console.log('update',data);
+			//console.log('update',data);
 			thisRoom.receiveTrackUpdate(data);
 		});
 
@@ -138,13 +137,13 @@ function Room(opts){
 
 		window.messages.subscribe('room-' + thisRoom.id + '-next', function(data){
 			//console.log("nextTrack callback reached");
-			console.log('next',data);
+			//console.log('next',data);
 			thisRoom.receiveNextTrack(data);
 		});
 
 		window.messages.subscribe('room-' + thisRoom.id + '-start', function(data){
 			//console.log("trackStart callback reached");
-			console.log('next',data);
+			//console.log('next',data);
 			thisRoom.receiveTrackUpdate(data);
 		});
 
@@ -181,7 +180,6 @@ function Room(opts){
 
 	this.receiveTrackUpdate = function(track){
 		thisRoom.whenPlayerReady(function(track){
-			console.log('updating track');
 			if(window.player.getVideoUrl().indexOf(track.videoId) === -1){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
@@ -191,6 +189,7 @@ function Room(opts){
 			var difference = (track.currentTime - window.player.getCurrentTime()) - ((Date.now()/1000) - track.stamp);
 
 			if( !thisRoom.isPaused && ( difference > 2 || difference < -2 ) && thisRoom.players.hasOwnProperty(track.player)){
+				console.log('updating track');
 				thisRoom.players[track.player].seekTo(track.currentTime);
 				thisRoom.updateTrackBar();
 			}
@@ -227,11 +226,11 @@ function Room(opts){
 	}
 
 	this._addToQueue = function(track){
-		thisRoom.currentQueue.push(track);
+		thisRoom.queue.push(track);
 	}
 
 	this._removeFromQueue = function(track){
-		var newQueue = thisRoom.currentQueue.filter(function(elem){
+		var newQueue = thisRoom.queue.filter(function(elem){
 			if(elem.videoId === track.videoId){
 				return false;
 			} else {
@@ -239,21 +238,20 @@ function Room(opts){
 			}
 
 			thisRoom.queues[0] = newQueue;
-			thisRoom.currentQueue = newQueue;
+			thisRoom.queue = newQueue;
 		});
+	}
 
-		this.queueAdd = function(track){
-			window.messages.invoke('room-' + thisRoom.id + '-queue-add',{id: thisRoom.id},function(data){
-				console.log('addTrack-invoked',data);
-			});
-		}
+	this.queueAdd = function(track){
+		window.messages.invoke('room-' + thisRoom.id + '-queue-add',track,function(data){
+			console.log('addTrack-invoked',data);
+		});
+	}
 
-		this.queueRemove = function(track){
-			window.messages.invoke('room-' + thisRoom.id + '-queue-rm',{id: thisRoom.id},function(data){
-				console.log('rmTrack-invoked',data);
-			});
-		}
-
+	this.queueRemove = function(track){
+		window.messages.invoke('room-' + thisRoom.id + '-queue-rm',track,function(data){
+			console.log('rmTrack-invoked',data);
+		});
 	}
 
 	thisRoom.init();
@@ -271,7 +269,7 @@ function Track(optsIn){
 		thisTrack.videoId = opts.videoId || "";
 		thisTrack.player = opts.player || "YT";
 
-		thisTrack.playTime = opts.length || 0;
+		thisTrack.playTime = opts.playTime || 0;
 		thisTrack.timeStarted = 0;
 
 		thisTrack.queued = false;
@@ -285,9 +283,67 @@ function YTTest(){
 	YoutubeInfo('https://www.youtube.com/watch?v=PApxRlpvsIU');
 }
 
+function quickAddInfo(info){
+	if(info.embed){
+		$('#quick-add-thumbnail').attr('src', 'http://img.youtube.com/vi/' + info.id + '/default.jpg');
+
+		if(info.title && info.title !== ''){
+			$('#quick-add-title-input').val(info.title);
+			$('#quick-add-title').toggleClass("is-focused");
+			$('#quick-add-title').toggleClass("is-focused");
+			$('#quick-add-title').addClass("is-dirty");
+		}
+		if(info.artist && info.artist !== ''){
+			$('#quick-add-artist-input').val(info.artist);
+			$('#quick-add-artist').toggleClass("is-focused");
+			$('#quick-add-artist').toggleClass("is-focused");
+			$('#quick-add-artist').addClass("is-dirty");
+		}
+
+		$('#quick-add-videoid').val(info.videoId);
+		$('#quick-add-playtime').val(info.playTime);
+
+		$("#quick-add-loading").hide();
+		$("#quick-add-info").show();
+		$("#quick-add-submit-button").removeAttr("disabled");
+	} else {
+		$("#quick-add-loading").hide();
+		$("#quick-add-embedwarning").show();
+	}
+}
+
+function quickAddReset(){
+	$('#quick-add-thumbnail').attr('src', "../images/icon.svg");
+	$('#quick-add-title-input').val('');
+	$('#quick-add-title').removeClass("is-focused");
+	$('#quick-add-title').removeClass("is-dirty");
+	$('#quick-add-artist-input').val('');
+	$('#quick-add-artist').removeClass("is-focused");
+	$('#quick-add-artist').removeClass("is-dirty");
+	$("#quick-add-submit-button").attr("disabled","true");
+	$("#quick-add-info").hide();
+	$("#quick-add-embedwarning").hide();
+	$("#quick-add-loading").hide();
+}
+
+function quickAddLoading(){
+	$("#quick-add-info").hide();
+	$("#quick-add-embedwarning").hide();
+	$("#quick-add-loading").show();
+}
+
+function addSongToQueue(info){
+	window.room.queueAdd(new Track(info));
+}
+
+
+
+
+
+
 
 $(document).ready(function(){
-	window.room = new Room({id:0});
+	window.room = new Room({id:1});
 
 	var nicknameDialog = document.getElementById('nickname-dialog');
 	var nicknameButton = document.getElementById('nickname-button');
@@ -317,6 +373,23 @@ $(document).ready(function(){
 		quickAddDialog.close();
 	});
 
+	document.getElementById('quick-add-submit-button').addEventListener('click', function(){
+		var button = $('quick-add-submit-button');
+		if(typeof(button.attr('disabled')) === 'undefined' || button.attr('disabled') === 'false'){
+			var editArtist = $('#quick-add-artist-input').val();
+			var editTitle = $('#quick-add-title-input').val();
+
+			var videoId = $('#quick-add-videoid').val();
+			var len = $('#quick-add-playtime').val();
+
+
+			addSongToQueue({videoId: videoId, title: editTitle, artist: editArtist, playTime: len});
+
+			quickAddDialog.close();
+			quickAddReset();
+		}
+	});
+
 
 	var queueCards = document.getElementById('queue-cards');
 	var showQueueButton = document.getElementById('show-queue-button');
@@ -330,70 +403,9 @@ $(document).ready(function(){
 	quickAddInput.on('change keypress', function(){
 		var value = quickAddInput.val();
 		if(value !== ''){
+			quickAddReset();
 			quickAddLoading();
 			YoutubeInfo(value, quickAddInfo);
 		}
 	});
 });
-
-function quickAddInfo(info){
-	if(info.embed){
-		$('#quick-add-thumbnail').attr('src', 'http://img.youtube.com/vi/' + info.id + '/default.jpg');
-
-		if(info.title && info.title !== ''){
-			$('#quick-add-title-input').val(info.title);
-			$('#quick-add-title').toggleClass("is-focused");
-			$('#quick-add-title').toggleClass("is-focused");
-			$('#quick-add-title').addClass("is-dirty");
-		}
-		if(info.artist && info.artist !== ''){
-			$('#quick-add-artist-input').val(info.artist);
-			$('#quick-add-artist').toggleClass("is-focused");
-			$('#quick-add-artist').toggleClass("is-focused");
-			$('#quick-add-artist').addClass("is-dirty");
-		}
-		$("#quick-add-loading").hide();
-		$("#quick-add-info").show();
-		$("#quick-add-submit-button").removeAttr("disabled");
-	} else {
-		$("#quick-add-loading").hide();
-		$("#quick-add-embedwarning").show();
-	}
-
-	quickAddDialog.getElementById('quick-add-submit-button').addEventListener('click', function(){
-		var button = $('quick-add-submit-button');
-		if(typeof(button.attr('disabled')) === 'undefined' || button.attr('disabled') === 'false'){
-			var editArtist = $('#quick-add-artist-input').val();
-			var editTitle = $('#quick-add-title-input').val();
-
-			addSongToQueue({videoId: info.id, title: editTitle, artist: editArtist, lenth: info.length});
-
-			quickAddDialog.close();
-			quickAddReset();
-		}
-	});
-}
-
-function quickAddReset(){
-	$('#quick-add-thumbnail').attr('src', "../images/icon.svg");
-	$('#quick-add-title-input').val('');
-	$('#quick-add-title').removeClass("is-focused");
-	$('#quick-add-title').removeClass("is-dirty");
-	$('#quick-add-artist-input').val('');
-	$('#quick-add-artist').removeClass("is-focused");
-	$('#quick-add-artist').removeClass("is-dirty");
-	$("#quick-add-submit-button").attr("disabled","true");
-	$("#quick-add-info").hide();
-	$("#quick-add-embedwarning").hide();
-	$("#quick-add-loading").hide();
-}
-
-function quickAddLoading(){
-	$("#quick-add-info").hide();
-	$("#quick-add-embedwarning").hide();
-	$("#quick-add-loading").show();
-}
-
-function addSongToQueue(info){
-	window.room.queueAdd(new Track(info));
-}

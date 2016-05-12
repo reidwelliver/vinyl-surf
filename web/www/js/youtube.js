@@ -46,7 +46,7 @@ function YoutubeInfo(url,callback) {
     }
 
 
-    var toReturn = {id: video_id, title: ytitle, artist: artist, length: length, embed: embedable };
+    var toReturn = {videoId: video_id, title: ytitle, artist: artist, playTime: longness, embed: embedable };
     console.log(toReturn);
 
     if(callback){
