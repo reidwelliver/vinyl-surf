@@ -1,3 +1,4 @@
+var trackid-glob = 0;
 var stomp = require('./stomp-client.js');
 
 var messages = new stomp({
@@ -12,7 +13,7 @@ function Track(optsIn){
 
 	this.init = function(opts){
 		opts = opts || {};
-		thisTrack.id = opts.id || 0;
+		thisTrack.id = opts.id || ++trackid-glob;
 		thisTrack.artist = opts.artist || "";
 		thisTrack.name = opts.name || "";
 
@@ -111,15 +112,12 @@ function Room(optsIn){
 		thisRoom.name = opts.name || "";
 		thisRoom.id = opts.id || 0;
 
-		thisRoom.queues = opts.queues || [];
+		thisRoom.queue = opts.queue || new Queue(thisRoom.name);
 		thisRoom.dj = opts.dj || "";
 		thisRoom.users = opts.users || [];
 
-		thisRoom.currentQueue = 0;
 		thisRoom.currentQueuePos = 0;
 
-		thisRoom.currentTrack = thisRoom.queues[0].tracks[0] || ""; //TODO: this will break with empty queue
-		thisRoom.nextTrack = thisRoom.queues[0].tracks[1] || "";
 
 		thisRoom.intervalIds = {};
 
@@ -128,16 +126,44 @@ function Room(optsIn){
 			messages.respond(thisRoom.firstLoadData(), options);
 		});
 
+
+		messages.provide('room-' + thisRoom.id + '-queue-rm', function(message, options, respondMethod){
+			console.log("client removed track from queue " + message);
+			//messages.respond(thisRoom.firstLoadData(), message);
+		});
+
+		messages.provide('room-' + thisRoom.id + '-queue-add', function(message, options, respondMethod){
+			console.log("client added track to queue " + message);
+			//messages.respond(thisRoom.firstLoadData(), options);
+		});
+
 		thisRoom.initUpdateIntervals();
 		thisRoom.playNext();
 	};
 
+
+	this.addToQueue = function(track){
+		thisRoom.queue.tracks.push(track);
+	}
+
+	this.removeFromQueue = function(track){
+		var newQueue = thisRoom.queue.tracks.filter(function(elem){
+			if(elem.videoId === track.videoId){
+				return false;
+			} else {
+				return true;
+			}
+
+			thisRoom.queue.tracks = newQueue;
+		});
+
+
 	this.firstLoadData = function(){
-		return thisRoom.currentTrack.getInfo();
+		return thisRoom.queue.tracks[thisRoom.currentQueuePos].getInfo();
 	}
 
 	this.broadcastTrackUpdate = function(){
-		messages.publish('room-' + thisRoom.id + '-update', thisRoom.currentTrack.getUpdate());
+		messages.publish('room-' + thisRoom.id + '-update', thisRoom.queue.tracks[thisRoom.currentQueuePos].getUpdate());
 	}
 
 	this.broadcastNextTrack = function(){
@@ -155,40 +181,32 @@ function Room(optsIn){
 		}, 5000);
 	}
 
+	this.currentTrack = function(){
+		return thisRoom.queue.tracks[thisRoom.currentQueuePos];
+	}
+
+	this.nextTrackPos = function(){
+		if(thisRoom.queue.length > thisRoom.currentQueuePos+1){
+			return currentQueuePos+1;
+		} else {
+			return thisRoom.queue.tracks[0];
+		}
+	}
+
+	this.nextTrack = function(){
+		return thisRoom.queue.tracks[thisRoom.nextTrackPos()];
+	}
+
 	this.playNext = function(){
-		thisRoom.currentTrack.setStopCallback(function(){
-			if(thisRoom.nextTrack && thisRoom.queues.length > thisRoom.currentQueue ){
-				thisRoom.currentTrack = thisRoom.nextTrack;
-
-				if (thisRoom.currentQueuePos >= thisRoom.queues[thisRoom.currentQueue].tracks.length ) {
-					thisRoom.currentQueue++;
-					thisRoom.currentQueuePos = 0;
-				}
-				else {
-					thisRoom.currentQueuePos++;
-				}
-
-				if(thisRoom.queues[thisRoom.currentQueue]){
-					thisRoom.nextTrack = thisRoom.queues[thisRoom.currentQueue].tracks[thisRoom.currentQueuePos+1];
-
-				}
-
-				thisRoom.playNext();
-			}
-			else{
-				thisRoom.currentQueue = 0;
-				thisRoom.currentQueuePos = 0;
-
-				thisRoom.currentTrack = thisRoom.queues[0].tracks[0];
-				thisRoom.nextTrack = thisRoom.queues[0].tracks[1];
-
+		thisRoom.currentTrack().setStopCallback(function(){
+				thisRoom.currentQueuePos = thisRoom.nextTrackPos();
 				thisRoom.playNext();
 			}
 		});
 
 		messages.publish('room-' + thisRoom.id + '-start', thisRoom.currentTrack.getInfo());
 
-		thisRoom.currentTrack.play();
+		thisRoom.currentTrack().play();
 	}
 
 	this.stop = function(){
@@ -232,7 +250,7 @@ var test;
 
 messages.connect(function(){
 	console.log("connected!");
-
+/*
 	//test stuff - move or remove later (probably mock in DB)
 	testTrack = new Track({
 		id: 1,
@@ -260,13 +278,15 @@ messages.connect(function(){
 		player: "YT",
 		playTime: 231
 	});
-
+*/
 	var testQueue = new Queue({
 		name: "Test Queue",
 		tracks: [
+/*
 			testTrack,
 			testTrack2,
 			testTrack3
+*/
 		]
 	});
 

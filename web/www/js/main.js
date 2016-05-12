@@ -7,12 +7,6 @@ if(!window.messages){
 	});
 }
 
-if(!window.messages.state.connected){
-	window.messages.connect(function(){
-		console.log("connected!");
-	});
-}
-
 
 window.popup = function (string) {
     var container = $("#popup");

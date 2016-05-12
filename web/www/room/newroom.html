@@ -125,7 +125,7 @@
             </button>
           </div>
       </div>
-      <div id="queue-cards" style="width:100%; background: none; padding-top: .6em; padding-bottom:.5em; border-top: 1px solid RGBA(0,0,0,0.2)">
+      <div id="queue-cards" style="width:100%; background: none; padding-top: .6em; padding-bottom:.5em; border-top: 1px solid RGBA(0,0,0,0.2); display: none;">
         <div class="queue-card-image mdl-card mdl-shadow--2dp">
           <div class="mdl-card__title mdl-card--expand"></div>
           <div class="mdl-card__actions">
@@ -137,11 +137,11 @@
 
 
     <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" data-mdl-for="dj-menu-button">
-      <li disabled class="mdl-menu__item">1 DJ before you</li>
-      <li class="mdl-menu__item">Request DJ</li>
-      <li class="mdl-menu__item">Manage Queues</li>
+      <li disabled class="mdl-menu__item">You're DJing</li>
+      <li disabled class="mdl-menu__item">Request DJ</li>
+      <li disabled class="mdl-menu__item">Manage Queues</li>
       <li id="quick-add-button" class="mdl-menu__item">Quick Add</li>
-      <li class="mdl-menu__item">Change Nickname</li>
+      <li id="nickname-button" class="mdl-menu__item">Change Nickname</li>
     </ul>
 
 
@@ -188,20 +188,19 @@
       </div>
     </dialog>
 
-    <dialog id="username-dialog" class="mdl-dialog" style="width:100px; max-width:100%;">
+    <dialog id="nickname-dialog" class="mdl-dialog" style="width:250px; max-width:100%;">
       <div class="mdl-dialog__content">
         <div class="mdl-textfield mdl-js-textfield">
-          <input id="quick-add-input" class="mdl-textfield__input" type="text">
-          <label class="mdl-textfield__label" for="quick-add-input">Enter A YouTube Video URL</label>
+          <input id="username-input" class="mdl-textfield__input" type="text">
+          <label class="mdl-textfield__label" for="username-input">Username</label>
         </div>
-
       </div>
       <div class="mdl-dialog__actions">
-        <button disabled="true" id="quick-add-submit-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect" style="width: 36px; min-width: 36px;">
+        <button id="username-submit-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect" style="width: 36px; min-width: 36px;">
           <i class="material-icons">check</i>
         </button>
         <div class="mdl-layout-spacer"></div>
-        <button id="quick-add-cancel-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect close" style="width: 36px; min-width: 36px;">
+        <button id="username-cancel-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect close" style="width: 36px; min-width: 36px;">
           <i class="material-icons">close</i>
         </button>
       </div>

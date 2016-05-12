@@ -18,7 +18,7 @@ function loadChat(){
 	}
 */
 
-function YoutubePlayer(optsIn, readyCallback){
+function YoutubePlayer(optsIn){
 	var thisPlayer = this;
 
 	this.init = function(opts){
@@ -101,15 +101,23 @@ function Room(opts){
 
 		opts.players = opts.players || {};
 
-		var youtubePlayerCallback = function(){
-			console.log("calling player callback");
-			thisRoom.playerReady = true;
-		}
+		thisRoom.playerReady = false;
 
 		thisRoom.players = {
-			YT: new YoutubePlayer(opts.players.YT, youtubePlayerCallback)
+			YT: new YoutubePlayer(opts.players.YT)
 		}
+		if(!window.messages.state.connected){
+			window.messages.connect(function(){
+				console.log("connected!");
+				thisRoom.messageInit();
+			});
+		} else {
+			thisRoom.messageInit();
+		}
+	};
 
+	this.messageInit = function(){
+		console.log("initializing message subscriptions");
 		window.messages.subscribe('room-' + thisRoom.id + '-update', function(data){
 			//console.log("trackUpdate callback reached");
 			console.log('update',data);
@@ -140,15 +148,13 @@ function Room(opts){
 			thisRoom.receiveTrackUpdate(data);
 		});
 
+		console.log("invoking room-load...");
 		window.messages.invoke('room-load',{id: thisRoom.id},function(data){
 			console.log('load',data);
 			thisRoom.receiveFirstLoad(data);
 		});
-	};
-
-	this.getCurrentTrackTime = function(){
-		return thisRoom.players["YT"].getCurrentTime();
 	}
+
 
 	this.receiveFirstLoad = function(track){
 		thisRoom.whenPlayerReady(function(track){
@@ -161,9 +167,9 @@ function Room(opts){
 	};
 
 	this.togglePlay = function(){
-		this.isPaused = !this.isPaused;
+		thisRoom.isPaused = !thisRoom.isPaused;
 		console.log("toggling play...");
-		if(this.isPaused){
+		if(thisRoom.isPaused){
 			$('#play-button-icon').html("play_circle_filled");
 			window.player.pauseVideo();
 		} else {
@@ -176,13 +182,13 @@ function Room(opts){
 	this.receiveTrackUpdate = function(track){
 		thisRoom.whenPlayerReady(function(track){
 			console.log('updating track');
-			if(thisRoom.players[track.player].getCurrentVideoURL().indexOf(track.videoId) === -1){
+			if(window.player.getVideoUrl().indexOf(track.videoId) === -1){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
 				thisRoom.updateTrackBar();
 			}
 
-			var difference = (track.currentTime - thisRoom.getCurrentTrackTime()) - ((Date.now()/1000) - track.stamp);
+			var difference = (track.currentTime - window.player.getCurrentTime()) - ((Date.now()/1000) - track.stamp);
 
 			if( !thisRoom.isPaused && ( difference > 2 || difference < -2 ) && thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.players[track.player].seekTo(track.currentTime);
@@ -193,7 +199,7 @@ function Room(opts){
 
 	this.receiveNextTrack = function(track){
 		thisRoom.whenPlayerReady(function(track){
-			if(thisRoom.nextTrack.id != track.id && thisRoom.players.hasOwnProperty(track.player)){
+			if(thisRoom.nextTrack.videoId !== track.videoId && thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.nextTrack = new Track(track);
 				thisRoom.players[thisRoom.nextTrack.player].queue(thisRoom.nextTrack);
 			}
@@ -201,12 +207,17 @@ function Room(opts){
 	};
 
 	this.whenPlayerReady = function(callback, params){
-		if(!thisRoom.playerReady){
+		if(!window.player){
 			console.log("waiting for player to be ready");
 			setTimeout(thisRoom.whenPlayerReady,200,callback,params);
 		}
-		else{
+		else if (thisRoom.playerReady){
 			callback(params);
+		} else {
+			window.player.addEventListener('onReady', function(){
+				thisRoom.playerReady = true;
+				callback(params);
+			});
 		}
 	}
 
@@ -221,7 +232,7 @@ function Room(opts){
 
 	this._removeFromQueue = function(track){
 		var newQueue = thisRoom.currentQueue.filter(function(elem){
-			if(elem.id === track.id){
+			if(elem.videoId === track.videoId){
 				return false;
 			} else {
 				return true;
@@ -257,7 +268,7 @@ function Track(optsIn){
 		thisTrack.artist = opts.artist || "";
 		thisTrack.title = opts.title || "";
 
-		thisTrack.videoId = opts.id || "";
+		thisTrack.videoId = opts.videoId || "";
 		thisTrack.player = opts.player || "YT";
 
 		thisTrack.playTime = opts.length || 0;
@@ -275,11 +286,22 @@ function YTTest(){
 }
 
 
-
-
 $(document).ready(function(){
-	console.log("room time!")
 	window.room = new Room({id:0});
+
+	var nicknameDialog = document.getElementById('nickname-dialog');
+	var nicknameButton = document.getElementById('nickname-button');
+	if (! nicknameDialog.showModal) {
+		window.dialogPolyfill.registerDialog(nicknameDialog);
+	}
+
+	nicknameButton.addEventListener('click', function() {
+		nicknameDialog.showModal();
+	});
+	nicknameDialog.querySelector('.close').addEventListener('click', function() {
+		nicknameDialog.close();
+	});
+
 
 	var quickAddDialog = document.getElementById('quick-add-dialog');
 	var quickAddButton = document.getElementById('quick-add-button');
@@ -288,13 +310,13 @@ $(document).ready(function(){
 	}
 
 	quickAddButton.addEventListener('click', function() {
-		console.log("boop!");
 		quickAddDialog.showModal();
 	});
 	quickAddDialog.querySelector('.close').addEventListener('click', function() {
 		quickAddReset();
 		quickAddDialog.close();
 	});
+
 
 	var queueCards = document.getElementById('queue-cards');
 	var showQueueButton = document.getElementById('show-queue-button');
@@ -344,7 +366,7 @@ function quickAddInfo(info){
 			var editArtist = $('#quick-add-artist-input').val();
 			var editTitle = $('#quick-add-title-input').val();
 
-			addSongToQueue({id: info.id, title: editTitle, artist: editArtist, lenth: info.length});
+			addSongToQueue({videoId: info.id, title: editTitle, artist: editArtist, lenth: info.length});
 
 			quickAddDialog.close();
 			quickAddReset();
