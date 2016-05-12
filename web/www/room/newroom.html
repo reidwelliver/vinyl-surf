@@ -1,36 +1,52 @@
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.getmdl.io/1.1.1/material.min.js"></script>
+    <script src="../js/stomp-web-bundle.js"></script>
+    <script src="../js/jquery.tubular.1.0.js"></script>
+    <script src="../js/uri.js"></script>
 
 
-<style>
-/*
-.demo-layout-transparent {
-  background: url('../images/DPP_0001.JPG') center / cover;
-}
-*/
-.vs-body .mdl-layout__header,
-.vs-body .mdl-layout__drawer-button,
-.vs-body .mdl-navigation__link {
-  color: black;
-  opacity: .80;
-}
+    <script src="../js/main.js"></script>
+    <script src="../js/room.js"></script>
+    <script src="../js/trackqueue.js"></script>
 
-.h5 .norm-text,
-.h6 .norm-text {
-  color: black;
-  opacity: 1;
-}
-</style>
+
+    <style>
+    .norm-text {
+      color: black;
+      opacity: 1;
+    }
+
+    #title-icon{
+        height: 80%;
+        width: auto;
+        max-width: 64px;
+        max-height: 64px;
+        opacity: .80;
+    }
+
+    .bar {
+        background-color: RGBA(255, 255, 255, .90);
+    }
+    </style>
+</head>
+
 <body>
   <div id="youtube-frame" style="position: absolute;"></div>
 
-  <div class="mdl-layout mdl-js-layout vs-body">
-    <header class="mdl-layout__header mdl-layout__header--scroll"  style="background-color: RGBA(255, 255, 255, .85);">
-      <div class="mdl-layout__header-row">
+  <div class="mdl-layout mdl-js-layout mdl-layout--no-drawer-button">
+    <header class="mdl-layout__header mdl-layout__header--scroll bar">
+      <div class="mdl-layout__header-row" style="padding-left:10px">
         <!-- Title -->
-        <span class="mdl-layout-title">Vinyl.Surf</span>
+        <img id="title-icon" src="../images/icon.svg">
+        <span class="mdl-layout-title norm-text" style="padding-left:.5em;">Vinyl.Surf</span>
+                <div class="mdl-layout-spacer"></div>
         <!-- Add spacer, to align navigation to the right -->
-        <div class="mdl-layout-spacer"></div>
+
       </div>
     </header>
     <div class="mdl-layout__drawer">
@@ -46,13 +62,13 @@
     <main class="mdl-layout__content">
     </main>
 
-    <footer class="mdl-mini-footer mdl-grid--no-spacing" style="padding-top: .1em; padding-bottom: .1em; background-color: RGBA(255, 255, 255, 0.85);">
+    <footer class="mdl-mini-footer mdl-grid--no-spacing bar" style="padding-top: .1em; padding-bottom: .1em; background-color: RGBA(255, 255, 255, 0.85);">
       <div class="mdl-cell mdl-cell--1-col">
         <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
           <i class="material-icons">recent_actors</i>
         </button>
       </div>
-        <div class="mdl-cell mdl-cell--2-col">
+        <div class="mdl-cell mdl-cell--2-col" style="padding-top: .5em;">
             <h5 class="norm-text" style="margin:.1em;">Video Title</h5>
             <h6 class="norm-text" style="margin:.1em;">Video Author</h6>
         </div>
@@ -63,7 +79,7 @@
         <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect" onclick="window.room.togglePlay()">
           <i id="play-button-icon" class="material-icons">pause_circle_filled</i>
         </button>
-        <button id="thumbsup-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+        <button onclick="YTTest()" id="thumbsup-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
           <i class="material-icons">thumb_up</i>
         </button>
         <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
@@ -79,19 +95,98 @@
           </button>
         </div>
     </footer>
-            <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" data-mdl-for="dj-menu-button">
-              <li disabled class="mdl-menu__item">1 DJ before you</li>
-              <li class="mdl-menu__item">Request DJ</li>
-              <li class="mdl-menu__item">Manage Queues</li>
-              <li class="mdl-menu__item">Quick Add</li>
-              <li class="mdl-menu__item">Change Nickname</li>
-            </ul>
+
+
+    <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" data-mdl-for="dj-menu-button">
+      <li disabled class="mdl-menu__item">1 DJ before you</li>
+      <li class="mdl-menu__item">Request DJ</li>
+      <li class="mdl-menu__item">Manage Queues</li>
+      <li class="mdl-menu__item">Quick Add</li>
+      <li class="mdl-menu__item">Change Nickname</li>
+    </ul>
   </div>
 </body>
 
-<script src="../js/stomp-web-bundle.js"></script>
-<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-<script src="https://code.getmdl.io/1.1.1/material.min.js"></script>
-<script src="../js/jquery.tubular.1.0.js"></script>
-<script src="../js/main.js"></script>
-<script src="../js/room.js"></script>
+
+
+
+
+
+
+
+<!--
+        <script>
+       $(document).ready(function(){
+         console.log("text");
+
+          socket.on('askedforplaylistresults', function(recieveddata){
+            //recieved data for this one should be a json
+            console.log(recieveddata);
+
+            //for the for loop
+            var trackamount=recieveddata.length;
+
+            console.log(trackamount);
+            //begining of the table for output
+            var tableforoutput = "<table><tr><td>Track Name</td><td>URL</td><td>Length</td>";
+
+            //the datacomes as objects inside of an array. This loops through the array and splits each apart so the table can be formed.
+            for (i = 0; i < trackamount; i++) {
+                tableforoutput += "<tr>";
+                tableforoutput += "<td>"+recieveddata[i]["NAME"]+"</td><td>"+recieveddata[i]["URL"]+"</td><td>"+recieveddata[i]["length"]+"</td><td><button type='button' onclick='RemoveTrack("+ recieveddata[i]['ID'] +")' class='button'>Remove</button></td>";
+                tableforoutput += "</tr>";
+                console.log(tableforoutput);
+
+              }
+              tableforoutput += "</table>";
+              document.getElementById('Message').innerHTML=tableforoutput;
+
+
+            });
+
+            socket.on('USERSPLAYLISTS', function(recieveddata){
+              //recieved data for this one should be an json,
+              console.log(recieveddata);
+
+              var playlisttotal=recieveddata.length;
+
+              for (i = 0; i < playlisttotal; i++) {
+
+                var x = document.getElementById("PlaylistSelecter");
+                var option = document.createElement("option");
+                option.text = recieveddata[i]["name"];
+                option.value = recieveddata[i]["name"];
+                x.add(option);
+
+              }
+            });
+        });
+        </script>
+
+
+        <button type="button" onclick="YoutubeInfo()" class="button">Single URL test</button>
+        <button type="button" onclick="OutputResults()" class="button">Output and send results</button>
+        <button type="button" onclick="ShowPlaylist()" class="button">Show Playlist</button>
+        <button type="button" onclick="RetrievePlaylists()" class="button">Retrieve Playlists</button>
+        <button type="button" onclick="AddPlaylist()" class="button">Add Playlist</button>
+
+
+        <form id="Theonlyform">
+            Test URL: <input type="text"><br>
+            Title Edit: <input type="text"><br>
+            Playlist: <input type="text"><br>
+            User: <input type="text"><br>
+        </form>
+
+
+        <select name="PlaylistSelecter" id="PlaylistSelecter" form="Theonlyform">
+
+        </select>
+
+
+        <p id="Message">
+
+        </p>
+        <p id="box1"></p>
+        <p id="mysqlreturn"></p>
+-->

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 720 720" style="enable-background:new 0 0 720 720;" xml:space="preserve">
+<style type="text/css">
+	.st0{opacity:0.87;}
+	.st1{fill:url(#XMLID_12_);stroke:#000000;stroke-width:11;stroke-miterlimit:10;}
+	.st2{opacity:0.93;}
+	.st3{fill:none;stroke:#000000;stroke-width:7;stroke-miterlimit:10;}
+	.st4{fill:#F9DB5D;stroke:#000000;stroke-width:7;stroke-miterlimit:10;}
+	.st5{fill:#F4EAD7;stroke:#000000;stroke-width:7;stroke-miterlimit:10;}
+</style>
+<g id="Layer_1" class="st0">
+	<radialGradient id="XMLID_12_" cx="360" cy="360" r="351" gradientUnits="userSpaceOnUse">
+		<stop  offset="4.580326e-002" style="stop-color:#2A1F10"/>
+		<stop  offset="0.4796" style="stop-color:#2B1E0F"/>
+		<stop  offset="1" style="stop-color:#2B2913"/>
+	</radialGradient>
+	<circle id="XMLID_1_" class="st1" cx="360" cy="360" r="351"/>
+	<g id="XMLID_2_" class="st2">
+		<g id="XMLID_3_">
+			<path id="XMLID_9_" class="st3" d="M360,702C171,702,18,549,18,360S171,18,360,18s342,153,342,342S549,702,360,702z"/>
+			<path id="XMLID_4_" class="st3" d="M645,360c0-157.5-127.5-285-285-285S75,202.5,75,360s127.5,285,285,285S645,517.5,645,360z"/>
+			<path id="XMLID_5_" class="st3" d="M360,572c-117.2,0-212-94.8-212-212s94.8-212,212-212s212,94.8,212,212S477.2,572,360,572z"/>
+			<path id="XMLID_6_" class="st3" d="M531,360c0-94.5-76.5-171-171-171s-171,76.5-171,171s76.5,171,171,171S531,454.5,531,360z"/>
+			<path id="XMLID_7_" class="st4" d="M360,474c-63,0-114-51-114-114s51-114,114-114s114,51,114,114S423,474,360,474z"/>
+			<path id="XMLID_8_" class="st5" d="M376,360c0-8.8-7.2-16-16-16s-16,7.2-16,16s7.2,16,16,16S376,368.8,376,360z"/>
+		</g>
+	</g>
+</g>
+<g id="Layer_2">
+	<path id="XMLID_11_" class="st5" d="M648.1,509.7c-20.6-66.4-238.5-17.9-322-100C260.3,345,290.8,274.8,369,252
+		c5.9-1.7,87.1,45.4,79.9,66.2c-4.9,14.2,16.2,39.9,34.1,36.6c13-2.4,19.2-21.3,30-21.8c15.6-0.7,14.7,22.7,31,26.7
+		c18.8,4.6,44.7,0.3,52.4-13.4c8.6-15.1-7.4-37.2-2.4-40.2c6-3.7,28.4,28.9,37.8,24.4c9.1-4.3-5-38,11-51.2c7-5.8,13.1-2.2,19.5-7.3
+		c16.7-13.3,1.4-58.3,0-62.2c-19.7-56.4-99.6-141.4-244.7-162.1C330,35,199,49.5,109,152.4C97,166.1,7.9,271.7,33.4,418.2
+		C55.7,545.8,149,613.6,176.1,631.7c17.2,11.4,110.2,71,232.9,52.4C541.6,664.1,663.6,559.9,648.1,509.7z"/>
+</g>
+</svg>

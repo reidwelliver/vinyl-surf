@@ -1,44 +1,12 @@
 var SSR = {};
-var apikey = "AIzaSyAztbAWiJbAnn6JQ5hJ5oLEDYf7eW2mY0k";
-
-//gotta make that connection you know?
-var socket = io.connect(':42081/track');
 
 
 
-
-
-
-//Could merge, like having the button
-function OutputResults(object_to_output) {
-
-  SSR.Title = document.getElementById("Theonlyform").elements[1].value;
-  SSR.Playlist = document.getElementById("PlaylistSelecter").value;
-  SSR.USERSNAME = document.getElementById("Theonlyform").elements[3].value;
-  //gets name of playlist for output
-
-//done here
- console.log(SSR);
- //this is where it sends messages to node
- socket.emit('addtracktodatabase',
-    SSR
-  );
-
-  //for results
-    document.getElementById('box1').innerHTML="<textarea rows='40' cols='100'>"+JSON.stringify(SSR) +"</textarea>";
-  }
-
-
-
-function YoutubeInfo(id) {
-
-
-  var form_fields = document.getElementById("Theonlyform");
-
-  test_url = form_fields.elements[0].value;
+function YoutubeInfo(url) {
+    var apikey = "AIzaSyAztbAWiJbAnn6JQ5hJ5oLEDYf7eW2mY0k";
 
   //I don't know why I keep doing this
-  var working_url = test_url ;
+  var working_url = url ;
 
   //this is for that library
   var uri = new URI(working_url);
@@ -80,14 +48,12 @@ function YoutubeInfo(id) {
 
                 //gets the title, embedableness and length in an iso format
                 var ytitle = data.items[0].snippet.title;
-                var longness = data.items[0].contentDetails.duration;
+
                 var embedableness = data.items[0].status.embeddable;
-                if (embedableness == false){
 
-                  console.log("That won't work homes");
 
-                }
-
+                var longness = data.items[0].contentDetails.duration;
+/*
                 //dear google, iso formats are cool and all but I need
                 //seconds, thisremoves the PT from the string
                 var minusPT = longness.substr(2);
@@ -161,33 +127,35 @@ function YoutubeInfo(id) {
 
 
                 }
-
-                var video_data = {id: video_id, title: ytitle, length: total_seconds, embed: embedableness };
-                editTitle(video_data);
-
-
-
-
-
+*/
+                console.log({id: video_id, title: ytitle, length: longness, embed: embedableness });
 
         })
 }
-function editTitle(VIDEODATA){
-
-  document.getElementById("Theonlyform").elements[1].value = VIDEODATA["title"];
-  document.getElementById('Message').innerHTML="Edit the title before hitting the other button to send";
-
-
-//See aren't objects better?
-  SSR ={
-  "URL" : VIDEODATA.id,
-   "Title" : VIDEODATA.title,
-   "Length" : VIDEODATA.length
-   };
 
 
 
-}
+
+
+
+//Could merge, like having the button
+function OutputResults(object_to_output) {
+
+  SSR.Title = document.getElementById("Theonlyform").elements[1].value;
+  SSR.Playlist = document.getElementById("PlaylistSelecter").value;
+  SSR.USERSNAME = document.getElementById("Theonlyform").elements[3].value;
+  //gets name of playlist for output
+
+//done here
+ console.log(SSR);
+ //this is where it sends messages to node
+ socket.emit('addtracktodatabase',
+    SSR
+  );
+
+  //for results
+    document.getElementById('box1').innerHTML="<textarea rows='40' cols='100'>"+JSON.stringify(SSR) +"</textarea>";
+  }
 
 
 //shows tracks on playlists

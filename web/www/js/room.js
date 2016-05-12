@@ -29,7 +29,7 @@ function YoutubePlayer(optsIn, readyCallback){
 		var tubOpts = {
         ratio: 16/9, // usually either 4/3 or 16/9 -- tweak as needed
         videoId: 'ZCAnLxRvNNc', // toy robot in space is a good default, no?
-        mute: true,
+        mute: false,
         repeat: true,
         width: $(window).width(),
         wrapperZIndex: 99,
@@ -228,6 +228,28 @@ function Track(optsIn){
 	thisTrack.init(optsIn);
 };
 
+
+
+
+function YTTest(){
+	YoutubeInfo('https://www.youtube.com/watch?v=PApxRlpvsIU');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 $(document).ready(function(){
+	console.log("room time!")
 	window.room = new Room({id:0});
 })
