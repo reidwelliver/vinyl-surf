@@ -116,6 +116,18 @@ function Room(opts){
 			thisRoom.receiveTrackUpdate(data);
 		});
 
+		window.messages.subscribe('room-' + thisRoom.id + '-queue-add', function(data){
+			//console.log("trackUpdate callback reached");
+			console.log('addQueue',data);
+			thisRoom._addToQueue(data);
+		});
+
+		window.messages.subscribe('room-' + thisRoom.id + '-queue-rm', function(data){
+			//console.log("trackUpdate callback reached");
+			console.log('rmQueue',data);
+			thisRoom._removeFromQueue(data);
+		});
+
 		window.messages.subscribe('room-' + thisRoom.id + '-next', function(data){
 			//console.log("nextTrack callback reached");
 			console.log('next',data);
@@ -128,7 +140,6 @@ function Room(opts){
 			thisRoom.receiveTrackUpdate(data);
 		});
 
-		//socket callbacks - move these eventually
 		window.messages.invoke('room-load',{id: thisRoom.id},function(data){
 			console.log('load',data);
 			thisRoom.receiveFirstLoad(data);
@@ -200,8 +211,38 @@ function Room(opts){
 	}
 
 	this.updateTrackBar = function(){
-		var span = thisRoom.currentTrack.name + "<br>" + thisRoom.currentTrack.artist;
+		var span = thisRoom.currentTrack.title + "<br>" + thisRoom.currentTrack.artist;
 		$("#trackinfo").html(span);
+	}
+
+	this._addToQueue = function(track){
+		thisRoom.currentQueue.push(track);
+	}
+
+	this._removeFromQueue = function(track){
+		var newQueue = thisRoom.currentQueue.filter(function(elem){
+			if(elem.id === track.id){
+				return false;
+			} else {
+				return true;
+			}
+
+			thisRoom.queues[0] = newQueue;
+			thisRoom.currentQueue = newQueue;
+		});
+
+		this.queueAdd = function(track){
+			window.messages.invoke('room-' + thisRoom.id + '-queue-add',{id: thisRoom.id},function(data){
+				console.log('addTrack-invoked',data);
+			});
+		}
+
+		this.queueRemove = function(track){
+			window.messages.invoke('room-' + thisRoom.id + '-queue-rm',{id: thisRoom.id},function(data){
+				console.log('rmTrack-invoked',data);
+			});
+		}
+
 	}
 
 	thisRoom.init();
@@ -214,9 +255,9 @@ function Track(optsIn){
 	this.init = function(opts){
 		opts = opts || {};
 		thisTrack.artist = opts.artist || "";
-		thisTrack.name = opts.name || "";
+		thisTrack.title = opts.title || "";
 
-		thisTrack.videoId = opts.videoId || "";
+		thisTrack.videoId = opts.id || "";
 		thisTrack.player = opts.player || "YT";
 
 		thisTrack.playTime = opts.length || 0;
@@ -229,8 +270,6 @@ function Track(optsIn){
 };
 
 
-
-
 function YTTest(){
 	YoutubeInfo('https://www.youtube.com/watch?v=PApxRlpvsIU');
 }
@@ -238,18 +277,101 @@ function YTTest(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 $(document).ready(function(){
 	console.log("room time!")
 	window.room = new Room({id:0});
-})
+
+	var quickAddDialog = document.getElementById('quick-add-dialog');
+	var quickAddButton = document.getElementById('quick-add-button');
+	if (! quickAddDialog.showModal) {
+		window.dialogPolyfill.registerDialog(quickAddDialog);
+	}
+
+	quickAddButton.addEventListener('click', function() {
+		console.log("boop!");
+		quickAddDialog.showModal();
+	});
+	quickAddDialog.querySelector('.close').addEventListener('click', function() {
+		quickAddReset();
+		quickAddDialog.close();
+	});
+
+	var queueCards = document.getElementById('queue-cards');
+	var showQueueButton = document.getElementById('show-queue-button');
+
+	showQueueButton.addEventListener('click', function(){
+		queueCards.style.display = queueCards.style.display === 'none' ? '' : 'none';
+	});
+
+	var quickAddInput = $('#quick-add-input');
+
+	quickAddInput.on('change keypress', function(){
+		var value = quickAddInput.val();
+		if(value !== ''){
+			quickAddLoading();
+			YoutubeInfo(value, quickAddInfo);
+		}
+	});
+});
+
+function quickAddInfo(info){
+	if(info.embed){
+		$('#quick-add-thumbnail').attr('src', 'http://img.youtube.com/vi/' + info.id + '/default.jpg');
+
+		if(info.title && info.title !== ''){
+			$('#quick-add-title-input').val(info.title);
+			$('#quick-add-title').toggleClass("is-focused");
+			$('#quick-add-title').toggleClass("is-focused");
+			$('#quick-add-title').addClass("is-dirty");
+		}
+		if(info.artist && info.artist !== ''){
+			$('#quick-add-artist-input').val(info.artist);
+			$('#quick-add-artist').toggleClass("is-focused");
+			$('#quick-add-artist').toggleClass("is-focused");
+			$('#quick-add-artist').addClass("is-dirty");
+		}
+		$("#quick-add-loading").hide();
+		$("#quick-add-info").show();
+		$("#quick-add-submit-button").removeAttr("disabled");
+	} else {
+		$("#quick-add-loading").hide();
+		$("#quick-add-embedwarning").show();
+	}
+
+	quickAddDialog.getElementById('quick-add-submit-button').addEventListener('click', function(){
+		var button = $('quick-add-submit-button');
+		if(typeof(button.attr('disabled')) === 'undefined' || button.attr('disabled') === 'false'){
+			var editArtist = $('#quick-add-artist-input').val();
+			var editTitle = $('#quick-add-title-input').val();
+
+			addSongToQueue({id: info.id, title: editTitle, artist: editArtist, lenth: info.length});
+
+			quickAddDialog.close();
+			quickAddReset();
+		}
+	});
+}
+
+function quickAddReset(){
+	$('#quick-add-thumbnail').attr('src', "../images/icon.svg");
+	$('#quick-add-title-input').val('');
+	$('#quick-add-title').removeClass("is-focused");
+	$('#quick-add-title').removeClass("is-dirty");
+	$('#quick-add-artist-input').val('');
+	$('#quick-add-artist').removeClass("is-focused");
+	$('#quick-add-artist').removeClass("is-dirty");
+	$("#quick-add-submit-button").attr("disabled","true");
+	$("#quick-add-info").hide();
+	$("#quick-add-embedwarning").hide();
+	$("#quick-add-loading").hide();
+}
+
+function quickAddLoading(){
+	$("#quick-add-info").hide();
+	$("#quick-add-embedwarning").hide();
+	$("#quick-add-loading").show();
+}
+
+function addSongToQueue(info){
+	window.room.queueAdd(new Track(info));
+}
