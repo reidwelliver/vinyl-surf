@@ -19,7 +19,7 @@ function Track(optsIn){
 		opts = opts || {};
 		thisTrack.id = opts.id || ++trackIdGlob;
 		thisTrack.artist = opts.artist || "";
-		thisTrack.name = opts.name || "";
+		thisTrack.title = opts.title || "";
 
 		thisTrack.videoId = opts.videoId || "";
 		thisTrack.player = opts.player || "YT";
@@ -36,7 +36,7 @@ function Track(optsIn){
 		return {
 			id: thisTrack.id,
 			artist: thisTrack.artist,
-			name: thisTrack.name,
+			title: thisTrack.title,
 			videoId: thisTrack.videoId,
 			player: thisTrack.player,
 			playTime: thisTrack.playTime,
@@ -50,7 +50,7 @@ function Track(optsIn){
 		return {
 			id: thisTrack.id,
 			artist: thisTrack.artist,
-			name: thisTrack.name,
+			title: thisTrack.title,
 			videoId: thisTrack.videoId,
 			player: thisTrack.player,
 			playTime: thisTrack.playTime,
@@ -135,13 +135,12 @@ function Room(optsIn){
 
 		messages.provide('room-' + thisRoom.id + '-load', function(message, options, respondMethod){
 			console.log("client connected to room " + thisRoom.name);
-			messages.respond(thisRoom.firstLoadData(), options);
+			respondMethod(thisRoom.firstLoadData(), options);
 		});
 
 
 		messages.provide('room-' + thisRoom.id + '-queue-rm', function(message, options, respondMethod){
 			console.log("client removed track from queue " + message);
-			//messages.respond(thisRoom.firstLoadData(), message);
 		});
 
 		messages.provide('room-' + thisRoom.id + '-queue-add', function(message, options, respondMethod){
@@ -183,7 +182,13 @@ function Room(optsIn){
 	}
 
 	this.firstLoadData = function(){
-		return thisRoom.queue.tracks[thisRoom.currentQueuePos].getInfo();
+		var info = {
+			queue: thisRoom.queue,
+			currentQueuePos: thisRoom.currentQueuePos
+		}
+
+		return info;
+		//return thisRoom.queue.tracks[thisRoom.currentQueuePos].getInfo();
 	}
 
 	this.broadcastTrackUpdate = function(){
@@ -283,7 +288,7 @@ messages.connect(function(){
 			new Track({
 				id: 1,
 				artist: "Shugo Tokumaru",
-				name: "Katachi",
+				title: "Katachi",
 				videoId: "Q-WM-x__BOk",
 				player: "YT",
 				playTime: 184
@@ -293,7 +298,7 @@ messages.connect(function(){
 
 	var testRoom = new Room({
 		name: "hello",
-		id: 1,
+		id: 20,
 		queue: testQueue,
 		dj: "bob",
 		users: [],

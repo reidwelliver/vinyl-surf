@@ -99,8 +99,8 @@
           </button>
         </div>
           <div class="mdl-cell mdl-cell--2-col" style="padding-top: .5em;">
-              <h5 class="norm-text" style="margin:.1em;">Video Title</h5>
-              <h6 class="norm-text" style="margin:.1em;">Video Author</h6>
+              <h5 id="bar-video-title" class="norm-text" style="margin:.1em;"></h5>
+              <h6 id="bar-video-artist" class="norm-text" style="margin:.1em;"></h6>
           </div>
           <div class="mdl-cell mdl-cell--1-col  mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
           <button id="thumbsdown-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
@@ -109,7 +109,7 @@
           <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect" onclick="window.room.togglePlay()">
             <i id="play-button-icon" class="material-icons">pause_circle_filled</i>
           </button>
-          <button onclick="YTTest()" id="thumbsup-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+          <button id="thumbsup-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
             <i class="material-icons">thumb_up</i>
           </button>
           <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
@@ -212,87 +212,3 @@
 </body>
   </div>
 </body>
-
-
-
-
-
-
-
-
-<!--
-        <script>
-       $(document).ready(function(){
-         console.log("text");
-
-          socket.on('askedforplaylistresults', function(recieveddata){
-            //recieved data for this one should be a json
-            console.log(recieveddata);
-
-            //for the for loop
-            var trackamount=recieveddata.length;
-
-            console.log(trackamount);
-            //begining of the table for output
-            var tableforoutput = "<table><tr><td>Track Name</td><td>URL</td><td>Length</td>";
-
-            //the datacomes as objects inside of an array. This loops through the array and splits each apart so the table can be formed.
-            for (i = 0; i < trackamount; i++) {
-                tableforoutput += "<tr>";
-                tableforoutput += "<td>"+recieveddata[i]["NAME"]+"</td><td>"+recieveddata[i]["URL"]+"</td><td>"+recieveddata[i]["length"]+"</td><td><button type='button' onclick='RemoveTrack("+ recieveddata[i]['ID'] +")' class='button'>Remove</button></td>";
-                tableforoutput += "</tr>";
-                console.log(tableforoutput);
-
-              }
-              tableforoutput += "</table>";
-              document.getElementById('Message').innerHTML=tableforoutput;
-
-
-            });
-
-            socket.on('USERSPLAYLISTS', function(recieveddata){
-              //recieved data for this one should be an json,
-              console.log(recieveddata);
-
-              var playlisttotal=recieveddata.length;
-
-              for (i = 0; i < playlisttotal; i++) {
-
-                var x = document.getElementById("PlaylistSelecter");
-                var option = document.createElement("option");
-                option.text = recieveddata[i]["name"];
-                option.value = recieveddata[i]["name"];
-                x.add(option);
-
-              }
-            });
-        });
-        </script>
-
-
-        <button type="button" onclick="YoutubeInfo()" class="button">Single URL test</button>
-        <button type="button" onclick="OutputResults()" class="button">Output and send results</button>
-        <button type="button" onclick="ShowPlaylist()" class="button">Show Playlist</button>
-        <button type="button" onclick="RetrievePlaylists()" class="button">Retrieve Playlists</button>
-        <button type="button" onclick="AddPlaylist()" class="button">Add Playlist</button>
-
-
-        <form id="Theonlyform">
-            Test URL: <input type="text"><br>
-            Title Edit: <input type="text"><br>
-            Playlist: <input type="text"><br>
-            User: <input type="text"><br>
-        </form>
-
-
-        <select name="PlaylistSelecter" id="PlaylistSelecter" form="Theonlyform">
-
-        </select>
-
-
-        <p id="Message">
-
-        </p>
-        <p id="box1"></p>
-        <p id="mysqlreturn"></p>
--->

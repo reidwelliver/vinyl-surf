@@ -17,6 +17,18 @@ function loadChat(){
 			loadChat();
 	}
 */
+function Queue(optsIn){
+	var thisQueue = this;
+
+	this.init = function(opts){
+		opts = opts || {};
+		thisQueue.tracks = opts.tracks || [];
+		thisQueue.name = opts.name || "";
+	};
+
+	thisQueue.init(optsIn);
+}
+
 
 function YoutubePlayer(optsIn){
 	var thisPlayer = this;
@@ -84,12 +96,10 @@ function Room(opts){
 		thisRoom.name = opts.name || "";
 		thisRoom.id = opts.id || 0;
 
-		thisRoom.queue = opts.queue || [];
-		thisRoom.dj = opts.dj || "";
-		thisRoom.users = opts.users || [];
-
 		thisRoom.currentTrack = "";
 		thisRoom.currentPlayer = "";
+
+		thisRoom.queue = new Queue();
 
 		thisRoom.nextTrack = "";
 		thisRoom.nextPlayer = "";
@@ -116,58 +126,56 @@ function Room(opts){
 	};
 
 	this.messageInit = function(){
-		console.log("initializing message subscriptions");
 		window.messages.subscribe('room-' + thisRoom.id + '-update', function(data){
-			//console.log("trackUpdate callback reached");
 			//console.log('update',data);
 			thisRoom.receiveTrackUpdate(data);
 		});
 
 		window.messages.subscribe('room-' + thisRoom.id + '-queue-add', function(data){
-			//console.log("trackUpdate callback reached");
 			console.log('addQueue',data);
 			thisRoom._addToQueue(data);
 		});
 
 		window.messages.subscribe('room-' + thisRoom.id + '-queue-rm', function(data){
-			//console.log("trackUpdate callback reached");
 			console.log('rmQueue',data);
 			thisRoom._removeFromQueue(data);
 		});
 
 		window.messages.subscribe('room-' + thisRoom.id + '-next', function(data){
-			//console.log("nextTrack callback reached");
 			//console.log('next',data);
 			thisRoom.receiveNextTrack(data);
 		});
 
 		window.messages.subscribe('room-' + thisRoom.id + '-start', function(data){
-			//console.log("trackStart callback reached");
-			//console.log('next',data);
+			//console.log('start',data);
 			thisRoom.receiveTrackUpdate(data);
 		});
 
-		console.log("invoking room-load...");
-		window.messages.invoke('room-load',{id: thisRoom.id},function(data){
+		window.messages.invoke('room-' + thisRoom.id + '-load',{},function(data){
 			console.log('load',data);
 			thisRoom.receiveFirstLoad(data);
 		});
 	}
 
 
-	this.receiveFirstLoad = function(track){
+	this.receiveFirstLoad = function(roomdata){
+		console.log("First Load!!")
+		console.log(roomdata);
+		thisRoom.queue.tracks = roomdata.queue.tracks;
+		thisRoom.currentQueuePos = roomdata.hasOwnProperty('currentQueuePos') ? roomdata.currentQueuePos : thisRoom.currentQueuePos;
+
+		var track = thisRoom.queue.tracks[thisRoom.currentQueuePos];
 		thisRoom.whenPlayerReady(function(track){
 			if(thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
-				thisRoom.updateTrackBar();
+				thisRoom.updateTrackBar(track);
 			}
 		}, track);
 	};
 
 	this.togglePlay = function(){
 		thisRoom.isPaused = !thisRoom.isPaused;
-		console.log("toggling play...");
 		if(thisRoom.isPaused){
 			$('#play-button-icon').html("play_circle_filled");
 			window.player.pauseVideo();
@@ -183,15 +191,14 @@ function Room(opts){
 			if(window.player.getVideoUrl().indexOf(track.videoId) === -1){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
-				thisRoom.updateTrackBar();
+				thisRoom.updateTrackBar(track);
 			}
 
 			var difference = (track.currentTime - window.player.getCurrentTime()) - ((Date.now()/1000) - track.stamp);
 
-			if( !thisRoom.isPaused && ( difference > 2 || difference < -2 ) && thisRoom.players.hasOwnProperty(track.player)){
-				console.log('updating track');
+			if( !thisRoom.isPaused && ( difference > 3 || difference < -3 ) && thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.players[track.player].seekTo(track.currentTime);
-				thisRoom.updateTrackBar();
+				thisRoom.updateTrackBar(track);
 			}
 		}, track);
 	};
@@ -220,17 +227,25 @@ function Room(opts){
 		}
 	}
 
-	this.updateTrackBar = function(){
-		var span = thisRoom.currentTrack.title + "<br>" + thisRoom.currentTrack.artist;
-		$("#trackinfo").html(span);
+	this.updateTrackBar = function(track){
+		$('#bar-video-title').html(track.title);
+		$('#bar-video-artist').html(track.artist);
 	}
 
 	this._addToQueue = function(track){
-		thisRoom.queue.push(track);
+		thisRoom.queue.tracks.push(track);
+
+		var queueButton = $("show-queue-button");
+		var numNew = 1;
+
+		if(queueButton.prop('data-badge')){
+			numNew += queueButton.prop('data-badge');
+		}
+		queueButton.prop('data-badge',numNew);
 	}
 
 	this._removeFromQueue = function(track){
-		var newQueue = thisRoom.queue.filter(function(elem){
+		var newQueue = thisRoom.queue.tracks.filter(function(elem){
 			if(elem.videoId === track.videoId){
 				return false;
 			} else {
@@ -278,10 +293,6 @@ function Track(optsIn){
 	thisTrack.init(optsIn);
 };
 
-
-function YTTest(){
-	YoutubeInfo('https://www.youtube.com/watch?v=PApxRlpvsIU');
-}
 
 function quickAddInfo(info){
 	if(info.embed){
@@ -343,7 +354,7 @@ function addSongToQueue(info){
 
 
 $(document).ready(function(){
-	window.room = new Room({id:1});
+	window.room = new Room({id:20});
 
 	var nicknameDialog = document.getElementById('nickname-dialog');
 	var nicknameButton = document.getElementById('nickname-button');
@@ -400,7 +411,7 @@ $(document).ready(function(){
 
 	var quickAddInput = $('#quick-add-input');
 
-	quickAddInput.on('change keypress', function(){
+	quickAddInput.on('change keypress keyup focus mouseenter', function(){
 		var value = quickAddInput.val();
 		if(value !== ''){
 			quickAddReset();
@@ -408,4 +419,10 @@ $(document).ready(function(){
 			YoutubeInfo(value, quickAddInfo);
 		}
 	});
+
+	var queueButton = $("show-queue-button");
+	queueButton.on('click', function(){
+		queueButton.removeProp('data-badge');
+	})
+
 });
