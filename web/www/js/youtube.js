@@ -1,7 +1,6 @@
 var SSR = {};
 
 
-console.log("youtubeinfo should be defined...");
 function YoutubeInfo(url,callback) {
     var apikey = "AIzaSyAztbAWiJbAnn6JQ5hJ5oLEDYf7eW2mY0k";
 
@@ -47,7 +46,6 @@ function YoutubeInfo(url,callback) {
 
 
     var toReturn = {videoId: video_id, title: ytitle, artist: artist, playTime: longness, embed: embedable };
-    console.log(toReturn);
 
     if(callback){
       callback(toReturn);
