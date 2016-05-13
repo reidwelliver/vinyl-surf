@@ -14,7 +14,7 @@ messages = new stomp({
 function Auth(callback) {
     var thisAuth = this;
     var connect = mysql.createConnection({
-      host     : 'localhost',
+      host     : "db",
       user     : 'root',
       password : '',
       database : 'surf'
@@ -84,7 +84,7 @@ function Auth(callback) {
 
     this.StompEvents = function () {
         messages.connect( function() {
-            console.log("connected!");
+          console.log("connected!");
 
            messages.provide('isAuthenticated', function(message, options, respondMethod){
                console.log("Checking authetication for", message);
@@ -119,6 +119,7 @@ function Auth(callback) {
                     }
                     else {
                         console.log("Successful Login. Token =", result.xtoken);
+												console.log("Row: ", result);
                         messages.respond({xtoken: result.xtoken, user: result.user, error: null}, options);
                     /*    thisAuth.VerifyToken(token, function(err, result) {
 
@@ -157,8 +158,6 @@ function Auth(callback) {
     }
 
     this.init = function() {
-				var admin = new Admin();
-				console.log("asdg");
         thisAuth.StompEvents();
     }
 
@@ -244,7 +243,9 @@ function Auth(callback) {
         var thisRegister = this;
         this.checkUsername(username, function(err, success) {
             if (err) {
-                console.log(new Error().stack);
+
+								console.log("check username error: ", err);
+                //console.log(new Error().stack);
             }
             if (success) {
                 var newUser = new thisAuth.User(username, password, email);
@@ -276,12 +277,13 @@ function Auth(callback) {
 
 
 var auth = new Auth(null);
-/*auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
+auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
     if (err)
         console.log(err);
     console.log(result);
-}); */
+});
 
+//console.log("test");
 /*auth.Login("test1", "test", function(err, token) {
     if (err)
         console.log(err);

@@ -23,7 +23,7 @@ window.popup = function (string) {
 
 function loadRoom(){
     window.popup("hide");
-	$.ajax("room/index.html",{
+	$.ajax("room/newroom.html",{
 		type:"GET",
 		dataFilter: null,
 		dataType: "html",

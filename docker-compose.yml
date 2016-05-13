@@ -10,6 +10,8 @@ services:
       dockerfile: Dockerfile
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+    - ./database/sql_scripts:/docker-entrypoint-initdb.d    
 
   vs-accounts:
     hostname: vs-accounts
