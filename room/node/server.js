@@ -109,6 +109,19 @@ function Queue(optsIn){
 		thisQueue.name = opts.name || "";
 	};
 
+	this.getInfo = function(){
+		var info = {
+			name: thisQueue.name,
+			tracks: []
+		}
+
+		thisQueue.tracks.forEach(function(track){
+			info.tracks.push(track.getInfo());
+		});
+
+		return info;
+	}
+
 	thisQueue.init(optsIn);
 }
 
@@ -134,17 +147,18 @@ function Room(optsIn){
 		thisRoom.intervalIds = {};
 
 		messages.provide('room-' + thisRoom.id + '-load', function(message, options, respondMethod){
-			console.log("client connected to room " + thisRoom.name);
-			respondMethod(thisRoom.firstLoadData(), options);
+			console.log("providing roomload");
+			messages.respond(thisRoom.firstLoadData(), options);
 		});
 
 
 		messages.provide('room-' + thisRoom.id + '-queue-rm', function(message, options, respondMethod){
-			console.log("client removed track from queue " + message);
+			console.log("client removed track from queue ");
+			console.log(message);
 		});
 
 		messages.provide('room-' + thisRoom.id + '-queue-add', function(message, options, respondMethod){
-			console.log("client added track to queue ")
+			console.log("client added track to queue ");
 			console.log(message);
 			thisRoom.addToQueue(message);
 		});
@@ -183,7 +197,7 @@ function Room(optsIn){
 
 	this.firstLoadData = function(){
 		var info = {
-			queue: thisRoom.queue,
+			queue: thisRoom.queue.getInfo(),
 			currentQueuePos: thisRoom.currentQueuePos
 		}
 
@@ -280,8 +294,6 @@ function RoomStore(optsIn){
 
 
 messages.connect(function(){
-	console.log("connected!");
-
 	var testQueue = new Queue({
 		name: "Test Queue",
 		tracks: [

@@ -151,15 +151,16 @@ function Room(opts){
 			thisRoom.receiveTrackUpdate(data);
 		});
 
+		console.log('invoking room-' + thisRoom.id + '-load');
 		window.messages.invoke('room-' + thisRoom.id + '-load',{},function(data){
-			console.log('load',data);
+			console.log('load fn worked',data);
 			thisRoom.receiveFirstLoad(data);
 		});
 	}
 
 
 	this.receiveFirstLoad = function(roomdata){
-		console.log("First Load!!")
+		console.log("First Load!!");
 		console.log(roomdata);
 		thisRoom.queue.tracks = roomdata.queue.tracks;
 		thisRoom.currentQueuePos = roomdata.hasOwnProperty('currentQueuePos') ? roomdata.currentQueuePos : thisRoom.currentQueuePos;
