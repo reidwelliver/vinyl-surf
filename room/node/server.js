@@ -309,7 +309,7 @@ messages.connect(function(){
 
 	var testRoom = new Room({
 		name: "hello",
-		id: 20,
+		id: 50,
 		queue: testQueue,
 		dj: "bob",
 		users: [],

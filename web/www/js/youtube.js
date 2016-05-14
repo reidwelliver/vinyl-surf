@@ -31,24 +31,29 @@ function YoutubeInfo(url,callback) {
 
   $.getJSON(requestUrl).done(function(data,status,xhr) {
     //gets the title, embedableness and length in an iso format
-    var ytitle = data.items[0].snippet.title;
-    var embedable = data.items[0].status.embeddable;
-    var longness = convertPT(data.items[0].contentDetails.duration);
-    var artist = '';
+    console.log("YTInfo:");
+    console.log(data);
+
+    if(data.items && data.items[0]){
+      var ytitle = data.items[0].snippet.title;
+      var embedable = data.items[0].status.embeddable;
+      var longness = convertPT(data.items[0].contentDetails.duration);
+      var artist = '';
 
 
-    var titleDash = ytitle.indexOf(' - ');
-    if(titleDash > -1){
-      var splitTitle = ytitle.split(' - ');
-      artist = splitTitle[0];
-      ytitle = splitTitle[1];
-    }
+      var titleDash = ytitle.indexOf(' - ');
+      if(titleDash > -1){
+        var splitTitle = ytitle.split(' - ');
+        artist = splitTitle[0];
+        ytitle = splitTitle[1];
+      }
 
 
-    var toReturn = {videoId: video_id, title: ytitle, artist: artist, playTime: longness, embed: embedable };
+      var toReturn = {videoId: video_id, title: ytitle, artist: artist, playTime: longness, embed: embedable };
 
-    if(callback){
-      callback(toReturn);
+      if(callback){
+        callback(toReturn);
+      }
     }
   })
 }

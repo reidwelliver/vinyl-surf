@@ -111,14 +111,8 @@ function Room(opts){
 		thisRoom.players = {
 			YT: new YoutubePlayer(opts.players.YT)
 		}
-		if(!window.messages.state.connected){
-			window.messages.connect(function(){
-				console.log("connected!");
-				thisRoom.messageInit();
-			});
-		} else {
-			thisRoom.messageInit();
-		}
+
+		thisRoom.messageInit();
 	};
 
 	this.messageInit = function(){
@@ -202,7 +196,7 @@ function Room(opts){
 
 			var difference = (track.currentTime - window.player.getCurrentTime()) - ((Date.now()/1000) - track.stamp);
 
-			if( !thisRoom.isPaused && ( difference > 3 || difference < -3 ) && thisRoom.players.hasOwnProperty(track.player)){
+			if( !thisRoom.isPaused && ( difference > 3 || difference < -3 )){
 				thisRoom.players[track.player].seekTo(track.currentTime);
 				thisRoom.updateTrackBar(track);
 			}
@@ -369,28 +363,16 @@ function quickAddLoading(){
 var prevVal = '';
 
 $(document).ready(function(){
-	window.room = new Room({id:20});
-
-
-	var nicknameDialog = document.getElementById('nickname-dialog');
-	var nicknameButton = document.getElementById('nickname-button');
-	if (! nicknameDialog.showModal) {
-		window.dialogPolyfill.registerDialog(nicknameDialog);
-	}
-
-	nicknameButton.addEventListener('click', function() {
-		nicknameDialog.showModal();
-	});
-	nicknameDialog.querySelector('.close').addEventListener('click', function() {
-		nicknameDialog.close();
-	});
-
+	window.room = new Room({id:50});
 
 	var quickAddDialog = document.getElementById('quick-add-dialog');
 	var quickAddButton = document.getElementById('quick-add-button');
+	window.dialogPolyfill.registerDialog(quickAddDialog);
+/*
 	if (! quickAddDialog.showModal) {
 		window.dialogPolyfill.registerDialog(quickAddDialog);
 	}
+*/
 
 	quickAddButton.addEventListener('click', function() {
 		quickAddDialog.showModal();
@@ -433,6 +415,7 @@ $(document).ready(function(){
 	quickAddInput.on('change keypress keyup focus', function(){
 		var value = quickAddInput.val();
 		if(value !== '' && value != prevVal){
+			prevVal = value;
 			quickAddLoading();
 			YoutubeInfo(value, quickAddInfo);
 		}

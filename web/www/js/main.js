@@ -1,13 +1,4 @@
 
-if(!window.messages){
-	window.messages = new stomp({
-		endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
-		user: 'vinyl-surf',
-		pass: 'vinyl-surf'
-	});
-}
-
-
 window.popup = function (string) {
     var container = $("#popup");
     if (string == "hide") {
@@ -102,3 +93,30 @@ function loadAuth(){
 		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
 	});
 }
+
+
+function checkConnection(callback){
+	if(!window.messages){
+		window.messages = new stomp({
+			endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
+			user: 'vinyl-surf',
+			pass: 'vinyl-surf'
+		});
+	}
+
+	if(!window.messages.state.connected){
+    window.messages.connect(function(){
+			console.log("connected!");
+			if(callback && typeof callback === 'function'){
+				callback();
+			}
+		});
+	} else if(callback && typeof callback === 'function'){
+			callback();
+	}
+}
+
+
+$(document).ready(function(){
+  checkConnection(loadRoom);
+});
