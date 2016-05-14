@@ -22,6 +22,10 @@
 	font-weight: 500;
 }
 
+.mdl-layout__header-row {
+	background-color: white;
+}
+
 .norm-text {
 	color: black;
 	opacity: 1;

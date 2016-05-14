@@ -10,7 +10,7 @@ messages = new stomp({
 	mode: 'server'
 });
 
-var Admin = function(callback) {
+var Admin = function(opt, callback) {
     var thisAdmin = this;
     var connect = mysql.createConnection({
       host     : 'localhost',
@@ -112,7 +112,8 @@ var Admin = function(callback) {
     this.init  = function() {
         thisAdmin.StompEvents();
     }
+		opt.Test();
     thisAdmin.init();
 }
 
-module.exports = Admin;
+exports.admin = Admin;

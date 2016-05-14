@@ -21,15 +21,37 @@ window.popup = function (string) {
     }
 }
 
+function hideOtherContainers() {
+		$("#page-content-room").hide();
+		$("#page-content-auth").hide();
+		$("#page-content-admin").hide();
+}
+
+function checkAndHideRoom() {
+	var tubular = $("#tubular-container");
+	var tubularshield = $("#tubular-shield");
+
+	if (tubular != null) {
+		tubular.hide();
+	}
+	if (tubularshield != null) {
+		tubular.hide();
+	}
+
+}
+
 function loadRoom(){
     window.popup("hide");
+		hideOtherContainers();
+		$("#page-content-room").show();
+
 	$.ajax("room/index.html",{
 		type:"GET",
 		dataFilter: null,
 		dataType: "html",
 		converters: {},
 		success:function(data, textStatus, jqXHR) {
-            $("#page-content").html(data);
+            $("#page-content-room").html(data);
             console.log('success');
             componentHandler.upgradeAllRegistered();
 
@@ -40,13 +62,17 @@ function loadRoom(){
 
 function loadAdmin(){
     window.popup("hide");
+		checkAndHideRoom();
+		hideOtherContainers();
+		$("#page-content-admin").show();
+
 	$.ajax("admin/index.html",{
 		type:"GET",
 		dataFilter: null,
 		dataType: "html",
 		converters: {},
 		success:function(data, textStatus, jqXHR) {
-            $("#page-content").html(data);
+            $("#page-content-admin").html(data);
             console.log('success');
             componentHandler.upgradeAllRegistered();
 
@@ -58,14 +84,17 @@ function loadAdmin(){
 
 function loadAuth(){
     window.popup("hide");
-		$("#page-content").html("");
+		checkAndHideRoom();
+		hideOtherContainers();
+		$("#page-content-auth").show();
+
 	$.ajax("auth/index.html",{
 		type:"GET",
 		dataFilter: null,
 		dataType: "html",
 		converters: {},
 		success:function(data, textStatus, jqXHR) {
-            $("#page-content").html(data);
+            $("#page-content-auth").html(data);
             componentHandler.upgradeAllRegistered();
             console.log('success');
 

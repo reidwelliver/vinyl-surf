@@ -11,7 +11,7 @@ messages = new stomp({
 	mode: 'server'
 });
 
-function Auth(callback) {
+function Auth(opt, callback) {
     var thisAuth = this;
     var connect = mysql.createConnection({
       host     : "db",
@@ -157,7 +157,8 @@ function Auth(callback) {
         });
     }
 
-    this.init = function() {
+    this.init = function(runStomp) {
+			if (runStomp == true)
         thisAuth.StompEvents();
     }
 
@@ -272,16 +273,22 @@ function Auth(callback) {
             }
         });
     }
-    thisAuth.init();
+		this.Test = function () {
+			console.log("test");
+		}
+
+    thisAuth.init(opt);
 }
 
+var auth = new Auth(true, null);
 
-var auth = new Auth(null);
-auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
+/*auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
     if (err)
         console.log(err);
     console.log(result);
-});
+});*/
+
+var admin = new Admin(auth);
 
 //console.log("test");
 /*auth.Login("test1", "test", function(err, token) {

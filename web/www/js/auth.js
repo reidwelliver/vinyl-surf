@@ -1,8 +1,3 @@
-messages = new stomp({
-	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
-	user: 'vinyl-surf',
-    pass: 'vinyl-surf'
-});
 
 function Authentication(readyCallback) {
     var thisAuth = this;
@@ -11,7 +6,7 @@ function Authentication(readyCallback) {
 
     this.Register = function() {
          window.popup("hide");
-         messages.invoke('Register',{username: $("#reg-username").val(), password: $("#reg-password").val(), email: $("#reg-email").val()}, function(data){
+         window.messages.invoke('Register',{username: $("#reg-username").val(), password: $("#reg-password").val(), email: $("#reg-email").val()}, function(data){
             console.log(data);
             if (data.error) {
                 window.popup(data.error);
@@ -29,9 +24,9 @@ function Authentication(readyCallback) {
     }
 
     this.init = function() {
-        messages.connect(function(){
+        window.messages.connect(function(){
             console.log("connected!");
-            messages.invoke('isAuthenticated',{xtoken: token}, function(data){
+            window.messages.invoke('isAuthenticated',{xtoken: token}, function(data){
                 thisAuth.connected = true;
                 console.log(data);
             });
@@ -45,7 +40,7 @@ function Authentication(readyCallback) {
     this.Login = function() {
         window.popup("hide");
 				var username = $("#login-username").val();
-        messages.invoke('Login',{username: username, password: $("#login-password").val()}, function(data){
+        window.messages.invoke('Login',{username: username, password: $("#login-password").val()}, function(data){
             console.log(data);
             if (data.error) {
                 window.popup(data.error);
@@ -59,7 +54,14 @@ function Authentication(readyCallback) {
         });
     }
 
-    thisAuth.init();
+		if(!window.messages.state.connected){
+			window.messages.connect(function(){
+				console.log("connected!");
+				thisAuth.init();
+			});
+		} else {
+			thisAuth.init();
+		}
 }
 
 var auth = new Authentication();
