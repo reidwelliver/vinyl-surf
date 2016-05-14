@@ -7,7 +7,6 @@
 	width: 7em;
 	height: 5em;
 	min-height: 5em;
-	background: url('../images/icon.svg') center / cover;
 }
 .queue-card-image > .mdl-card__actions {
 	height: 1.75em;

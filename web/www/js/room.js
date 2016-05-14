@@ -80,10 +80,6 @@ function YoutubePlayer(optsIn){
 		return window.player.getCurrentTime();
 	}
 
-	this.getCurrentVideoURL = function(){
-		return window.player.getVideoUrl();
-	}
-
 	this.init(optsIn);
 };
 
@@ -162,17 +158,26 @@ function Room(opts){
 	this.receiveFirstLoad = function(roomdata){
 		console.log("First Load!!");
 		console.log(roomdata);
-		thisRoom.queue.tracks = roomdata.queue.tracks;
 		thisRoom.currentQueuePos = roomdata.hasOwnProperty('currentQueuePos') ? roomdata.currentQueuePos : thisRoom.currentQueuePos;
 
-		var track = thisRoom.queue.tracks[thisRoom.currentQueuePos];
+		var queueCardContainer = $('#queue-cards');
+
+		roomdata.queue.tracks.forEach(function(track){
+			var conTrack = new Track(track);
+			thisRoom.queue.tracks.push(conTrack);
+
+			console.log('adding track to queuecards');
+			queueCardContainer.append(conTrack.queueCard());
+			console.log(conTrack.queueCard());
+		});
+
 		thisRoom.whenPlayerReady(function(track){
 			if(thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
 				thisRoom.updateTrackBar(track);
 			}
-		}, track);
+		}, thisRoom.queue.tracks[thisRoom.currentQueuePos]);
 	};
 
 	this.togglePlay = function(){
@@ -291,13 +296,22 @@ function Track(optsIn){
 		thisTrack.queued = false;
 	};
 
+	this.queueCard = function(){
+		var card = '<div class="queue-card-image mdl-card mdl-shadow--2dp" ' +
+			'style="background: url(\'http://img.youtube.com/vi/' + thisTrack.videoId + '/default.jpg\') center / cover;">' +
+			'<div class="mdl-card__title mdl-card--expand"></div><div class="mdl-card__actions">' +
+			'<span class="queue-card-text">Image.jpg</span>' +
+			'</div></div>';
+			return card;
+	}
+
 	thisTrack.init(optsIn);
 };
 
 
 function quickAddInfo(info){
 	if(info.embed){
-		$('#quick-add-thumbnail').attr('src', 'http://img.youtube.com/vi/' + info.id + '/default.jpg');
+		$('#quick-add-thumbnail').attr('src', 'http://img.youtube.com/vi/' + info.videoId + '/default.jpg');
 
 		if(info.title && info.title !== ''){
 			$('#quick-add-title-input').val(info.title);
@@ -344,18 +358,18 @@ function quickAddLoading(){
 	$("#quick-add-loading").show();
 }
 
-function addSongToQueue(info){
-	window.room.queueAdd(new Track(info));
-}
 
 
 
 
 
 
+//todo: move this
+var prevVal = '';
 
 $(document).ready(function(){
-	window.room = new Room({id:69});
+	window.room = new Room({id:20});
+
 
 	var nicknameDialog = document.getElementById('nickname-dialog');
 	var nicknameButton = document.getElementById('nickname-button');
@@ -381,7 +395,6 @@ $(document).ready(function(){
 		quickAddDialog.showModal();
 	});
 	quickAddDialog.querySelector('.close').addEventListener('click', function() {
-		quickAddReset();
 		quickAddDialog.close();
 	});
 
@@ -395,10 +408,14 @@ $(document).ready(function(){
 			var len = $('#quick-add-playtime').val();
 
 
-			addSongToQueue({videoId: videoId, title: editTitle, artist: editArtist, playTime: len});
-
-			quickAddDialog.close();
+			console.log("resetting and closing add dialog");
 			quickAddReset();
+			quickAddDialog.close();
+
+			console.log("adding song to queue");
+
+			window.room.queueAdd({videoId: videoId, title: editTitle, artist: editArtist, playTime: len});
+
 		}
 	});
 
@@ -412,10 +429,9 @@ $(document).ready(function(){
 
 	var quickAddInput = $('#quick-add-input');
 
-	quickAddInput.on('change keypress keyup focus mouseenter', function(){
+	quickAddInput.on('change keypress keyup focus', function(){
 		var value = quickAddInput.val();
-		if(value !== ''){
-			quickAddReset();
+		if(value !== '' && value != prevVal){
 			quickAddLoading();
 			YoutubeInfo(value, quickAddInfo);
 		}

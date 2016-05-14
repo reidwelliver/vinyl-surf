@@ -173,7 +173,6 @@ function Room(optsIn){
 		}
 
 		thisRoom.queue.tracks.push(track);
-
 		messages.publish('room-' + thisRoom.id + '-queue-add', track.getUpdate());
 	}
 
@@ -310,7 +309,7 @@ messages.connect(function(){
 
 	var testRoom = new Room({
 		name: "hello",
-		id: 69,
+		id: 20,
 		queue: testQueue,
 		dj: "bob",
 		users: [],
