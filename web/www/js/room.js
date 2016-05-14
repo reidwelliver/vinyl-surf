@@ -339,6 +339,7 @@ function quickAddInfo(info){
 }
 
 function quickAddReset(){
+	console.log("resetting quick-add");
 	$('#quick-add-thumbnail').attr('src', "../images/icon.svg");
 	$('#quick-add-title-input').val('');
 	$('#quick-add-title').removeClass("is-focused");
