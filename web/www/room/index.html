@@ -6,65 +6,67 @@
 <script src="../js/youtube.js"></script>
 
 
-<div id="youtube-frame" style="position: absolute;"></div>
-<div class="mdl-layout mdl-js-layout mdl-layout--no-drawer-button">
+<body>
+  <div id="youtube-frame" style="position: absolute;"></div>
+  <div class="mdl-layout mdl-js-layout mdl-layout--no-drawer-button">
 
-  <main class="mdl-layout__content">
-  </main>
+    <main class="mdl-layout__content">
+    </main>
 
-  <footer class="mdl-mini-footer" style="padding: .5em; background-color: RGBA(255, 255, 255, 0.85);">
-    <div class="mdl-grid mdl-grid--no-spacing bar" style="width:100%; background: none; padding-bottom: .6em">
-      <div class="mdl-cell mdl-cell--1-col">
-        <button id="show-queue-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
-          <i class="material-icons">recent_actors</i>
+    <footer class="mdl-mini-footer" style="padding: .5em; background-color: RGBA(255, 255, 255, 0.85);">
+      <div class="mdl-grid mdl-grid--no-spacing bar" style="width:100%; background: none; padding-bottom: .6em">
+        <div class="mdl-cell mdl-cell--1-col">
+          <button id="show-queue-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+            <i class="material-icons">recent_actors</i>
+          </button>
+        </div>
+
+        <div class="mdl-cell mdl-cell--2-col" style="padding-top: .5em;">
+            <h5 id="bar-video-title" class="norm-text" style="margin:.1em;"></h5>
+            <h6 id="bar-video-artist" class="norm-text" style="margin:.1em;"></h6>
+        </div>
+
+        <div class="mdl-cell mdl-cell--1-col  mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
+
+        <button id="thumbsdown-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+          <i class="material-icons">thumb_down</i>
         </button>
-      </div>
 
-      <div class="mdl-cell mdl-cell--2-col" style="padding-top: .5em;">
-          <h5 id="bar-video-title" class="norm-text" style="margin:.1em;"></h5>
-          <h6 id="bar-video-artist" class="norm-text" style="margin:.1em;"></h6>
-      </div>
-
-      <div class="mdl-cell mdl-cell--1-col  mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
-
-      <button id="thumbsdown-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
-        <i class="material-icons">thumb_down</i>
-      </button>
-
-      <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect" onclick="window.room.togglePlay()">
-        <i id="play-button-icon" class="material-icons">pause_circle_filled</i>
-      </button>
-
-      <button id="thumbsup-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
-        <i class="material-icons">thumb_up</i>
-      </button>
-
-      <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
-      <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
-
-      <div class="mdl-cell mdl-cell--1-col">
-        <button id="chat-show-button" class="mdl-button mdl-js-button mdl-button--fab">
-          <i class="material-icons" >textsms</i>
+        <button id="play-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect" onclick="window.room.togglePlay()">
+          <i id="play-button-icon" class="material-icons">pause_circle_filled</i>
         </button>
-      </div>
 
-      <div class="mdl-cell mdl-cell--1-col">
-        <button id="dj-menu-button" class="mdl-button mdl-js-button mdl-button--fab">
-          <i class="material-icons" >mic</i>
+        <button id="thumbsup-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+          <i class="material-icons">thumb_up</i>
         </button>
+
+        <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
+        <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
+
+        <div class="mdl-cell mdl-cell--1-col">
+          <button id="chat-show-button" class="mdl-button mdl-js-button mdl-button--fab">
+            <i class="material-icons" >textsms</i>
+          </button>
+        </div>
+
+        <div class="mdl-cell mdl-cell--1-col">
+          <button id="dj-menu-button" class="mdl-button mdl-js-button mdl-button--fab">
+            <i class="material-icons" >mic</i>
+          </button>
+        </div>
       </div>
-    </div>
-    <div id="queue-cards" style="width:100%; background: none; padding-top: .6em; padding-bottom:.5em; border-top: 1px solid RGBA(0,0,0,0.2); display: none;"></div>
-  </footer>
+      <div id="queue-cards" style="width:100%; background: none; padding-top: .6em; padding-bottom:.5em; border-top: 1px solid RGBA(0,0,0,0.2); display: none;"></div>
+    </footer>
 
 
-  <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" data-mdl-for="dj-menu-button">
-    <li disabled class="mdl-menu__item">You're DJing</li>
-    <li disabled class="mdl-menu__item">Request DJ</li>
-    <li disabled class="mdl-menu__item">Manage Queues</li>
-    <li id="quick-add-button" class="mdl-menu__item">Quick Add</li>
-  </ul>
+    <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" data-mdl-for="dj-menu-button">
+      <li disabled class="mdl-menu__item">You're DJing</li>
+      <li disabled class="mdl-menu__item">Request DJ</li>
+      <li disabled class="mdl-menu__item">Manage Queues</li>
+      <li id="quick-add-button" class="mdl-menu__item">Quick Add</li>
+    </ul>
 
+  </div>
 
   <dialog id="quick-add-dialog" class="mdl-dialog" style="width:500px; max-width:100%;">
     <div class="mdl-dialog__content">
@@ -110,4 +112,4 @@
       </button>
     </div>
   </dialog>
-</div>
+</body>

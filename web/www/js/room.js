@@ -367,6 +367,7 @@ $(document).ready(function(){
 
 	var quickAddDialog = document.getElementById('quick-add-dialog');
 	var quickAddButton = document.getElementById('quick-add-button');
+
 	window.dialogPolyfill.registerDialog(quickAddDialog);
 /*
 	if (! quickAddDialog.showModal) {
@@ -382,17 +383,17 @@ $(document).ready(function(){
 	});
 
 	document.getElementById('quick-add-submit-button').addEventListener('click', function(){
+		console.log("what is this dialog doing!?!?");
 		var button = $('quick-add-submit-button');
-		if(typeof(button.attr('disabled')) === 'undefined' || button.attr('disabled') === 'false'){
+		if(typeof(button.prop('disabled')) === 'undefined' || button.prop('disabled') === 'false'){
 			var editArtist = $('#quick-add-artist-input').val();
 			var editTitle = $('#quick-add-title-input').val();
-
 			var videoId = $('#quick-add-videoid').val();
 			var len = $('#quick-add-playtime').val();
 
 
 			console.log("resetting and closing add dialog");
-			quickAddReset();
+			//quickAddReset();
 			quickAddDialog.close();
 
 			console.log("adding song to queue");
