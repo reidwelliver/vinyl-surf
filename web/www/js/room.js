@@ -228,8 +228,37 @@ function Room(opts){
 	}
 
 	this.updateTrackBar = function(track){
-		$('#bar-video-title').html(track.title);
-		$('#bar-video-artist').html(track.artist);
+		var title = $('#bar-video-title');
+		var artist = $('#bar-video-artist');
+
+		title.hide();
+		artist.hide();
+
+		title.html(track.title);
+		artist.html(track.artist);
+
+		var todo = [title, artist];
+
+		for(int i = 0; i <= 1; i++){
+			var thing = todo[i];
+			if(thing.prop("behavior")){
+				thing.removeProp("behavior");
+			}
+			var text = thing.text();
+			var words = text.split(' ');
+
+			thing.text(words[0]);
+			var height = thing.height();
+			console.log("height");
+			for(var i = 1; i < words.length; i++){
+				thing.text(thing.text() + ' ' + words[i]);
+				if(thing.height() > height){
+					thing.prop("behavior","scroll");
+					break;
+				}
+			}
+			thing.show();
+		});
 	}
 
 	this._addToQueue = function(track){

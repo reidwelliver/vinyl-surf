@@ -7,13 +7,20 @@
 	width: 7em;
 	height: 5em;
 	min-height: 5em;
+	display: inline-block;
+	margin-left: .5em;
+	margin-right: .5em;
 }
+
+.mdl-card--expand {
+    height: 3em;
+}
+
 .queue-card-image > .mdl-card__actions {
 	height: 1.75em;
-	padding: .1em;
-	padding-top: .2em;
-	padding-left: .2em;
-	background: rgba(0, 0, 0, 0.2);
+	background: rgba(0, 0, 0, 0.7);
+	vertical-align: bottom;
+	text-align: bottom;
 }
 .queue-card-text {
 	color: #fff;
@@ -50,4 +57,11 @@
 
 .bar {
 		background-color: RGBA(255, 255, 255, .90);
+}
+
+
+#queue-cards{
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
 }
