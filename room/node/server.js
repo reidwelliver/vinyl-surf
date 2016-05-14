@@ -298,7 +298,7 @@ messages.connect(function(){
 
 	var testRoom = new Room({
 		name: "hello",
-		id: 20,
+		id: 69,
 		queue: testQueue,
 		dj: "bob",
 		users: [],

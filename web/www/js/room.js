@@ -354,7 +354,7 @@ function addSongToQueue(info){
 
 
 $(document).ready(function(){
-	window.room = new Room({id:20});
+	window.room = new Room({id:69});
 
 	var nicknameDialog = document.getElementById('nickname-dialog');
 	var nicknameButton = document.getElementById('nickname-button');
