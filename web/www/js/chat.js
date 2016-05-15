@@ -4,7 +4,7 @@ function Chat(opts){
 
 	this.init = function(){
 		thisChat.elems = {
-			messageBox: $("#chat-container"),
+			messageBox: $("#chat-box"),
 			inputBox: $("#chat-input")
 		}
 
@@ -49,14 +49,9 @@ function Chat(opts){
 	}
 
 	this.receiveMessage = function(message){
-		var template =
-			'<tr>' +
-				'<td class="mdl-data-table__cell--non-numeric chat-user-username">' + message.user.nick + '</td>' +
-				'<td class="mdl-data-table__cell--non-numeric chat-user-message">'  + message.message + '</td>' +
-			'</tr>'
-		;
-
+		var template =  $('<tr>').text(message.user.nick + ": " + message.message);
 		thisChat.elems.messageBox.append(template);
+		$("#chat-box").scrollTop($("#chat-box")[0].scrollHeight);
 	}
 
 	thisChat.init();

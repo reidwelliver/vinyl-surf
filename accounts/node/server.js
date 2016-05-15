@@ -2,7 +2,6 @@ var mysql = require('mysql');
 var crypto = require('crypto');
 var fs = require('fs');
 var stomp = require('./stomp-client.js');
-var Admin = require('./admin.js');
 
 messages = new stomp({
 	endpoint: 'ws://vinyl.surf:15674/stomp/websocket',
@@ -11,8 +10,9 @@ messages = new stomp({
 	mode: 'server'
 });
 
-function Auth(opt, callback) {
+function Auth(callback) {
     var thisAuth = this;
+		var Admin = null;
     var connect = mysql.createConnection({
       host     : "db",
       user     : 'root',
@@ -22,33 +22,70 @@ function Auth(opt, callback) {
 
     var userTokens = new Map();
 
+		this.GetAllUsers = function (callback) {
+        connect.query("SELECT id, username, administrator, create_date FROM users", function (err, rows, fields) {
+            console.log(rows);
+            callback(err, rows);
+        });
+    }
+    this.BanUsers = function (users, ban_type, callback) {
+        for (var i = 0; i < users.length; i++) {
+            if (ban_type == 0) { //Sitewide ban
+                 connect.query("UPDATE users SET ban_date = now() where id = ?", users[i].id, function (err, rows, fields) {
+                    if (err) {
+                        callback("error", null);
+                    }
+                    else { //success
+                        callback(null, rows);
+                    }
+                });
+            }
+        }
+    }
+
     this.ExtendToken = function(token, callback) {
         var expire_time = (Date.now() / 1000) + 900;
         connect.query("UPDATE tokens SET expire_time = ? where token = ?", [expire_time, token], function (err, rows, fields) {
             console.log(rows);
         });
     }
-    this.TokenToUserHelper = function(user_id, callback) {
-        connect.query("SELECT id, username, email_address, administrator, upvotes, downvotes FROM users WHERE id = ?", [user_id],  function (err, rows, fields) {
-            if (err || rows.length == 0) {
-                 callback("Not found", null);
-            }
-            var row = rows[0];
-            callback(null, row);
-        });
-    }
 
     this.TokenToUser = function(token, callback) {
-         connect.query("SELECT user_id FROM tokens WHERE token = ?", [token],  function (err, rows, fields) {
-            if (err || rows.length == 0) {
-                 callback("Not found", null);
-            }
+			console.log(token);
+      connect.query("SELECT user_id, administrator FROM tokens,users WHERE token = ? and tokens.user_id = users.id", [token],  function (err, rows, fields) {
+          if (err || rows.length == 0) {
+						 console.log(err);
+             callback("Not found", null);
+						 return;
+          }
 
-            var row = rows[0];
-            thisAuth.TokenToUserHelper(row.user_id, function(err, result) {
-                callback(err, result);
-            });
-         });
+          var row = rows[0];
+					callback(err, row);
+       });
+    }
+
+		this.isAdmin = function(admin) {
+        if (admin) {
+            console.log("Admin successfully authenticated");
+            return true;
+        }
+        else {
+            console.log("Someones trying to hack us captain");
+            return false;
+        }
+    }
+
+    this.CheckAdmin = function (token, callback) {
+				thisAuth.TokenToUser(token, function(err, data) {
+					if (err) {
+						console.log(err);
+						callback(err, data);
+					}
+					else {
+						console.log(data);
+						callback(err, data.administrator);
+					}
+				});
     }
 
     this.VerifyToken = function (token, callback) {
@@ -85,6 +122,68 @@ function Auth(opt, callback) {
     this.StompEvents = function () {
         messages.connect( function() {
           console.log("connected!");
+
+					messages.provide('GetAllUsers', function(message, options, respondMethod){
+							console.log("GetAllUsers ", message);
+							if (message === undefined) {
+								messages.respond({users: null, error: "Not Authorized"}, options);
+								console.log("Bad message");
+							}
+							else {
+								thisAuth.CheckAdmin(message.xtoken, function(err, admin) {
+									if (err) {
+										messages.respond({users: null, error: "Not Authorized"}, options);
+									}
+									else if (thisAuth.isAdmin(admin)) {
+										console.log(Admin);
+										thisAuth.GetAllUsers(function (err, results) {
+												 if (err) {
+														 console.log(err);
+														 messages.respond({users: null, error: err}, options);
+												 }
+												 else {
+														 console.log("Response:", results);
+														 messages.respond({users: results, error: null}, options);
+												 }
+										 	});
+										}
+										else {
+											messages.respond({users: null, error: "Not Authorized"}, options);
+										}
+								});
+							}
+					 });
+
+					 messages.provide("BanUsers", function(message, options, respondMethod){
+							 thisAuth.CheckAdmin(message.xtoken, function(admin) {
+									 thisAuth.BanUsers(message.users, function(err, result){
+											 messages.respond({users: results}, options);
+									 });
+							 });
+					 });
+
+					 messages.provide('GetAllReports', function(message, options, respondMethod){
+						 if (message === undefined) {
+							 messages.respond({users: null, error: "Not Authorized"}, options);
+							 console.log("Bad message");
+						 }
+						 else {
+							 thisAuth.CheckAdmin(message.xtoken, function(err, admin) {
+									if (err) {
+										messages.respond({users: null, error: "Not Authorized"}, options);
+									}
+									else if (thisAuth.isAdmin(admin)) {
+										 var reports = [];
+										 reports.push({id: 1, username: "test", room: "test-room", reason: "flames"});
+										 reports.push({id: 2, username: "test1", room: "test-room", reason: "bad words"});
+										 messages.respond({reports: reports, error: null}, options);
+									}
+									else {
+										messages.respond({users: null, error: "Not Authorized"}, options);
+									}
+								});
+						 }
+					 });
 
            messages.provide('isAuthenticated', function(message, options, respondMethod){
                console.log("Checking authetication for", message);
@@ -155,11 +254,6 @@ function Auth(opt, callback) {
                 });
             });
         });
-    }
-
-    this.init = function(runStomp) {
-			if (runStomp == true)
-        thisAuth.StompEvents();
     }
 
     this.User = function(username, password, email) {
@@ -273,22 +367,22 @@ function Auth(opt, callback) {
             }
         });
     }
-		this.Test = function () {
-			console.log("test");
-		}
 
-    thisAuth.init(opt);
+		this.init = function() {
+        thisAuth.StompEvents();
+    }
+
+    thisAuth.init();
 }
 
-var auth = new Auth(true, null);
+var auth = new Auth(null);
 
 /*auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
     if (err)
         console.log(err);
     console.log(result);
 });*/
-
-var admin = new Admin(auth);
+//var admin = new Admin.Admin(auth);
 
 //console.log("test");
 /*auth.Login("test1", "test", function(err, token) {

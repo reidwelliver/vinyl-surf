@@ -169,7 +169,7 @@ function Room(opts){
 			if(thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
-				thisRoom.updateTrackBar(track);
+	//			thisRoom.updateTrackBar(track);
 			}
 		}, thisRoom.queue.tracks[thisRoom.currentQueuePos]);
 	};
@@ -191,14 +191,14 @@ function Room(opts){
 			if(window.player.getVideoUrl().indexOf(track.videoId) === -1){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
-				thisRoom.updateTrackBar(track);
+	//			thisRoom.updateTrackBar(track);
 			}
 
 			var difference = (track.currentTime - window.player.getCurrentTime()) - ((Date.now()/1000) - track.stamp);
 
 			if( !thisRoom.isPaused && ( difference > 3 || difference < -3 )){
 				thisRoom.players[track.player].seekTo(track.currentTime);
-				thisRoom.updateTrackBar(track);
+	//			thisRoom.updateTrackBar(track);
 			}
 		}, track);
 	};
@@ -239,11 +239,11 @@ function Room(opts){
 
 		var todo = [title, artist];
 
-		for(int i = 0; i <= 1; i++){
+		/*for(int i = 0; i <= 1; i++){
 			var thing = todo[i];
 			if(thing.prop("behavior")){
 				thing.removeProp("behavior");
-			}
+			}*/
 			var text = thing.text();
 			var words = text.split(' ');
 
@@ -258,7 +258,6 @@ function Room(opts){
 				}
 			}
 			thing.show();
-		});
 	}
 
 	this._addToQueue = function(track){
@@ -407,6 +406,28 @@ $(document).ready(function(){
 	quickAddButton.addEventListener('click', function() {
 		quickAddDialog.showModal();
 	});
+
+	$("#chat-show-button").click(function() {
+		var container = $("#chat");
+    if (!container.is(":visible")) {
+			$("#chat").height($(window).height() - $(".mdl-layout__header-row").height() - $("#footer").height() - 15);
+			$("#chat-box").height($("#chat").height() + ($("#chat-field").height() * 2));
+			$("#chat-box").css("overflow", "scroll");
+
+			//$("#tubular-container").width($(window).width() - container.width());
+			//$("#tubular-shield").width($(window).width() - container.width());
+			//window.resizeTubular(window.height, $(window).width() - container.width());
+			$tubularPlayer = $('#tubular-player');
+			$tubularPlayer.width($(window).width() - container.width());
+			container.show();
+    }
+		else {
+			$tubularPlayer.width($(window).width());
+			container.hide();
+		}
+	//	this.focus();
+	});
+
 	quickAddDialog.querySelector('.close').addEventListener('click', function() {
 		quickAddDialog.close();
 	});

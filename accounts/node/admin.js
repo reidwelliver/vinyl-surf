@@ -10,77 +10,16 @@ messages = new stomp({
 	mode: 'server'
 });
 
-var Admin = function(opt, callback) {
+var Admin = function(callback) {
     var thisAdmin = this;
+		var thisAuth = null;
+
     var connect = mysql.createConnection({
-      host     : 'localhost',
+      host     : 'db',
       user     : 'root',
       password : '',
       database : 'surf'
     });
-
-    this.isAdmin = function(admin) {
-        if (admin) {
-            console.log("Admin successfully authenticated");
-            return true;
-        }
-        else {
-            console.log("Someones trying to hack us captain");
-            return false;
-        }
-    }
-    this.CheckAdmin = function (token, callback) {
-        messages.invoke('TokenToUser',{xtoken:token}, function(data){
-            console.log(data);
-            callback(data.user.administrator);
-        });;
-    }
-
-    this.StompEvents = function () {
-        messages.connect( function() {
-            console.log("connected!");
-
-           messages.provide('GetAllUsers', function(message, options, respondMethod){
-               thisAdmin.CheckAdmin(message.xtoken, function(admin) {
-
-                   if (thisAdmin.isAdmin(admin)) {
-                        thisAdmin.GetAllUsers(function (err, results) {
-                            if (err) {
-                                console.log(err);
-                                messages.respond({users: null, error: err}, options);
-                            }
-                            else {
-                                console.log("Response:", results);
-                                messages.respond({users: results, error: null}, options);
-                            }
-                        });
-                   }
-                   else {
-                        messages.respond({users: null, error: "Not Authorized"}, options);
-                   }
-               });
-            });
-
-            messages.provide("BanUsers", function(message, options, respondMethod){
-                thisAdmin.CheckAdmin(message.xtoken, function(admin) {
-                    thisAdmin.BanUsers(message.users, function(err, result){
-                        messages.respond({users: results}, options);
-                    });
-                });
-            });
-
-            messages.provide('GetAllReports', function(message, options, respondMethod){
-               thisAdmin.CheckAdmin(message.xtoken, function(admin) {
-                    if (thisAdmin.isAdmin(admin)) {
-                        var reports = [];
-                        reports.push({id: 1, username: "test", room: "test-room", reason: "flames"});
-                        reports.push({id: 2, username: "test1", room: "test-room", reason: "bad words"});
-                        messages.respond({reports: reports, error: null}, options);
-                    }
-               });
-            });
-        });
-    }
 
     this.GetAllReports = function (callback) {
          connect.query("SELECT * FROM reports", function (err, rows, fields) {
@@ -110,9 +49,8 @@ var Admin = function(opt, callback) {
     }
 
     this.init  = function() {
-        thisAdmin.StompEvents();
     }
-		opt.Test();
+
     thisAdmin.init();
 }
 

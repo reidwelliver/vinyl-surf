@@ -49,7 +49,7 @@ function Authentication(readyCallback) {
             else {
                 token = data.xtoken;
                 window.popup("Logged in");
-                localStorage.setItem("auth", data.user);
+								window.vinyl = data;
             }
         });
     }

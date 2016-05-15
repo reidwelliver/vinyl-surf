@@ -1,7 +1,7 @@
 function Admin(readyCallback) {
     var thisAdmin = this;
-    var token = localStorage.getItem("token");
-    console.log(token);
+    var token = window.vinyl.xtoken;
+
 
     this.StompEvents = function () {
         window.messages.invoke('GetAllUsers',{xtoken: token}, function(data){
