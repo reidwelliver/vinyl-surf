@@ -18,6 +18,11 @@ function Chat(opts){
 		thisChat.elems.inputBox.keyup( function(ev){
 			if(ev.keyCode === 13) {
 				console.log("enter key pressed");
+				if (window.vinyl === undefined) {
+						window.popup("You must login to use the chat feature!");
+						return;
+				}
+
 				thisChat.sendMessage();
 			}
 		});

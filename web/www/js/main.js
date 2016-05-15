@@ -12,10 +12,54 @@ window.popup = function (string) {
     }
 }
 
+function logout() {
+    console.log("logout");
+    changeTabsLogout();
+    window.vinyl = undefined;
+    window.popup("Logged out");
+}
+
+function changeTabsLogout() {
+
+  $('.auth-link').each(function(i, obj) {
+    $(obj).text("Login/Register");
+    $(obj).attr("href", "javascript:loadAuth()");
+  });
+
+  $('.profile-link').each(function(i, obj) {
+    $(obj).hide();
+  });
+  if (window.vinyl.user.administrator != null) {
+    $('.admin-link').each(function(i, obj) {
+      $(obj).hide();
+    });
+  }
+  $("#auth-grid").show();
+}
+
+function showTabsLogin() {
+  $("#auth-grid").hide();
+
+  $('.auth-link').each(function(i, obj) {
+    $(obj).text("Logout " + window.vinyl.user.username);
+    $(obj).attr("href", "javascript:logout()")
+  });
+
+  $('.profile-link').each(function(i, obj) {
+    $(obj).show();
+  });
+  if (window.vinyl.user.administrator != null) {
+    $('.admin-link').each(function(i, obj) {
+      $(obj).show();
+    });
+  }
+}
+
 function hideOtherContainers() {
 		$("#page-content-room").hide();
 		$("#page-content-auth").hide();
 		$("#page-content-admin").hide();
+    $("#page-content-profile").hide();
 }
 
 function checkAndHideRoom() {
@@ -51,8 +95,42 @@ function loadRoom(){
 	});
 }
 
+function loadProfile() {
+
+  if (window.vinyl === undefined) {
+    window.popup("You must login first!");
+    return;
+  }
+
+  window.popup("hide");
+  checkAndHideRoom();
+  hideOtherContainers();
+  $("#page-content-profile").show();
+
+  $.ajax("profile/index.html",{
+		type:"GET",
+		dataFilter: null,
+		dataType: "html",
+		converters: {},
+		success:function(data, textStatus, jqXHR) {
+            $("#page-content-profile").html(data);
+            console.log('success');
+            componentHandler.upgradeAllRegistered();
+
+        },
+		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
+	});
+
+}
+
 function loadAdmin(){
     window.popup("hide");
+
+    if (window.vinyl.user.administrator == null) {
+      window.popup("You must login first!");
+      return;
+    }
+
 		checkAndHideRoom();
 		hideOtherContainers();
 		$("#page-content-admin").show();

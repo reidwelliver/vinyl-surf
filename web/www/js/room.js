@@ -408,6 +408,7 @@ $(document).ready(function(){
 	});
 
 	$("#chat-show-button").click(function() {
+
 		var container = $("#chat");
     if (!container.is(":visible")) {
 			$("#chat").height($(window).height() - $(".mdl-layout__header-row").height() - $("#footer").height() - 15);

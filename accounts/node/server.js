@@ -369,6 +369,7 @@ function Auth(callback) {
     }
 
 		this.init = function() {
+				console.log("Init");
         thisAuth.StompEvents();
     }
 
@@ -376,12 +377,11 @@ function Auth(callback) {
 }
 
 var auth = new Auth(null);
-
-/*auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
+auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
     if (err)
         console.log(err);
     console.log(result);
-});*/
+});
 //var admin = new Admin.Admin(auth);
 
 //console.log("test");

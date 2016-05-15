@@ -24,21 +24,18 @@ function Authentication(readyCallback) {
     }
 
     this.init = function() {
-        window.messages.connect(function(){
-            console.log("connected!");
+    //    window.messages.connect(function(){
+            console.log("connected inside!");
             window.messages.invoke('isAuthenticated',{xtoken: token}, function(data){
                 thisAuth.connected = true;
                 console.log(data);
             });
-        });
+  //      });
     }
-
-		this.GetSessionData = function () {
-				return localStorage.getItem("auth");
-		}
 
     this.Login = function() {
         window.popup("hide");
+        console.log("Trying to login");
 				var username = $("#login-username").val();
         window.messages.invoke('Login',{username: username, password: $("#login-password").val()}, function(data){
             console.log(data);
@@ -50,18 +47,25 @@ function Authentication(readyCallback) {
                 token = data.xtoken;
                 window.popup("Logged in");
 								window.vinyl = data;
+                showTabsLogin();
             }
         });
     }
 
-		if(!window.messages.state.connected){
-			window.messages.connect(function(){
-				console.log("connected!");
-				thisAuth.init();
-			});
-		} else {
-			thisAuth.init();
-		}
+    if (window.vinyl === undefined) {
+        if(!window.messages.state.connected){
+    			window.messages.connect(function(){
+    				console.log("connected!");
+    				thisAuth.init();
+    			});
+    		} else {
+    			thisAuth.init();
+    		}
+    }
+    else {
+      $("#auth-grid").hide();
+      console.log(window.vinyl);
+    }
 }
 
 var auth = new Authentication();
