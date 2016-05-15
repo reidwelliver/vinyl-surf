@@ -6,7 +6,7 @@
                   <a href="#login-panel" class="mdl-tabs__tab is-active">Account Login</a>
                   <a href="#register-panel" class="mdl-tabs__tab">Account Registration</a>
               </div>
-                <div class="mdl-tabs__panel is-active" id="login-panel">
+                <div class="mdl-tabs__panel is-active" id="login-panel" style="text-align: center;">
                       <div class="mdl-grid">
                         <div class="mdl-cell--16-col" style="margin:auto;">
                             <form id="login-form"  action="javascript:auth.Login();">
@@ -31,31 +31,29 @@
                 <div class="mdl-tabs__panel" id="register-panel">
                     <div class="mdl-grid">
                         <div class="mdl-cell--16-col" style="margin:auto;">
-                            <div class="mdl-textfield mdl-js-textfield">
-                                <form id="login-form"  action="javascript:auth.Register();">
-                                  <div class="mdl-textfield mdl-js-textfield">
-                                    <input id="reg-username" class="mdl-textfield__input" type="text" id="username">
-                                    <label class="mdl-textfield__label" for="username">Username...</label>
-                                  </div>
-                                  <br>
-                                  <div class="mdl-textfield mdl-js-textfield">
-                                    <input id="reg-password" class="mdl-textfield__input" type="text" id="password">
-                                    <label class="mdl-textfield__label" for="password">Password...</label>
-                                  </div>
-                                    <br>
-                                   <div class="mdl-textfield mdl-js-textfield">
-                                    <input id="reg-email" class="mdl-textfield__input" type="text" id="email">
-                                    <label class="mdl-textfield__label" for="email">Email..</label>
-                                  </div>
-                                  <div>
-                                  <br>
-                                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
-                                      Register
-                                    </button>
+                            <form id="login-form"  action="javascript:auth.Register();" style="text-align: center;">
+                              <div class="mdl-textfield mdl-js-textfield">
+                                <input id="reg-username" class="mdl-textfield__input" type="text" id="username">
+                                <label class="mdl-textfield__label" for="username">Username...</label>
+                              </div>
+                              <br>
+                              <div class="mdl-textfield mdl-js-textfield">
+                                <input id="reg-password" class="mdl-textfield__input" type="text" id="password">
+                                <label class="mdl-textfield__label" for="password">Password...</label>
+                              </div>
+                                <br>
+                               <div class="mdl-textfield mdl-js-textfield">
+                                <input id="reg-email" class="mdl-textfield__input" type="text" id="email">
+                                <label class="mdl-textfield__label" for="email">Email..</label>
+                              </div>
+                              <div>
+                              <br>
+                                <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                                  Register
+                                </button>
 
-                                  </div>
-                                </form>
-                            </div>
+                              </div>
+                            </form>
                         </div>
                     </div>
                 </div>
