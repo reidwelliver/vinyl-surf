@@ -16,6 +16,7 @@ function logout() {
     console.log("logout");
     changeTabsLogout();
     window.vinyl = undefined;
+    loadAuth();
     window.popup("Logged out");
 }
 
