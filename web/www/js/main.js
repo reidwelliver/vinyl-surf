@@ -56,6 +56,16 @@ function showTabsLogin() {
   }
 }
 
+function checkLogin(callback) {
+  if (window.vinyl !== undefined) {
+    window.messages.invoke('isAuthenticated',{xtoken: window.vinyl.token}, function(data){
+        callback(null, data);
+    });
+  } else {
+    loadAuth();
+  }
+}
+
 function hideOtherContainers() {
 		$("#page-content-room").hide();
 		$("#page-content-auth").hide();
@@ -63,16 +73,40 @@ function hideOtherContainers() {
     $("#page-content-profile").hide();
 }
 
+function checkAndShowRoom() {
+  var tubular = $("#tubular-container");
+	var tubularshield = $("#tubular-shield");
+  var tubularPlayer = $('#tubular-player');
+
+	if (tubular != undefined) {
+		tubular.show();
+	}
+	if (tubularshield != undefined) {
+		tubularshield.show();
+	}
+  if (tubularPlayer != undefined) {
+    tubularPlayer.show();
+  }
+}
+
+
 function checkAndHideRoom() {
 	var tubular = $("#tubular-container");
-	var tubularshield = $("#tubular-shield");
+	var tubularShield = $("#tubular-shield");
+  var tubularPlayer = $('#tubular-player');
 
-	if (tubular != null) {
+	if (tubular != undefined) {
+    console.log("hide tubular");
 		tubular.hide();
 	}
-	if (tubularshield != null) {
-		tubular.hide();
+	if (tubularShield != undefined) {
+    console.log("hide shield");
+		tubularShield.hide();
 	}
+  if (tubularPlayer != undefined) {
+    console.log("hide player");
+    tubularPlayer.hide();
+  }
 
 }
 
@@ -87,6 +121,7 @@ function loadRoom(){
 		dataType: "html",
 		converters: {},
 		success:function(data, textStatus, jqXHR) {
+            checkAndShowRoom();
             $("#page-content-room").html(data);
             console.log('success');
             componentHandler.upgradeAllRegistered();

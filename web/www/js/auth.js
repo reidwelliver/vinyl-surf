@@ -1,7 +1,6 @@
 
 function Authentication(readyCallback) {
     var thisAuth = this;
-    var token = "";
     var connected = false;
 
     this.Register = function() {
@@ -15,22 +14,30 @@ function Authentication(readyCallback) {
             }
             else {
                 token = data.xtoken;
-     /*           messages.invoke('isAuthenticated',{xtoken: token}, function(data){
-                    thisAuth.connected = true;
-                    console.log(data);
-                });       */
             }
         });
     }
 
+    this.CheckToken = function(token, callback) {
+      window.messages.invoke('isAuthenticated',{xtoken: token}, function(data){
+          thisAuth.connected = true;
+          callback(null, data);
+      });
+    }
+
     this.init = function() {
-    //    window.messages.connect(function(){
-            console.log("connected inside!");
-            window.messages.invoke('isAuthenticated',{xtoken: token}, function(data){
-                thisAuth.connected = true;
-                console.log(data);
-            });
-  //      });
+        if (window.vinyl === undefined) {
+          thisAuth.CheckToken("", function(err, data) {
+            thisAuth.connected = true;
+            console.log(data);
+          });
+        }
+        else {
+          thisAuth.CheckToken(window.vinyl.token, function(err, data) {
+            thisAuth.connected = true;
+            console.log(data);
+          });
+        }
     }
 
     this.Login = function() {
@@ -68,4 +75,5 @@ function Authentication(readyCallback) {
     }
 }
 
-var auth = new Authentication();
+if (auth === undefined)
+  var auth = new Authentication();
