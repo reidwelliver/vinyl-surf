@@ -141,14 +141,13 @@ function Room(opts){
 		console.log(roomdata);
 		thisRoom.currentQueuePos = roomdata.hasOwnProperty('currentQueuePos') ? roomdata.currentQueuePos : thisRoom.currentQueuePos;
 
-		var queueCardContainer = $('#queue-cards');
 
 		roomdata.queue.tracks.forEach(function(track){
 			var conTrack = new Track(track);
 			thisRoom.queue.tracks.push(conTrack);
 
 			console.log('adding track to queuecards');
-			queueCardContainer.append(conTrack.queueCard());
+			$('#queue-cards').append(conTrack.queueCard());
 			console.log(conTrack.queueCard());
 		});
 
@@ -238,7 +237,7 @@ function Room(opts){
 		}
 		queueButton.prop('data-badge',numNew);
 
-		queueCardContainer.append(track.queueCard());
+		$('#queue-cards').append(track.queueCard());
 	}
 
 	this._removeFromQueue = function(track){
