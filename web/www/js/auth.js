@@ -7,8 +7,8 @@ function Authentication(readyCallback) {
          window.popup("hide");
          var username = $("#reg-username").val();
          var password = $("#reg-password").val();
-         if (username.length < 5 || password.length < 5) {
-            window.popup("Username and Password must be more than 5 characters!");
+         if (username.length < 4 || password.length < 4) {
+            window.popup("Username and Password must be more than 4 characters!");
             return;
          }
 
