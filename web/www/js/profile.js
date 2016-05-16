@@ -27,6 +27,31 @@ function Profile (readyCallback) {
       });
   }
 
+  this.ChangeEmail = function() {
+      console.log("Change Email ", window.vinyl.xtoken);
+      window.popup("hide");
+
+      var email1 = $("#email-1").val();
+      var password2 = $("#email-2").val();
+
+      if (email1 != email2) {
+        window.popup("Emails don't match!");
+        return;
+      }
+
+      window.messages.invoke('ChangeEmail',{xtoken: window.vinyl.xtoken, email: email}, function(data){
+          console.log(data);
+          if (data.error) {
+              window.popup(data.error);
+              console.log(data.error);
+          }
+          else {
+              console.log(data);
+              window.popup("Email Changed!");
+          }
+      });
+  }
+
   if (window.vinyl === undefined) {
       if(!window.messages.state.connected){
         window.messages.connect(function(){

@@ -22,16 +22,6 @@
                                         Sitewide Ban
                                     </button>
                                 </div>
-                        <!--        <div class="mdl-cell">
-                                    <button class="mdl-button">
-                                        Room Ban
-                                    </button>
-                                </div>
-                                <div class="mdl-cell">
-                                    <button class="mdl-button">
-                                        Timed Ban
-                                    </button>
-                                </div> -->
                             </div>
                         </div>
                         <div class="mdl-grid">
@@ -52,19 +42,28 @@
                         </div>
                     </div>
                     <div class="mdl-tabs__panel" id="user-panel">
-                        <div class="mdl-grid">
-                            <div class="mdl-cell--16-col" style="margin:auto;">
-                                <div class="mdl-textfield mdl-js-textfield">
-                                    <input class="mdl-textfield__input" type="text" id="user_search">
-                                    <label class="mdl-textfield__label" for="user_search">Search for user...</label>
+                        <div class="container mdl-shadow--2dp" style="width: 400px; margin: auto;">
+                            <div class="mdl-grid">
+                                <div class="mdl-cell--16-col" style="margin:auto;">
+                                    <button class="mdl-button" onclick="admin.BanUsers();">
+                                        Ban Users
+                                    </button>
                                 </div>
                             </div>
                         </div>
                         <div class="mdl-grid">
-                            <div class="mdl-cell--1-col">
-                            </div>
-                            <div class="mdl-cell--10-col">
-                                <table id="user-table" class="mdl-data-table fullwidth mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" style="margin:auto;">
+                            <form id="user_search" action="javascript:admin.SearchUser();" style="margin-left:auto; margin-right:auto; text-align: center;">
+                              <div class="mdl-cell--16-col">
+                                  <div class="mdl-textfield mdl-js-textfield" style="text-align: center;">
+                                      <input class="mdl-textfield__input" type="text" id="user-search">
+                                      <label class="mdl-textfield__label" for="user_search">Search for user...</label>
+                                  </div>
+                              </div>
+                            </form>
+                        </div>
+                        <div class="mdl-grid">
+                            <div class="mdl-cell--16-col" style="margin-left:auto; margin-right:auto; text-align: center;">
+                                <table id="user-table" class="mdl-data-table fullwidth mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" style="margin-left:auto; margin-right:auto; text-align: center;">
                                   <thead>
                                     <tr>
                                       <th class="mdl-data-table__cell--non-numeric">User id</th>
