@@ -22,6 +22,17 @@ function Auth(callback) {
 
     var userTokens = new Map();
 
+		this.User = function(username, password, email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+    this.TokenUser  = function (user_id, token) {
+        this.user_id = user_id;
+        this.token = token;
+        this.expire_time = (Date.now() / 1000) + 900;
+    }
+
 		this.GetAllUsers = function (callback) {
         connect.query("SELECT id, username, administrator, create_date FROM users", function (err, rows, fields) {
             console.log(rows);
@@ -45,19 +56,21 @@ function Auth(callback) {
 
     this.ExtendToken = function(token, callback) {
         var expire_time = (Date.now() / 1000) + 900;
+				console.log("extending " + token + " to " + expire_time);
         connect.query("UPDATE tokens SET expire_time = ? where token = ?", [expire_time, token], function (err, rows, fields) {
-            console.log(rows);
+            console.log("Token extended: ", rows);
+						callback(err, rows);
         });
     }
 
     this.TokenToUser = function(token, callback) {
 			console.log(token);
       connect.query("SELECT user_id, administrator FROM tokens,users WHERE token = ? and tokens.user_id = users.id", [token],  function (err, rows, fields) {
-          if (err || rows.length == 0) {
+		      if (err || rows.length == 0) {
 						 console.log(err);
-             callback("Not found", null);
+		         callback("Not found", null);
 						 return;
-          }
+		      }
 
           var row = rows[0];
 					callback(err, row);
@@ -75,6 +88,18 @@ function Auth(callback) {
         }
     }
 
+		this.ChangePassword = function(token, password, callback) {
+
+			connect.query("UPDATE tokens, users SET users.password = ? WHERE tokens.token = ? and tokens.user_id=users.id", [password, token],  function (err, rows, fields) {
+					if (err || rows.length == 0) {
+						 console.log(err);
+		         callback("Not found", null);
+						 return;
+		      }
+					callback(null, rows);
+				});
+		}
+
     this.CheckAdmin = function (token, callback) {
 				thisAuth.TokenToUser(token, function(err, data) {
 					if (err) {
@@ -87,6 +112,7 @@ function Auth(callback) {
 					}
 				});
     }
+
 
     this.VerifyToken = function (token, callback) {
         if (userTokens[token]) {
@@ -162,6 +188,18 @@ function Auth(callback) {
 							 });
 					 });
 
+					 messages.provide("ChangePassword", function(message, options, respondMethod) {
+						 console.log("ChangePassword");
+						 thisAuth.ChangePassword(message.xtoken,message.password, function(err, result) {
+							 if (err) {
+									console.log(err);
+							 }
+							 else {
+								 console.log(result);
+							 }
+						 });
+					 });
+
 					 messages.provide('GetAllReports', function(message, options, respondMethod){
 						 if (message === undefined) {
 							 messages.respond({users: null, error: "Not Authorized"}, options);
@@ -187,13 +225,16 @@ function Auth(callback) {
 
            messages.provide('isAuthenticated', function(message, options, respondMethod){
                console.log("Checking authetication for", message);
-               if (message.xtoken != "") {
+
+               if (message !== undefined && message.xtoken !== undefined) {
                     thisAuth.VerifyToken(message.xtoken, function (err, result) {
                         if (err) {
                             messages.respond({xtoken: "", error: err}, options);
                             console.log("error", err);
                         } else {
-                            messages.respond({xtoken: result, error: null}, options);
+														thisAuth.ExtendToken(result, function (err, nresult) {
+                            	messages.respond({xtoken: result, error: null}, options);
+														});
                         }
                     });
                }
@@ -218,7 +259,7 @@ function Auth(callback) {
                     }
                     else {
                         console.log("Successful Login. Token =", result.xtoken);
-												console.log("Row: ", result);
+										//		console.log("Row: ", result);
                         messages.respond({xtoken: result.xtoken, user: result.user, error: null}, options);
                     /*    thisAuth.VerifyToken(token, function(err, result) {
 
@@ -254,17 +295,6 @@ function Auth(callback) {
                 });
             });
         });
-    }
-
-    this.User = function(username, password, email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-    this.TokenUser  = function (user_id, token) {
-        this.user_id = user_id;
-        this.token = token;
-        this.expire_time = (Date.now() / 1000) + 900;
     }
 
     this.SetToken = function(id, callback) {
@@ -369,7 +399,6 @@ function Auth(callback) {
     }
 
 		this.init = function() {
-				console.log("Init");
         thisAuth.StompEvents();
     }
 
@@ -377,11 +406,15 @@ function Auth(callback) {
 }
 
 var auth = new Auth(null);
-auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
+
+/*auth.Register("admin", "admin", "admin@admin.com", function(err, result) {
     if (err)
         console.log(err);
+
     console.log(result);
-});
+});*/
+
+
 //var admin = new Admin.Admin(auth);
 
 //console.log("test");

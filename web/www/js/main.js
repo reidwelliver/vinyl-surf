@@ -58,7 +58,8 @@ function showTabsLogin() {
 
 function checkLogin(callback) {
   if (window.vinyl !== undefined) {
-    window.messages.invoke('isAuthenticated',{xtoken: window.vinyl.token}, function(data){
+    console.log(window.vinyl);
+    window.messages.invoke('isAuthenticated',{xtoken: window.vinyl.xtoken}, function(data){
         callback(null, data);
     });
   } else {
@@ -123,7 +124,6 @@ function loadRoom(){
 		success:function(data, textStatus, jqXHR) {
             checkAndShowRoom();
             $("#page-content-room").html(data);
-            console.log('success');
             componentHandler.upgradeAllRegistered();
 
         },
@@ -132,7 +132,6 @@ function loadRoom(){
 }
 
 function loadProfile() {
-
   if (window.vinyl === undefined) {
     window.popup("You must login first!");
     return;
@@ -149,11 +148,10 @@ function loadProfile() {
 		dataType: "html",
 		converters: {},
 		success:function(data, textStatus, jqXHR) {
-            $("#page-content-profile").html(data);
-            console.log('success');
-            componentHandler.upgradeAllRegistered();
+          $("#page-content-profile").html(data);
+          componentHandler.upgradeAllRegistered();
 
-        },
+      },
 		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
 	});
 
@@ -178,7 +176,6 @@ function loadAdmin(){
 		converters: {},
 		success:function(data, textStatus, jqXHR) {
             $("#page-content-admin").html(data);
-            console.log('success');
             componentHandler.upgradeAllRegistered();
 
         },
@@ -201,7 +198,6 @@ function loadAuth(){
 		success:function(data, textStatus, jqXHR) {
             $("#page-content-auth").html(data);
             componentHandler.upgradeAllRegistered();
-            console.log('success');
 
         },
 		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}

@@ -33,7 +33,7 @@ function Authentication(readyCallback) {
           });
         }
         else {
-          thisAuth.CheckToken(window.vinyl.token, function(err, data) {
+          thisAuth.CheckToken(window.vinyl.xtoken, function(err, data) {
             thisAuth.connected = true;
             console.log(data);
           });
@@ -43,15 +43,14 @@ function Authentication(readyCallback) {
     this.Login = function() {
         window.popup("hide");
         console.log("Trying to login");
-				var username = $("#login-username").val();
-        window.messages.invoke('Login',{username: username, password: $("#login-password").val()}, function(data){
+        window.messages.invoke('Login',{username: $("#login-username").val(), password: $("#login-password").val()}, function(data){
             console.log(data);
             if (data.error) {
                 window.popup(data.error);
                 console.log(data.error);
             }
             else {
-                token = data.xtoken;
+
                 window.popup("Logged in");
 								window.vinyl = data;
                 showTabsLogin();
@@ -75,5 +74,5 @@ function Authentication(readyCallback) {
     }
 }
 
-if (auth === undefined)
+//if (auth === undefined)
   var auth = new Authentication();
