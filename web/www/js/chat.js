@@ -50,7 +50,7 @@ function Chat(opts){
 	}
 
 	this.receiveMessage = function(message){
-		var template =  $('<tr>').text("<b"> + message.user + "</b>" + ": " + message.message);
+		var template =  $('<tr>').text("<b>" + message.user + "</b>" + ": " + message.message);
 		thisChat.elems.messageBox.append(template);
 		$("#chat-box").scrollTop($("#chat-box")[0].scrollHeight);
 	}
