@@ -5,6 +5,13 @@ function Authentication(readyCallback) {
 
     this.Register = function() {
          window.popup("hide");
+         var username = $("#reg-username").val();
+         var password = $("#reg-password").val();
+         if (username.length < 5 || password.length < 5) {
+            window.popup("Username and Password must be more than 5 characters!");
+            return;
+         }
+
          window.messages.invoke('Register',{username: $("#reg-username").val(), password: $("#reg-password").val(), email: $("#reg-email").val()}, function(data){
             console.log(data);
             if (data.error) {

@@ -196,6 +196,7 @@ function Auth(callback) {
 							 }
 							 else {
 								 console.log(result);
+								 messages.respond({result: "password changed!"}, options);
 							 }
 						 });
 					 });

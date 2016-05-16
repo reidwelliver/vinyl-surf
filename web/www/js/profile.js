@@ -22,7 +22,7 @@ function Profile (readyCallback) {
           }
           else {
               console.log(data);
-              window.popup("Password Changed");
+              window.popup("Password Changed!");
           }
       });
   }
