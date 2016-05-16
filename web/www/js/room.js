@@ -155,7 +155,9 @@ function Room(opts){
 		thisRoom.whenPlayerReady(function(track){
 			if(thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.currentTrack = new Track(track);
-				thisRoom.players[track.player].playNow(track);
+				if(!window.isPaused){
+					thisRoom.players[track.player].playNow(track);
+				}
 				thisRoom.updateTrackBar(track);
 			}
 		}, thisRoom.queue.tracks[thisRoom.currentQueuePos]);
@@ -177,7 +179,9 @@ function Room(opts){
 		thisRoom.whenPlayerReady(function(track){
 			if(window.player.getVideoUrl().indexOf(track.videoId) === -1){
 				thisRoom.currentTrack = new Track(track);
-				thisRoom.players[track.player].playNow(track);
+				if(!window.isPaused){
+					thisRoom.players[track.player].playNow(track);
+				}
 				thisRoom.updateTrackBar(track);
 			}
 
