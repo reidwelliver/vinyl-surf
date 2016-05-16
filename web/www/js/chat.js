@@ -10,10 +10,6 @@ function Chat(opts){
 
 		console.log("elems", $("#chat-input"));
 
-		thisChat.user = new User({
-			nick: (window.vinyl.user.username)
-		})
-
 		//send chat message on return key
 		thisChat.elems.inputBox.keyup( function(ev){
 			if(ev.keyCode === 13) {
@@ -43,7 +39,7 @@ function Chat(opts){
 
 	this.sendMessage = function(){
 		var message = {
-			user: thisChat.user,
+			user: window.vinyl.user.username,
 			message: thisChat.getInputBoxContents()
 		};
 
@@ -54,23 +50,12 @@ function Chat(opts){
 	}
 
 	this.receiveMessage = function(message){
-		var template =  $('<tr>').text(message.user.nick + ": " + message.message);
+		var template =  $('<tr>').text("<b"> + message.user + "</b>" + ": " + message.message);
 		thisChat.elems.messageBox.append(template);
 		$("#chat-box").scrollTop($("#chat-box")[0].scrollHeight);
 	}
 
 	thisChat.init();
-}
-
-
-function User(opts){
-	var thisUser = this;
-
-	this.init = function(){
-		thisUser.nick = opts.nick || "bob";
-	}
-
-	this.init();
 }
 
 window.chat = new Chat({id:0});
