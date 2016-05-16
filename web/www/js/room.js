@@ -109,7 +109,7 @@ function Room(opts){
 		});
 
 		window.messages.subscribe('room-' + thisRoom.id + '-queue-add', function(data){
-			console.log('addQueue',data);
+			console.log('addQueue!!!!!',data);
 			thisRoom._addToQueue(data);
 		});
 
@@ -220,36 +220,10 @@ function Room(opts){
 
 		title.html(track.title);
 		artist.html(track.artist);
-/*
-		title.hide();
-		artist.hide();
-
-		var todo = [title, artist];
-
-		for(int i = 0; i <= 1; i++){
-			var thing = todo[i];
-			if(thing.prop("behavior")){
-				thing.removeProp("behavior");
-			}
-			var text = thing.text();
-			var words = text.split(' ');
-
-			thing.text(words[0]);
-			var height = thing.height();
-			console.log("height");
-			for(var i = 1; i < words.length; i++){
-				thing.text(thing.text() + ' ' + words[i]);
-				if(thing.height() > height){
-					thing.prop("behavior","scroll");
-					break;
-				}
-			}
-			thing.show();
-
-		*/
 	}
 
 	this._addToQueue = function(track){
+		track = new Track(track);
 		thisRoom.queue.tracks.push(track);
 
 		var queueButton = $("show-queue-button");
@@ -259,6 +233,8 @@ function Room(opts){
 			numNew += queueButton.prop('data-badge');
 		}
 		queueButton.prop('data-badge',numNew);
+
+		queueCardContainer.append(track.queueCard());
 	}
 
 	this._removeFromQueue = function(track){
