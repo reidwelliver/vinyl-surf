@@ -11,7 +11,7 @@ function Chat(opts){
 		console.log("elems", $("#chat-input"));
 
 		thisChat.user = new User({
-			nick: ("user" + Math.floor(Math.random() * (100 - 1)) + 1)
+			nick: (window.vinyl.user.username)
 		})
 
 		//send chat message on return key
