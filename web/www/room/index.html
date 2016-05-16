@@ -10,17 +10,14 @@
 <div class="mdl-layout mdl-js-layout mdl-layout--no-drawer-button">
 
   <main class="mdl-layout__content">
-  </main>
-
-  <div id="chat" style="position:absolute; float: right; display: none; z-index:99; right:0px; top: 0%; background-color: RGBA(255, 255, 255, 0.85);">
-    <div id="chat-box">
-
-    </div>
-    <div id="chat-field" class="mdl-textfield mdl-js-textfield" style="top:0%;">
-        <input id="chat-input" class="mdl-textfield__input" type="text"/>
-        <label class="mdl-textfield__label">Message</label>
+  <div id="chat" style="position:absolute; float: right; display: none; z-index:99; right:0px; top: 0px; background-color: RGBA(255, 255, 255, 0.85); width: 30%; max-width: 30%; overflow: hidden">
+    <div id="chat-box" style="overflow:scroll; padding-left: 1em; background: none;"></div>
+    <div id="chat-field" class="mdl-textfield mdl-js-textfield" style="top:0%; background: none; overflow: hidden; margin: auto; margin-left: 2.5em;">
+	    <input id="chat-input" class="mdl-textfield__input" type="text"/>
+	    <label class="mdl-textfield__label">Message</label>
     </div>
   </div>
+  </main>
 
   <footer id="footer" class="mdl-mini-footer" style="padding: .5em; background-color: RGBA(255, 255, 255, 0.85);">
     <div class="mdl-grid mdl-grid--no-spacing bar" style="width:100%; background: none; padding-bottom: .6em">
@@ -31,9 +28,11 @@
       </div>
 
       <div class="mdl-cell mdl-cell--3-col" style="padding-top: .5em;">
-          <marquee id="bar-video-title" class="norm-text" style="margin:.1em;"></marquee>
-          <marquee id="bar-video-artist" class="norm-text" style="margin:.1em;"></marquee>
-      </div>
+          <marquee behavior="alternate">
+		<h5 id="bar-video-title" class="norm-text" style="margin:.1em;"></h5>
+          	<h6 id="bar-video-artist" class="norm-text" style="margin:.1em;"></h6>
+          </marquee>
+	</div>
 
       <div class="mdl-cell mdl-cell--1-col  mdl-cell--hide-phone mdl-cell--hide-tablet"></div>
 

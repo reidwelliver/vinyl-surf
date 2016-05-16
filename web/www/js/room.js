@@ -1,3 +1,8 @@
+if(!window.isPaused){
+	window.isPaused = false;
+} else {
+	$('#play-button-icon').html("play_circle_filled");
+}
 
 function Queue(optsIn){
 	var thisQueue = this;
@@ -86,8 +91,6 @@ function Room(opts){
 
 		thisRoom.currentQueuePos = 0;
 
-		thisRoom.isPaused = false;
-
 		opts.players = opts.players || {};
 
 		thisRoom.playerReady = false;
@@ -153,14 +156,14 @@ function Room(opts){
 			if(thisRoom.players.hasOwnProperty(track.player)){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
-	//			thisRoom.updateTrackBar(track);
+				thisRoom.updateTrackBar(track);
 			}
 		}, thisRoom.queue.tracks[thisRoom.currentQueuePos]);
 	};
 
 	this.togglePlay = function(){
-		thisRoom.isPaused = !thisRoom.isPaused;
-		if(thisRoom.isPaused){
+		window.isPaused = !window.isPaused;
+		if(window.isPaused){
 			$('#play-button-icon').html("play_circle_filled");
 			window.player.pauseVideo();
 		} else {
@@ -175,14 +178,14 @@ function Room(opts){
 			if(window.player.getVideoUrl().indexOf(track.videoId) === -1){
 				thisRoom.currentTrack = new Track(track);
 				thisRoom.players[track.player].playNow(track);
-	//			thisRoom.updateTrackBar(track);
+				thisRoom.updateTrackBar(track);
 			}
 
 			var difference = (track.currentTime - window.player.getCurrentTime()) - ((Date.now()/1000) - track.stamp);
 
-			if( !thisRoom.isPaused && ( difference > 3 || difference < -3 )){
+			if( !window.isPaused && ( difference > 3 || difference < -3 )){
 				thisRoom.players[track.player].seekTo(track.currentTime);
-	//			thisRoom.updateTrackBar(track);
+				thisRoom.updateTrackBar(track);
 			}
 		}, track);
 	};
@@ -396,20 +399,20 @@ $(document).ready(function(){
 	$("#chat-show-button").click(function() {
 
 		var container = $("#chat");
-    if (!container.is(":visible")) {
+  	  if (!container.is(":visible")) {
 			$("#chat").height($(window).height() - $(".mdl-layout__header-row").height() - $("#footer").height() - 15);
 			$("#chat-box").height($("#chat").height() + ($("#chat-field").height() * 2));
-			$("#chat-box").css("overflow", "scroll");
+			//$("#chat-box").css("overflow", "scroll");
 
 			//$("#tubular-container").width($(window).width() - container.width());
 			//$("#tubular-shield").width($(window).width() - container.width());
 			//window.resizeTubular(window.height, $(window).width() - container.width());
-			$tubularPlayer = $('#tubular-player');
-			$tubularPlayer.width($(window).width() - container.width());
+			//$tubularPlayer = $('#tubular-player');
+			//$tubularPlayer.width($(window).width() - container.width());
 			container.show();
     }
 		else {
-			$tubularPlayer.width($(window).width());
+			//$tubularPlayer.width($(window).width());
 			container.hide();
 		}
 	//	this.focus();
