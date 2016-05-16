@@ -1,22 +1,4 @@
-/*
-function loadChat(){
-	$.ajax("chat/index.html",{
-		type:"GET",
-		dataFilter: null,
-		dataType: "html",
-		converters: {},
-		success:function(data, textStatus, jqXHR) {
-      $("#chat-wrap").html(data);
-      console.log('success-chat');
-      componentHandler.upgradeAllRegistered();
-    },
-		error: function(jqXHR, textStatus, errorThrown) {console.log("failure",errorThrown);}
-	});
-}
-	if(!window.chat){
-			loadChat();
-	}
-*/
+
 function Queue(optsIn){
 	var thisQueue = this;
 
@@ -38,23 +20,25 @@ function YoutubePlayer(optsIn){
 	};
 
 	this.initFrame = function(opts){
-		var tubOpts = {
-        ratio: 16/9, // usually either 4/3 or 16/9 -- tweak as needed
-        videoId: 'Q-WM-x__BOk',
-        mute: false,
-        repeat: true,
-        width: $(window).width(),
-        wrapperZIndex: 99,
-        playButtonClass: 'tubular-play',
-        pauseButtonClass: 'tubular-pause',
-        muteButtonClass: 'tubular-mute',
-        volumeUpClass: 'tubular-volume-up',
-        volumeDownClass: 'tubular-volume-down',
-        increaseVolumeBy: 10,
-        start: 0
-    };
+		if(!window.player){
+			var tubOpts = {
+					ratio: 16/9, // usually either 4/3 or 16/9 -- tweak as needed
+					videoId: 'Q-WM-x__BOk',
+					mute: false,
+					repeat: true,
+					width: $(window).width(),
+					wrapperZIndex: 99,
+					playButtonClass: 'tubular-play',
+					pauseButtonClass: 'tubular-pause',
+					muteButtonClass: 'tubular-mute',
+					volumeUpClass: 'tubular-volume-up',
+					volumeDownClass: 'tubular-volume-down',
+					increaseVolumeBy: 10,
+					start: 0
+			};
 
-		$('#youtube-frame').tubular(tubOpts);
+			$('#youtube-frame').tubular(tubOpts);
+		}
 	};
 
 	this.seekTo = function(seconds){
@@ -231,19 +215,19 @@ function Room(opts){
 		var title = $('#bar-video-title');
 		var artist = $('#bar-video-artist');
 
+		title.html(track.title);
+		artist.html(track.artist);
+/*
 		title.hide();
 		artist.hide();
 
-		title.html(track.title);
-		artist.html(track.artist);
-
 		var todo = [title, artist];
 
-		/*for(int i = 0; i <= 1; i++){
+		for(int i = 0; i <= 1; i++){
 			var thing = todo[i];
 			if(thing.prop("behavior")){
 				thing.removeProp("behavior");
-			}*/
+			}
 			var text = thing.text();
 			var words = text.split(' ');
 
@@ -258,6 +242,8 @@ function Room(opts){
 				}
 			}
 			thing.show();
+
+		*/
 	}
 
 	this._addToQueue = function(track){
@@ -322,7 +308,7 @@ function Track(optsIn){
 		var card = '<div class="queue-card-image mdl-card mdl-shadow--2dp" ' +
 			'style="background: url(\'http://img.youtube.com/vi/' + thisTrack.videoId + '/default.jpg\') center / cover;">' +
 			'<div class="mdl-card__title mdl-card--expand"></div><div class="mdl-card__actions">' +
-			'<span class="queue-card-text">Image.jpg</span>' +
+			'<span class="queue-card-text">' + thisTrack.title + '</span>' +
 			'</div></div>';
 			return card;
 	}
@@ -391,7 +377,7 @@ function quickAddLoading(){
 var prevVal = '';
 
 $(document).ready(function(){
-	window.room = new Room({id:50});
+	window.room = new Room({id:55});
 
 	var quickAddDialog = document.getElementById('quick-add-dialog');
 	var quickAddButton = document.getElementById('quick-add-button');
