@@ -20,7 +20,7 @@ function Authentication(readyCallback) {
 
             }
             else {
-                token = data.xtoken;
+                window.popup("You have been registered. Please login!")
             }
         });
     }
