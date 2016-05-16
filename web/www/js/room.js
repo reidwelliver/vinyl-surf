@@ -383,7 +383,7 @@ $(document).ready(function(){
 
 	$("#thumbsdown-button").click(function() {
 		window.room.skipTrack();
-	}
+	});
 
 	$("#chat-show-button").click(function() {
 
