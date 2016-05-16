@@ -39,19 +39,22 @@ function Auth(callback) {
             callback(err, rows);
         });
     }
-    this.BanUsers = function (users, ban_type, callback) {
+    this.BanUsers = function (users, callback) {
+				console.log("Ban Users");//
         for (var i = 0; i < users.length; i++) {
-            if (ban_type == 0) { //Sitewide ban
-                 connect.query("UPDATE users SET ban_date = now() where id = ?", users[i].id, function (err, rows, fields) {
-                    if (err) {
-                        callback("error", null);
-                    }
-                    else { //success
-                        callback(null, rows);
-                    }
-                });
-            }
+						 console.log("Banning:", users[i].id);
+             connect.query("UPDATE users SET ban_time = 1 where id = ?", users[i].id, function (err, rows, fields) {
+							 	console.log(err);
+								if (err) {
+
+        //            callback(err, null);
+                }
+                else { //success
+									console.log(rows);
+                }
+            });
         }
+				callback(null, users);
     }
 
     this.ExtendToken = function(token, callback) {
@@ -62,6 +65,7 @@ function Auth(callback) {
 						callback(err, rows);
         });
     }
+
 
     this.TokenToUser = function(token, callback) {
 			console.log(token);
@@ -183,9 +187,28 @@ function Auth(callback) {
 					 messages.provide("BanUsers", function(message, options, respondMethod){
 							 thisAuth.CheckAdmin(message.xtoken, function(admin) {
 									 thisAuth.BanUsers(message.users, function(err, result){
-											 messages.respond({users: results}, options);
+										 	 if (err) {
+												 console.log(err);
+											 }
+											 else {
+												 console.log(result);
+												 messages.respond({users: result}, options);
+											 }
 									 });
 							 });
+					 });
+
+					 messages.provide("SearchUsers", function(message, options, respondMethod) {
+						 console.log("Search Users");
+						 connect.query("SELECT id, username, administrator, create_date FROM users where username = ?", [message.user], function (err, rows, fields) {
+		             console.log(rows);
+								 if (err) {
+
+								 }
+								 else {
+		             	messages.respond({users: rows}, options);
+								 }
+		         });
 					 });
 
 					 messages.provide("ChangePassword", function(message, options, respondMethod) {
@@ -213,8 +236,8 @@ function Auth(callback) {
 									}
 									else if (thisAuth.isAdmin(admin)) {
 										 var reports = [];
-										 reports.push({id: 1, username: "test", room: "test-room", reason: "flames"});
-										 reports.push({id: 2, username: "test1", room: "test-room", reason: "bad words"});
+						//				 reports.push({id: 1, username: "test", room: "test-room", reason: "flames"});
+						//				 reports.push({id: 2, username: "test1", room: "test-room", reason: "bad words"});
 										 messages.respond({reports: reports, error: null}, options);
 									}
 									else {
@@ -331,7 +354,7 @@ function Auth(callback) {
         });
     }
     this.DoLogin = function(username, password, callback) {
-        connect.query("SELECT id, username, email_address, administrator, upvotes, downvotes FROM users WHERE username = ? and password = ?", [username, password],  function (err, rows, fields) {
+        connect.query("SELECT id, username, email_address, administrator, upvotes, downvotes FROM users WHERE username = ? and password = ? and ban_time is null", [username, password],  function (err, rows, fields) {
             if (err) {
                 callback(err, null);
             }

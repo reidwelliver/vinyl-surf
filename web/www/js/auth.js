@@ -20,7 +20,7 @@ function Authentication(readyCallback) {
 
             }
             else {
-                window.popup("You have been registered. Please login!")
+                window.popup("You have been registered. Please login!");
             }
         });
     }

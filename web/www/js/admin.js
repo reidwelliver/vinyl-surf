@@ -2,6 +2,50 @@ function Admin(readyCallback) {
     var thisAdmin = this;
     var token = window.vinyl.xtoken;
 
+    this.SearchUser = function () {
+    //  console.log($("#user-search"));
+      var user = $("#user-search").val();
+      console.log("text:", user);
+      window.messages.invoke('SearchUsers',{xtoken: token, user: user}, function(data){
+        console.log(data);
+        var users = data.users;
+        $("#user-table tbody tr").remove();
+
+        for (var i = 0; i < users.length; i++) {
+          $("#user-table").find('tbody')
+              .append($('<tr>')
+                  .append($('<td>')
+                    .append('<input class="user-box" id="' + users[i].id + '" type="checkbox" />')
+                  )
+                  .append($('<td>')
+                      .text(users[i].id)
+                  )
+                   .append($('<td>')
+                      .text(users[i].username)
+                  )
+                  .append($('<td>')
+                      .text(function () { if (users[i].administrator) return "admin"; else { return "user"} ; })
+                  )
+                   .append($('<td>')
+                      .text(users[i].create_date)
+                  )
+              );
+          }
+
+      });
+    }
+
+    this.BanUsers = function () {
+      var users = [];
+      console.log("Ban Users");
+      $('.user-box').each(function(i, obj) {
+        if ($(obj).is(':checked'))
+          users.push({id: obj.id});
+      });
+      window.messages.invoke('BanUsers',{xtoken: token, users: users}, function(data){
+        window.popup("Users Banned");
+      });
+    }
 
     this.StompEvents = function () {
         window.messages.invoke('GetAllUsers',{xtoken: token}, function(data){
@@ -16,6 +60,7 @@ function Admin(readyCallback) {
                     $("#user-table").find('tbody')
                         .append($('<tr>')
                             .append($('<td>')
+                              .append('<input class="user-box" id="' + users[i].id + '" type="checkbox" />')
                             )
                             .append($('<td>')
                                 .text(users[i].id)
