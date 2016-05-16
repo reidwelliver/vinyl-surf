@@ -136,6 +136,11 @@ function Room(opts){
 	}
 
 
+	this.skipTrack = function(){
+		console.log("skipping track!");
+		window.messages.invoke('room-' + thisRoom.id + '-skip',{},function(){});
+	}
+
 	this.receiveFirstLoad = function(roomdata){
 		console.log("First Load!!");
 		console.log(roomdata);
@@ -374,6 +379,11 @@ $(document).ready(function(){
 	quickAddButton.addEventListener('click', function() {
 		quickAddDialog.showModal();
 	});
+
+
+	$("#thumbsdown-button").click(function() {
+		window.room.skipTrack();
+	}
 
 	$("#chat-show-button").click(function() {
 

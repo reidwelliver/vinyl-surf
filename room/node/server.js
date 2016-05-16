@@ -151,6 +151,10 @@ function Room(optsIn){
 			messages.respond(thisRoom.firstLoadData(), options);
 		});
 
+		messages.provide('room-' + thisRoom.id + '-skip', function(message, options, respondMethod){
+			console.log("skip");
+			thisRoom.skipTrack();
+		});
 
 		messages.provide('room-' + thisRoom.id + '-queue-rm', function(message, options, respondMethod){
 			console.log("client removed track from queue ");
@@ -166,6 +170,10 @@ function Room(optsIn){
 		thisRoom.initUpdateIntervals();
 		thisRoom.playNext();
 	};
+
+	this.skipTrack = function(){
+		thisRoom.playNext();
+	}
 
 	this.addToQueue = function(track){
 		if(!(track instanceof Track)){
